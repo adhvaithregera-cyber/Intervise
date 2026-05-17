@@ -110,13 +110,22 @@ export default function LandingPage() {
             Three phases, back to back. The whole loop takes under 20 minutes.
           </p>
 
-          <div className="space-y-5">
+          <div className="relative space-y-5">
+            {/* Vertical line running through all steps and beyond */}
+            <div
+              className="absolute left-[47px] sm:left-[59px] top-0 w-px pointer-events-none"
+              style={{
+                bottom: '-3.5rem',
+                background: 'linear-gradient(to bottom, #ADBBDA 0%, #ADBBDA 75%, transparent 100%)',
+              }}
+            />
+
             {steps.map((step, i) => (
               <div
                 key={step.number}
                 className="group grid grid-cols-[auto_1fr] gap-5 rounded-2xl border border-[#ADBBDA] bg-white p-6 shadow-sm hover:border-[#7091E6] hover:shadow-md transition-all sm:gap-8 sm:p-8"
               >
-                {/* Left: number + connector */}
+                {/* Left: number badge */}
                 <div className="flex flex-col items-center">
                   <div
                     className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-base font-bold text-white transition-transform group-hover:scale-105 sm:h-14 sm:w-14 sm:rounded-2xl sm:text-lg"
@@ -124,15 +133,6 @@ export default function LandingPage() {
                   >
                     {step.number}
                   </div>
-                  {i < steps.length - 1 && (
-                    <div
-                      className="mt-4 w-px flex-1"
-                      style={{
-                        background: 'linear-gradient(to bottom, #ADBBDA, transparent)',
-                        minHeight: '1.5rem',
-                      }}
-                    />
-                  )}
                 </div>
 
                 {/* Right: content */}
