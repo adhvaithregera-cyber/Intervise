@@ -179,12 +179,12 @@ export default function PricingSection() {
                 className={cn(
                   'flex h-full flex-col rounded-2xl border p-8 transition-all duration-300',
                   plan.popular
-                    ? 'shadow-2xl'
+                    ? 'shadow-2xl shadow-[#7091E6]/40'
                     : 'border-[#ADBBDA] bg-white shadow-sm hover:shadow-lg hover:border-[#7091E6]'
                 )}
                 style={
                   plan.popular
-                    ? { backgroundColor: '#3D52A0', borderColor: '#7091E6' }
+                    ? { backgroundColor: '#3D52A0', borderColor: '#7091E6', boxShadow: '0 0 40px 8px rgba(112,145,230,0.35)' }
                     : {}
                 }
               >
