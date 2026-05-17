@@ -187,8 +187,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Divider */}
-      <div className="border-t border-[#ADBBDA]/40" />
+      {/* Gradient bridge into Pricing */}
+      <div className="h-24" style={{ background: 'linear-gradient(to bottom, #ffffff, #EDE8F5)' }} />
 
       {/* Pricing — animated */}
       <PricingSection />

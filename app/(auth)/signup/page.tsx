@@ -10,6 +10,7 @@ export default function SignupPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [confirmed, setConfirmed] = useState(false)
 
   async function handleGoogleSignIn() {
     const supabase = createClient()
@@ -24,15 +25,44 @@ export default function SignupPage() {
     setError(null)
     setLoading(true)
     const supabase = createClient()
-    const { error } = await supabase.auth.signUp({ email, password })
+    const { data, error } = await supabase.auth.signUp({ email, password })
     if (error) { setError(error.message); setLoading(false); return }
-    window.location.href = '/onboarding'
+
+    if (data.session) {
+      // Email confirmation disabled — user is immediately signed in
+      window.location.href = '/onboarding'
+    } else {
+      // Email confirmation required — show check-your-inbox screen
+      setConfirmed(true)
+      setLoading(false)
+    }
   }
 
   const inputClass = "w-full rounded-xl border border-[#ADBBDA] bg-[#EDE8F5]/50 px-3 py-2.5 text-sm text-[#3D52A0] placeholder-[#8697C4] focus:border-[#7091E6] focus:outline-none focus:ring-2 focus:ring-[#7091E6]/20"
 
+  if (confirmed) {
+    return (
+      <div className="rounded-2xl border border-[#ADBBDA] bg-white p-8 shadow-xl text-center">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#EDE8F5]">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3D52A0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2" />
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+          </svg>
+        </div>
+        <h2 className="mb-2 text-xl font-bold text-[#3D52A0]">Check your inbox</h2>
+        <p className="mb-6 text-sm text-[#8697C4]">
+          We sent a confirmation link to <span className="font-semibold text-[#3D52A0]">{email}</span>. Click it to activate your account and get started.
+        </p>
+        <p className="text-xs text-[#ADBBDA]">
+          Already confirmed?{' '}
+          <Link href="/login" className="font-semibold text-[#3D52A0] hover:text-[#7091E6]">Log in</Link>
+        </p>
+      </div>
+    )
+  }
+
   return (
-    <div className="rounded-2xl border border-white/60 bg-white/80 backdrop-blur-xl p-8 shadow-xl shadow-[#3D52A0]/10">
+    <div className="rounded-2xl border border-[#ADBBDA] bg-white p-8 shadow-xl">
       <div className="mb-8 text-center">
         <Link href="/" className="text-lg font-bold tracking-widest text-[#3D52A0]">INTERVISE</Link>
         <p className="mt-4 text-2xl font-bold text-[#3D52A0]">Create your account</p>

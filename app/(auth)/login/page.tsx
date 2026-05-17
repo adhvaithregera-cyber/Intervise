@@ -5,6 +5,12 @@ import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 
+const FRIENDLY_ERRORS: Record<string, string> = {
+  'Invalid login credentials': 'Wrong email or password. Please try again.',
+  'Email not confirmed': 'Please confirm your email first — check your inbox for the link we sent.',
+  'Too many requests': 'Too many attempts. Please wait a moment and try again.',
+}
+
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -25,14 +31,18 @@ export default function LoginPage() {
     setLoading(true)
     const supabase = createClient()
     const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) { setError('Invalid email or password.'); setLoading(false); return }
+    if (error) {
+      setError(FRIENDLY_ERRORS[error.message] ?? error.message)
+      setLoading(false)
+      return
+    }
     window.location.href = '/dashboard'
   }
 
   const inputClass = "w-full rounded-xl border border-[#ADBBDA] bg-[#EDE8F5]/50 px-3 py-2.5 text-sm text-[#3D52A0] placeholder-[#8697C4] focus:border-[#7091E6] focus:outline-none focus:ring-2 focus:ring-[#7091E6]/20"
 
   return (
-    <div className="rounded-2xl border border-white/60 bg-white/80 backdrop-blur-xl p-8 shadow-xl shadow-[#3D52A0]/10">
+    <div className="rounded-2xl border border-[#ADBBDA] bg-white p-8 shadow-xl">
       <div className="mb-8 text-center">
         <Link href="/" className="text-lg font-bold tracking-widest text-[#3D52A0]">INTERVISE</Link>
         <p className="mt-4 text-2xl font-bold text-[#3D52A0]">Welcome back</p>
