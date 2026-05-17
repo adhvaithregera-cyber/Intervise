@@ -56,7 +56,7 @@ export default function LandingPage() {
         <div className="flex flex-col items-center text-center">
           <h1 className="mb-6 max-w-3xl text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl text-[#3D52A0]">
             Your next interview is{' '}
-            <span style={{ color: '#7091E6' }}>won</span> before it starts.
+            <span style={{ color: '#7091E6' }}>won before it starts.</span>
           </h1>
 
           <p className="mb-10 max-w-[520px] text-base leading-relaxed text-[#8697C4] sm:text-lg">
