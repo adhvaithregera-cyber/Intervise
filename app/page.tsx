@@ -5,20 +5,41 @@ const steps = [
   {
     number: '01',
     title: 'Learn the format',
+    tag: 'Before you speak',
     description:
-      'Each question comes with a briefing card showing the exact answer structure — STAR, PACE, and 6 others — before the clock starts.',
+      'Most candidates fail not because they don\'t know the answer — but because they don\'t know how to structure it. Every question in Intervise is paired with a briefing card that shows you exactly which format to use.',
+    details: [
+      'Choose from 8 proven frameworks: STAR, PACE, SOAR, CAR, PREP, and more',
+      'Each format has a colour-coded breakdown of what to say in each section',
+      'You see the briefing card before the timer starts — never cold-called',
+    ],
+    formats: ['STAR', 'PACE', 'SOAR', 'CAR', 'PREP'],
   },
   {
     number: '02',
-    title: 'Answer under pressure',
+    title: 'Answer under real pressure',
+    tag: 'Live recording',
     description:
-      'Record your voice within a countdown timer, just like a real interview. No pauses, no retries.',
+      'A real interview doesn\'t pause for you to collect your thoughts. Intervise doesn\'t either. Once you start, a countdown timer runs. Your mic records. You answer as if the interviewer is right there.',
+    details: [
+      'Countdown timer matches the actual time limit for each question type',
+      'Your audio is recorded via your browser — nothing leaves your device during the session',
+      'Tap Done early or let the timer run out — both trigger the next step',
+    ],
+    formats: [],
   },
   {
     number: '03',
     title: 'Get instant feedback',
+    tag: 'Your report',
     description:
-      'Filler word count, words per minute, and an overall grade — the moment you finish.',
+      'The moment your answer ends, your audio is transcribed and analysed. No waiting. You\'ll see exactly where you lost points — and what to fix before your next session.',
+    details: [
+      'Filler word count with full breakdown: "um" vs "uh" vs "like" vs "basically"',
+      'Words per minute — so you know if you\'re rushing or dragging',
+      'Overall grade (A–F) based on your performance across all answers',
+    ],
+    formats: [],
   },
 ]
 
@@ -105,22 +126,74 @@ export default function LandingPage() {
       </section>
 
       {/* How it works */}
-      <section id="how-it-works" className="mx-auto max-w-6xl px-6 py-24">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#8697C4]">The process</p>
-        <h2 className="mb-16 text-4xl font-bold text-[#3D52A0]">How it works</h2>
-        <div className="grid grid-cols-3 gap-6">
-          {steps.map((step) => (
-            <div
-              key={step.number}
-              className="group rounded-2xl border border-[#ADBBDA] bg-white p-8 shadow-sm hover:border-[#7091E6] hover:shadow-md transition-all"
-            >
-              <p className="mb-5 text-5xl font-bold text-[#ADBBDA] group-hover:text-[#7091E6] transition-colors">
-                {step.number}
-              </p>
-              <h3 className="mb-3 text-base font-semibold text-[#3D52A0]">{step.title}</h3>
-              <p className="text-sm text-[#8697C4] leading-relaxed">{step.description}</p>
-            </div>
-          ))}
+      <section id="how-it-works" className="py-24" style={{ background: 'linear-gradient(180deg, #EDE8F5 0%, white 60%, #EDE8F5 100%)' }}>
+        <div className="mx-auto max-w-6xl px-6">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#8697C4]">The process</p>
+          <h2 className="mb-4 text-4xl font-bold text-[#3D52A0]">How it works</h2>
+          <p className="mb-16 max-w-xl text-[#8697C4]">
+            Three phases, back to back. The whole loop takes under 20 minutes.
+          </p>
+
+          <div className="space-y-6">
+            {steps.map((step, i) => (
+              <div
+                key={step.number}
+                className="group grid grid-cols-[auto_1fr] gap-8 rounded-2xl border border-[#ADBBDA] bg-white p-8 shadow-sm hover:border-[#7091E6] hover:shadow-lg transition-all"
+              >
+                {/* Left: number + connector */}
+                <div className="flex flex-col items-center">
+                  <div
+                    className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-lg font-bold text-white group-hover:scale-105 transition-transform"
+                    style={{ background: 'linear-gradient(135deg, #3D52A0, #7091E6)' }}
+                  >
+                    {step.number}
+                  </div>
+                  {i < steps.length - 1 && (
+                    <div className="mt-4 w-px flex-1 bg-gradient-to-b from-[#ADBBDA] to-transparent" style={{ minHeight: '2rem' }} />
+                  )}
+                </div>
+
+                {/* Right: content */}
+                <div>
+                  <div className="mb-3 flex items-center gap-3">
+                    <h3 className="text-xl font-bold text-[#3D52A0]">{step.title}</h3>
+                    <span className="rounded-full border border-[#ADBBDA] bg-[#EDE8F5] px-3 py-0.5 text-xs font-semibold text-[#8697C4]">
+                      {step.tag}
+                    </span>
+                  </div>
+
+                  <p className="mb-6 text-sm leading-relaxed text-[#8697C4]">{step.description}</p>
+
+                  {/* Detail bullets */}
+                  <ul className="mb-5 space-y-2">
+                    {step.details.map((d) => (
+                      <li key={d} className="flex items-start gap-2.5 text-sm text-[#3D52A0]">
+                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#7091E6]" />
+                        {d}
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* Format chips */}
+                  {step.formats.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {step.formats.map((f) => (
+                        <span
+                          key={f}
+                          className="rounded-xl border border-[#7091E6]/40 bg-[#7091E6]/10 px-3 py-1 text-xs font-semibold text-[#3D52A0]"
+                        >
+                          {f}
+                        </span>
+                      ))}
+                      <span className="rounded-xl border border-[#ADBBDA] bg-[#EDE8F5] px-3 py-1 text-xs font-semibold text-[#8697C4]">
+                        +3 more
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -135,7 +208,7 @@ export default function LandingPage() {
           <h2 className="mb-4 text-4xl font-bold text-[#3D52A0]">Simple pricing</h2>
           <p className="mb-16 text-[#8697C4]">Start free. Upgrade when you need more sessions.</p>
 
-          <div className="grid grid-cols-3 gap-6 items-start">
+          <div className="grid grid-cols-3 gap-6 items-stretch">
             {plans.map((plan) => (
               <div
                 key={plan.name}
@@ -145,11 +218,14 @@ export default function LandingPage() {
                     : 'border-[#ADBBDA] bg-white shadow-sm hover:shadow-md hover:border-[#7091E6]'
                 }`}
               >
-                {plan.highlight && (
-                  <span className="mb-6 self-start rounded-full bg-[#7091E6]/30 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-white">
-                    Most popular
-                  </span>
-                )}
+                {/* Badge row — always present to keep card heights equal */}
+                <div className="mb-6 h-7">
+                  {plan.highlight && (
+                    <span className="rounded-full bg-[#7091E6]/30 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-white">
+                      Most popular
+                    </span>
+                  )}
+                </div>
                 <div className="mb-6">
                   <h3 className={`mb-1 text-base font-semibold ${plan.highlight ? 'text-white' : 'text-[#3D52A0]'}`}>
                     {plan.name}
