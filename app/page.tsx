@@ -59,8 +59,7 @@ export default function LandingPage() {
           </h1>
 
           <p className="mb-10 max-w-[520px] text-base leading-relaxed text-[#8697C4] sm:text-lg">
-            Most candidates memorise 500 answers. Learn the 8 formats, practise under real pressure,
-            and know exactly where you went wrong.
+            You practised for weeks. You knew your answers cold. Then the interviewer asked one question — and your mind went blank.
           </p>
 
           {/* CTAs */}
