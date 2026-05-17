@@ -25,13 +25,13 @@ export function InterviewComparison() {
         <div className="flex items-center justify-between border-b border-[#ADBBDA] bg-[#EDE8F5]/60 px-6 py-4">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-widest text-[#8697C4]">Before</p>
-            <p className="mt-0.5 text-sm font-semibold text-[#8697C4]">No format used</p>
+            <p className="mt-0.5 text-sm font-semibold text-[#3D52A0]">No format used</p>
           </div>
           <div className="flex items-center gap-3">
-            <span className="rounded-full border border-[#ADBBDA] bg-white px-3 py-0.5 text-xs font-semibold text-[#ADBBDA] line-through">
+            <span className="rounded-full border border-[#ADBBDA] bg-white px-3 py-0.5 text-xs font-semibold text-[#8697C4] line-through">
               STAR
             </span>
-            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#ADBBDA]/30 text-xl font-black text-[#8697C4]">
+            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#ADBBDA]/50 text-xl font-black text-[#3D52A0]">
               D
             </span>
           </div>
@@ -39,7 +39,7 @@ export function InterviewComparison() {
 
         {/* Answer */}
         <div className="px-6 py-5">
-          <blockquote className="rounded-xl border border-[#ADBBDA]/60 bg-[#EDE8F5]/30 p-4 text-sm italic leading-relaxed text-[#8697C4]">
+          <blockquote className="rounded-xl border border-[#ADBBDA] bg-[#EDE8F5]/50 p-4 text-sm italic leading-relaxed text-[#3D52A0]">
             "Um, so I'm Aditya. I was born in Chennai and I studied at VIT. I did my 10th with 91% and my 12th with 87%. I have done some projects in Python and I also know Java a little bit. I did an internship at a startup last year where I basically helped them with their app. I like coding and I want to work at a good company where I can grow. That's basically it about me."
           </blockquote>
         </div>
@@ -48,8 +48,8 @@ export function InterviewComparison() {
         <div className="mt-auto border-t border-[#ADBBDA]/60 px-6 py-5">
           <ul className="space-y-2.5">
             {beforeFlaws.map((f) => (
-              <li key={f} className="flex items-start gap-2.5 text-sm text-[#8697C4]">
-                <span className="mt-0.5 shrink-0 text-[#ADBBDA]">✕</span>
+              <li key={f} className="flex items-start gap-2.5 text-sm text-[#3D52A0]">
+                <span className="mt-0.5 shrink-0 text-[#8697C4]">✕</span>
                 {f}
               </li>
             ))}
