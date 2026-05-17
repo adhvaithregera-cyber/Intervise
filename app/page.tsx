@@ -97,7 +97,7 @@ export default function LandingPage() {
       </div>
 
       {/* How it works */}
-      <section id="how-it-works" className="py-20 sm:py-24" style={{ background: 'linear-gradient(to bottom, #EDE8F5 0%, #EDE8F5 80%, #ffffff 100%)' }}>
+      <section id="how-it-works" className="py-20 sm:py-24" style={{ background: 'linear-gradient(to bottom, #F6F3FA 0%, #F6F3FA 80%, #ffffff 100%)' }}>
         <div className="mx-auto max-w-4xl px-4 sm:px-6">
           <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#8697C4]">
             The process
