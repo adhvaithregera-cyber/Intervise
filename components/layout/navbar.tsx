@@ -11,7 +11,7 @@ export async function Navbar() {
         {/* Center: wordmark */}
         <div className="absolute left-1/2 -translate-x-1/2">
           <Link
-            href={user ? '/dashboard' : '/'}
+            href="/"
             className="text-base font-bold tracking-widest text-[#3D52A0] hover:text-[#7091E6] transition-colors"
           >
             INTERVISE

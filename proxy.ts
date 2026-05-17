@@ -30,9 +30,10 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const isPublicPath = pathname === '/' || pathname === '/login' || pathname === '/signup'
   const isAuthCallback = pathname.startsWith('/auth/')
+  const isApiPath = pathname.startsWith('/api/')
 
-  // Allow auth callbacks through
-  if (isAuthCallback) return supabaseResponse
+  // Allow auth callbacks and API routes through — no redirects on API paths
+  if (isAuthCallback || isApiPath) return supabaseResponse
 
   // Redirect unauthenticated users away from protected routes
   if (!user && !isPublicPath) {
