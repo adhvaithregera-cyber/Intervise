@@ -1,7 +1,3 @@
-'use client'
-
-import { useState, useRef, useCallback, useEffect } from 'react'
-
 const beforeFlaws = [
   'Starts with where they were born — irrelevant',
   'Lists grades instead of a narrative',
@@ -19,127 +15,97 @@ const afterStrengths = [
   'Under 90 seconds — ideal length',
 ]
 
-function BeforePanel() {
-  return (
-    <div className="h-full bg-red-50 p-6 sm:p-8 flex flex-col gap-5">
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-bold uppercase tracking-widest text-red-400">Before</span>
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 text-lg font-black text-red-500">D</span>
-      </div>
-      <blockquote className="rounded-xl border border-red-200 bg-white/70 p-4 text-sm leading-relaxed text-[#3D52A0] italic">
-        "Um, so I'm Aditya. I was born in Chennai and I studied at VIT. I did my 10th with 91% and my 12th with 87%. I have done some projects in Python and I also know Java a little bit. I did an internship at a startup last year where I basically helped them with their app. I like coding and I want to work at a good company where I can grow. That's basically it about me."
-      </blockquote>
-      <ul className="space-y-2">
-        {beforeFlaws.map((f) => (
-          <li key={f} className="flex items-start gap-2.5 text-sm text-red-600">
-            <span className="mt-0.5 shrink-0">✕</span>
-            {f}
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
-}
-
-function AfterPanel() {
-  return (
-    <div className="h-full bg-emerald-50 p-6 sm:p-8 flex flex-col gap-5">
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-bold uppercase tracking-widest text-emerald-500">After — Present → Past → Future</span>
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-lg font-black text-emerald-600">A</span>
-      </div>
-      <blockquote className="rounded-xl border border-emerald-200 bg-white/70 p-4 text-sm leading-relaxed text-[#3D52A0]">
-        <span className="mb-1 block font-semibold text-emerald-600 text-xs uppercase tracking-wider">Present</span>
-        "I'm a final-year Computer Science student at VIT, specialising in AI and full-stack development. I've built two production web apps — one of which has 200 active users."
-        <span className="mt-3 mb-1 block font-semibold text-emerald-600 text-xs uppercase tracking-wider">Past</span>
-        "My interest in product development started in second year when I built a ride-sharing app for our campus that solved a real problem — 300 students used it daily. That experience taught me how to ship fast and take feedback seriously."
-        <span className="mt-3 mb-1 block font-semibold text-emerald-600 text-xs uppercase tracking-wider">Future</span>
-        "I'm looking for a role where I can contribute to real product decisions from day one, which is exactly why this position at your company caught my attention."
-      </blockquote>
-      <ul className="space-y-2">
-        {afterStrengths.map((s) => (
-          <li key={s} className="flex items-start gap-2.5 text-sm text-emerald-700">
-            <span className="mt-0.5 shrink-0">✓</span>
-            {s}
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
-}
-
 export function InterviewComparison() {
-  const [sliderPosition, setSliderPosition] = useState(50)
-  const [isDragging, setIsDragging] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
-
-  const handleMove = useCallback(
-    (clientX: number) => {
-      if (!isDragging || !containerRef.current) return
-      const rect = containerRef.current.getBoundingClientRect()
-      const pos = Math.max(5, Math.min(95, ((clientX - rect.left) / rect.width) * 100))
-      setSliderPosition(pos)
-    },
-    [isDragging]
-  )
-
-  const stopDrag = useCallback(() => setIsDragging(false), [])
-
-  useEffect(() => {
-    window.addEventListener('mouseup', stopDrag)
-    return () => window.removeEventListener('mouseup', stopDrag)
-  }, [stopDrag])
-
   return (
-    <div
-      ref={containerRef}
-      className="relative w-full select-none overflow-hidden rounded-2xl border border-[#ADBBDA] shadow-xl cursor-ew-resize"
-      style={{ minHeight: 540 }}
-      onMouseMove={(e) => handleMove(e.clientX)}
-      onMouseLeave={stopDrag}
-      onTouchMove={(e) => handleMove(e.touches[0].clientX)}
-      onTouchEnd={stopDrag}
-    >
-      {/* Before — left panel, clipped on the right */}
-      <div className="absolute inset-0" style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}>
-        <BeforePanel />
-      </div>
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
 
-      {/* After — right panel, clipped on the left */}
-      <div className="absolute inset-0" style={{ clipPath: `inset(0 0 0 ${sliderPosition}%)` }}>
-        <AfterPanel />
-      </div>
+      {/* ── Before ── */}
+      <div className="flex flex-col rounded-2xl border border-red-200 bg-red-50 overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-red-200 bg-red-100/60 px-6 py-4">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-red-400">Before</p>
+            <p className="mt-0.5 text-sm font-semibold text-red-500">No format used</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="rounded-full border border-red-200 bg-white px-3 py-0.5 text-xs font-semibold text-red-400 line-through">
+              STAR
+            </span>
+            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-red-200 text-xl font-black text-red-600">
+              D
+            </span>
+          </div>
+        </div>
 
-      {/* Drag handle */}
-      <div
-        className="absolute top-0 bottom-0 z-10 flex items-center justify-center"
-        style={{ left: `calc(${sliderPosition}% - 1px)` }}
-        onMouseDown={() => setIsDragging(true)}
-        onTouchStart={() => setIsDragging(true)}
-      >
-        <div className="h-full w-0.5 bg-white/60" />
-        <div
-          className={`absolute flex h-11 w-11 items-center justify-center rounded-full border border-[#ADBBDA] bg-white shadow-lg transition-transform ${isDragging ? 'scale-110' : ''}`}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8697C4" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="15 18 9 12 15 6" />
-            <polyline points="9 6 15 12 9 18" />
-          </svg>
+        {/* Answer */}
+        <div className="px-6 py-5">
+          <blockquote className="rounded-xl border border-red-200 bg-white/80 p-4 text-sm italic leading-relaxed text-[#3D52A0]">
+            "Um, so I'm Aditya. I was born in Chennai and I studied at VIT. I did my 10th with 91% and my 12th with 87%. I have done some projects in Python and I also know Java a little bit. I did an internship at a startup last year where I basically helped them with their app. I like coding and I want to work at a good company where I can grow. That's basically it about me."
+          </blockquote>
+        </div>
+
+        {/* Flaws */}
+        <div className="mt-auto border-t border-red-200 px-6 py-5">
+          <ul className="space-y-2.5">
+            {beforeFlaws.map((f) => (
+              <li key={f} className="flex items-start gap-2.5 text-sm text-red-600">
+                <span className="mt-0.5 shrink-0 text-red-400">✕</span>
+                {f}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 
-      {/* Corner labels — always visible */}
-      <div className="pointer-events-none absolute top-3 left-4 z-20 rounded-full bg-red-100 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-red-400">
-        Before
-      </div>
-      <div className="pointer-events-none absolute top-3 right-4 z-20 rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-emerald-500">
-        After
+      {/* ── After ── */}
+      <div className="flex flex-col rounded-2xl border border-emerald-200 bg-emerald-50 overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-emerald-200 bg-emerald-100/60 px-6 py-4">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-500">After</p>
+            <p className="mt-0.5 text-sm font-semibold text-emerald-600">STAR format applied</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="rounded-full border border-emerald-300 bg-white px-3 py-0.5 text-xs font-semibold text-emerald-600">
+              STAR
+            </span>
+            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-emerald-200 text-xl font-black text-emerald-700">
+              A
+            </span>
+          </div>
+        </div>
+
+        {/* Answer */}
+        <div className="px-6 py-5">
+          <blockquote className="rounded-xl border border-emerald-200 bg-white/80 p-4 text-sm leading-relaxed text-[#3D52A0]">
+            <span className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-emerald-500">
+              S — Situation (Present)
+            </span>
+            "I'm a final-year Computer Science student at VIT, specialising in AI and full-stack development. I've built two production web apps — one of which has 200 active users."
+            <span className="mt-3 mb-1 block text-[10px] font-bold uppercase tracking-widest text-emerald-500">
+              T — Task (Past)
+            </span>
+            "My interest in product development started in second year when I built a ride-sharing app for our campus — 300 students used it daily. That taught me how to ship fast and take feedback seriously."
+            <span className="mt-3 mb-1 block text-[10px] font-bold uppercase tracking-widest text-emerald-500">
+              A — Action &amp; R — Result (Future)
+            </span>
+            "I'm looking for a role where I can contribute to real product decisions from day one, which is exactly why this position caught my attention."
+          </blockquote>
+        </div>
+
+        {/* Strengths */}
+        <div className="mt-auto border-t border-emerald-200 px-6 py-5">
+          <ul className="space-y-2.5">
+            {afterStrengths.map((s) => (
+              <li key={s} className="flex items-start gap-2.5 text-sm text-emerald-700">
+                <span className="mt-0.5 shrink-0 text-emerald-500">✓</span>
+                {s}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
 
-      {/* Drag hint */}
-      <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 z-20 rounded-full bg-white/80 px-3 py-1 text-[10px] font-medium text-[#8697C4] shadow-sm backdrop-blur-sm">
-        drag to compare
-      </div>
     </div>
   )
 }
