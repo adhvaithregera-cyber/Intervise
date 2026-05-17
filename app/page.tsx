@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Navbar } from '@/components/layout/navbar'
 import PricingSection from '@/components/ui/pricing-section'
 import { HeroHighlight, Highlight } from '@/components/ui/hero-highlight'
+import { ScrollHint } from '@/components/ui/scroll-hint'
 
 const steps = [
   {
@@ -78,6 +79,7 @@ export default function LandingPage() {
             </Link>
           </div>
         </div>
+        <ScrollHint />
       </HeroHighlight>
 
       {/* Divider */}
