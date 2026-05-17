@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Navbar } from '@/components/layout/navbar'
 import PricingSection from '@/components/ui/pricing-section'
+import { HeroHighlight, Highlight } from '@/components/ui/hero-highlight'
 
 const steps = [
   {
@@ -50,33 +51,35 @@ export default function LandingPage() {
       <Navbar />
 
       {/* Hero */}
-      <section className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center px-4 py-20 text-center sm:px-6">
-        <h1 className="mb-6 max-w-3xl text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-          Your next interview is{' '}
-          <span style={{ color: '#7091E6' }}>won before it starts.</span>
-        </h1>
+      <HeroHighlight containerClassName="min-h-[calc(100vh-4rem)] px-4 py-20 sm:px-6">
+        <div className="flex flex-col items-center text-center">
+          <h1 className="mb-6 max-w-3xl text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl text-[#3D52A0]">
+            Your next interview is{' '}
+            <Highlight>won before it starts.</Highlight>
+          </h1>
 
-        <p className="mb-10 max-w-[520px] text-base leading-relaxed text-[#8697C4] sm:text-lg">
-          Most candidates memorise 500 answers. Learn the 8 formats, practise under real pressure,
-          and know exactly where you went wrong.
-        </p>
+          <p className="mb-10 max-w-[520px] text-base leading-relaxed text-[#8697C4] sm:text-lg">
+            Most candidates memorise 500 answers. Learn the 8 formats, practise under real pressure,
+            and know exactly where you went wrong.
+          </p>
 
-        {/* CTAs */}
-        <div className="flex flex-col items-center gap-3 sm:flex-row">
-          <Link
-            href="/signup"
-            className="inline-flex w-full items-center justify-center rounded-xl bg-[#3D52A0] px-8 py-3 text-base font-semibold text-white shadow-md shadow-[#3D52A0]/20 hover:bg-[#2d3d78] transition-colors sm:w-auto"
-          >
-            Practice for free
-          </Link>
-          <Link
-            href="#how-it-works"
-            className="inline-flex w-full items-center justify-center rounded-xl border-2 border-[#ADBBDA] px-8 py-3 text-base font-semibold text-[#3D52A0] hover:border-[#7091E6] hover:text-[#7091E6] transition-colors sm:w-auto"
-          >
-            See how it works →
-          </Link>
+          {/* CTAs */}
+          <div className="flex flex-col items-center gap-3 sm:flex-row">
+            <Link
+              href="/signup"
+              className="inline-flex w-full items-center justify-center rounded-xl bg-[#3D52A0] px-8 py-3 text-base font-semibold text-white shadow-md shadow-[#3D52A0]/20 hover:bg-[#2d3d78] transition-colors sm:w-auto"
+            >
+              Practice for free
+            </Link>
+            <Link
+              href="#how-it-works"
+              className="inline-flex w-full items-center justify-center rounded-xl border-2 border-[#ADBBDA] px-8 py-3 text-base font-semibold text-[#3D52A0] hover:border-[#7091E6] hover:text-[#7091E6] transition-colors sm:w-auto"
+            >
+              See how it works →
+            </Link>
+          </div>
         </div>
-      </section>
+      </HeroHighlight>
 
       {/* Divider */}
       <div className="border-t border-[#ADBBDA]/40" />

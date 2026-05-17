@@ -2,14 +2,52 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { NavAuthLinks } from './nav-auth-links'
 
+function getInitials(name?: string | null, email?: string | null): string {
+  if (name) {
+    const parts = name.trim().split(' ')
+    return parts.length >= 2
+      ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+      : parts[0].slice(0, 2).toUpperCase()
+  }
+  if (email) return email[0].toUpperCase()
+  return '?'
+}
+
 export async function Navbar() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
+  let initials = '?'
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('full_name')
+      .eq('id', user.id)
+      .single()
+    initials = getInitials(profile?.full_name, user.email)
+  }
+
   return (
     <nav className="sticky top-0 z-50 border-b border-[#ADBBDA] bg-white">
       <div className="relative mx-auto flex h-16 max-w-7xl items-center px-4 sm:px-6">
-        {/* Center: wordmark */}
+
+        {/* Left: marketing links */}
+        <div className="flex items-center gap-5">
+          <Link
+            href="/signup"
+            className="hidden sm:inline-flex items-center rounded-xl border-2 border-[#3D52A0] px-4 py-1.5 text-sm font-semibold text-[#3D52A0] hover:bg-[#3D52A0] hover:text-white transition-colors"
+          >
+            Try for FREE
+          </Link>
+          <a
+            href="/#pricing"
+            className="text-sm font-medium text-[#8697C4] hover:text-[#3D52A0] transition-colors"
+          >
+            Pricing
+          </a>
+        </div>
+
+        {/* Center: wordmark (absolute so it stays truly centered) */}
         <div className="absolute left-1/2 -translate-x-1/2">
           <Link
             href="/"
@@ -19,25 +57,28 @@ export async function Navbar() {
           </Link>
         </div>
 
-        {/* Right: auth links */}
-        {user ? (
-          <NavAuthLinks />
-        ) : (
-          <div className="ml-auto flex items-center gap-4">
-            <Link
-              href="/login"
-              className="text-sm font-medium text-[#8697C4] hover:text-[#3D52A0] transition-colors"
-            >
-              Login
-            </Link>
-            <Link
-              href="/signup"
-              className="rounded-xl bg-[#3D52A0] px-4 py-1.5 text-sm font-semibold text-white hover:bg-[#2d3d78] transition-colors shadow-sm shadow-[#3D52A0]/20"
-            >
-              Sign up
-            </Link>
-          </div>
-        )}
+        {/* Right: auth-dependent links */}
+        <div className="ml-auto">
+          {user ? (
+            <NavAuthLinks initials={initials} />
+          ) : (
+            <div className="flex items-center gap-4">
+              <Link
+                href="/login"
+                className="text-sm font-medium text-[#8697C4] hover:text-[#3D52A0] transition-colors"
+              >
+                Login
+              </Link>
+              <Link
+                href="/signup"
+                className="rounded-xl bg-[#3D52A0] px-4 py-1.5 text-sm font-semibold text-white hover:bg-[#2d3d78] transition-colors shadow-sm shadow-[#3D52A0]/20"
+              >
+                Sign up
+              </Link>
+            </div>
+          )}
+        </div>
+
       </div>
     </nav>
   )
