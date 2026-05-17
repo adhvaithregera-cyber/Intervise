@@ -3,6 +3,7 @@ import { Navbar } from '@/components/layout/navbar'
 import PricingSection from '@/components/ui/pricing-section'
 import { HeroHighlight } from '@/components/ui/hero-highlight'
 import { InterviewComparison } from '@/components/ui/interview-comparison'
+import { CategoryStrip } from '@/components/ui/category-strip'
 
 const steps = [
   {
@@ -90,8 +91,10 @@ export default function LandingPage() {
         </div>
       </HeroHighlight>
 
-      {/* Divider */}
-      <div className="border-t border-[#ADBBDA]/40" />
+      {/* Category strip — bleeds from hero into How It Works */}
+      <div className="relative z-10 -mt-6 border-y border-[#ADBBDA]/40">
+        <CategoryStrip />
+      </div>
 
       {/* How it works */}
       <section id="how-it-works" className="bg-white py-20 sm:py-24">
