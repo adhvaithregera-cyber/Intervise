@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Navbar } from '@/components/layout/navbar'
+import PricingSection from '@/components/ui/pricing-section'
 
 const steps = [
   {
@@ -43,38 +44,6 @@ const steps = [
   },
 ]
 
-const plans = [
-  {
-    name: 'Free',
-    price: '₹0',
-    period: '',
-    description: 'Try it out, no card required.',
-    features: ['2 sessions / month', '3 questions per session', 'Filler word count', 'WPM score', 'Easy difficulty only'],
-    cta: 'Get started free',
-    href: '/signup',
-    highlight: false,
-  },
-  {
-    name: 'Student',
-    price: '₹149',
-    period: '/mo',
-    description: 'For serious job seekers.',
-    features: ['10 sessions / month', '5 questions per session', 'Full filler breakdown', 'Eye contact analysis', 'All 8 categories', 'Easy + Medium difficulty'],
-    cta: 'Start Student plan',
-    href: '/signup',
-    highlight: true,
-  },
-  {
-    name: 'Pro',
-    price: '₹499',
-    period: '/mo',
-    description: 'For placement season crunch.',
-    features: ['30 sessions / month', '5–8 questions per session', 'Everything in Student', 'Progress trend charts', 'Company question sets', 'All difficulty levels'],
-    cta: 'Start Pro plan',
-    href: '/signup',
-    highlight: false,
-  },
-]
 
 export default function LandingPage() {
   return (
@@ -90,14 +59,10 @@ export default function LandingPage() {
       >
         {/* Hook */}
         <h1 className="mb-12 max-w-3xl px-6 text-5xl font-bold leading-tight tracking-tight">
-          <span style={{ color: '#3D52A0' }}>Your next interview is </span>
-          <span
-            className="relative"
-            style={{
-              color: '#ffffff',
-              textShadow: '0 2px 24px rgba(61,82,160,0.25)',
-            }}
-          >
+          <span style={{ color: '#ffffff', textShadow: '0 2px 24px rgba(255,255,255,0.2)' }}>
+            Your next interview is{' '}
+          </span>
+          <span style={{ color: '#3D52A0' }}>
             won before it starts.
           </span>
         </h1>
@@ -197,78 +162,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Pricing */}
-      <section
-        id="pricing"
-        className="py-24"
-        style={{ background: 'linear-gradient(180deg, #EDE8F5 0%, white 100%)' }}
-      >
-        <div className="mx-auto max-w-6xl px-6">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#8697C4]">Pricing</p>
-          <h2 className="mb-4 text-4xl font-bold text-[#3D52A0]">Simple pricing</h2>
-          <p className="mb-16 text-[#8697C4]">Start free. Upgrade when you need more sessions.</p>
-
-          <div className="grid grid-cols-3 gap-6 items-stretch">
-            {plans.map((plan) => (
-              <div
-                key={plan.name}
-                className={`flex flex-col rounded-2xl border p-8 transition-all ${
-                  plan.highlight
-                    ? 'border-[#7091E6] bg-[#3D52A0] shadow-xl shadow-[#3D52A0]/20'
-                    : 'border-[#ADBBDA] bg-white shadow-sm hover:shadow-md hover:border-[#7091E6]'
-                }`}
-              >
-                {/* Badge row — always present to keep card heights equal */}
-                <div className="mb-6 h-7">
-                  {plan.highlight && (
-                    <span className="rounded-full bg-[#7091E6]/30 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-white">
-                      Most popular
-                    </span>
-                  )}
-                </div>
-                <div className="mb-6">
-                  <h3 className={`mb-1 text-base font-semibold ${plan.highlight ? 'text-white' : 'text-[#3D52A0]'}`}>
-                    {plan.name}
-                  </h3>
-                  <p className={`mb-5 text-sm ${plan.highlight ? 'text-[#ADBBDA]' : 'text-[#8697C4]'}`}>
-                    {plan.description}
-                  </p>
-                  <div className="flex items-baseline gap-1">
-                    <span className={`text-5xl font-bold ${plan.highlight ? 'text-white' : 'text-[#3D52A0]'}`}>
-                      {plan.price}
-                    </span>
-                    {plan.period && (
-                      <span className={`text-sm ${plan.highlight ? 'text-[#ADBBDA]' : 'text-[#8697C4]'}`}>
-                        {plan.period}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <ul className="mb-8 space-y-3 flex-1">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className={`flex items-start gap-3 text-sm ${plan.highlight ? 'text-[#EDE8F5]' : 'text-[#8697C4]'}`}>
-                      <span className={`font-bold mt-0.5 shrink-0 ${plan.highlight ? 'text-[#7091E6]' : 'text-[#3D52A0]'}`}>✓</span>
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-
-                <Link
-                  href={plan.href}
-                  className={`block w-full rounded-xl py-3 text-center text-sm font-semibold transition-all ${
-                    plan.highlight
-                      ? 'bg-white text-[#3D52A0] hover:bg-[#EDE8F5]'
-                      : 'border-2 border-[#3D52A0] text-[#3D52A0] hover:bg-[#3D52A0] hover:text-white'
-                  }`}
-                >
-                  {plan.cta}
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Pricing — animated section */}
+      <PricingSection />
 
       {/* Footer */}
       <footer className="border-t border-[#ADBBDA] bg-white">
