@@ -85,7 +85,7 @@ export default function LandingPage() {
       <div className="border-t border-[#ADBBDA]/40" />
 
       {/* How it works */}
-      <section id="how-it-works" className="bg-[#EDE8F5]/40 py-20 sm:py-24">
+      <section id="how-it-works" className="bg-white py-20 sm:py-24">
         <div className="mx-auto max-w-4xl px-4 sm:px-6">
           <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#8697C4]">
             The process

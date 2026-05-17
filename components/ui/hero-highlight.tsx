@@ -61,8 +61,8 @@ export const Highlight = ({
 }) => {
   return (
     <motion.span
-      initial={{ backgroundSize: '0% 100%' }}
-      animate={{ backgroundSize: '100% 100%' }}
+      initial={{ backgroundSize: '0% 85%' }}
+      animate={{ backgroundSize: '100% 85%' }}
       transition={{ duration: 1.2, ease: 'easeOut', delay: 0.3 }}
       style={{
         backgroundRepeat: 'no-repeat',
@@ -70,7 +70,7 @@ export const Highlight = ({
         display: 'inline',
         backgroundImage: 'linear-gradient(90deg, #7091E6, #3D52A0)',
       }}
-      className={cn('relative inline-block pb-1 px-1 rounded-lg text-white', className)}
+      className={cn('relative inline-block rounded-md text-white', className)}
     >
       {children}
     </motion.span>
