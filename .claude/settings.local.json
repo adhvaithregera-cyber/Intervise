@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c \":*)",
+      "Bash(python -c \":*)",
+      "Bash(python:*)",
+      "Bash(gh auth:*)",
+      "Bash(gh repo:*)",
+      "Bash(npx create-next-app@latest . --typescript --tailwind --app --no-src-dir --import-alias \"@/*\" --no-eslint --yes)",
+      "Bash(npx create-next-app@latest . --typescript --tailwind --app --no-src-dir --import-alias \"@/*\" --no-eslint --yes --name intervise)",
+      "Read(//c/Users/Adhvaith/OneDrive/Desktop/**)",
+      "Bash(npx create-next-app@latest intervise-temp --typescript --tailwind --app --no-src-dir --import-alias \"@/*\" --no-eslint --yes)",
+      "Bash(cp -r \"C:/Users/Adhvaith/OneDrive/Desktop/intervise-temp/app\" \"C:/Users/Adhvaith/OneDrive/Desktop/Intervise/\")",
+      "Bash(cp -r \"C:/Users/Adhvaith/OneDrive/Desktop/intervise-temp/public\" \"C:/Users/Adhvaith/OneDrive/Desktop/Intervise/\")",
+      "Bash(cp -r \"C:/Users/Adhvaith/OneDrive/Desktop/intervise-temp/node_modules\" \"C:/Users/Adhvaith/OneDrive/Desktop/Intervise/\")",
+      "Bash(cp \"C:/Users/Adhvaith/OneDrive/Desktop/intervise-temp/package.json\" \"C:/Users/Adhvaith/OneDrive/Desktop/Intervise/\")",
+      "Bash(cp \"C:/Users/Adhvaith/OneDrive/Desktop/intervise-temp/package-lock.json\" \"C:/Users/Adhvaith/OneDrive/Desktop/Intervise/\")",
+      "Bash(cp \"C:/Users/Adhvaith/OneDrive/Desktop/intervise-temp/tsconfig.json\" \"C:/Users/Adhvaith/OneDrive/Desktop/Intervise/\")",
+      "Bash(cp \"C:/Users/Adhvaith/OneDrive/Desktop/intervise-temp/next.config.ts\" \"C:/Users/Adhvaith/OneDrive/Desktop/Intervise/\")",
+      "Bash(cp \"C:/Users/Adhvaith/OneDrive/Desktop/intervise-temp/next-env.d.ts\" \"C:/Users/Adhvaith/OneDrive/Desktop/Intervise/\")",
+      "Bash(cp \"C:/Users/Adhvaith/OneDrive/Desktop/intervise-temp/postcss.config.mjs\" \"C:/Users/Adhvaith/OneDrive/Desktop/Intervise/\")",
+      "Bash(npm install:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(timeout 20 npm run dev)",
+      "Bash(node -e \"const p = require\\(''./package.json''\\); console.log\\(''name:'', p.name, ''\\\\ndeps:'', Object.keys\\(p.dependencies\\).join\\('', ''\\)\\)\")",
+      "Bash(node -e \"const p = require\\(''./package.json''\\); console.log\\(''Next:'', p.dependencies.next\\); console.log\\(''Tailwind:'', p.devDependencies?.tailwindcss || p.dependencies?.tailwindcss\\)\")",
+      "Bash(npm test:*)",
+      "Bash(supabase --version)",
+      "Bash(psql --version)",
+      "Bash(node -e \":*)",
+      "Bash(npm list:*)",
+      "Bash(npx tsc:*)",
+      "Bash(ls C:UsersAdhvaithOneDriveDesktopIntervise/*.ts)",
+      "Bash(grep \"\\\\.ts$\")"
+    ]
+  }
+}
