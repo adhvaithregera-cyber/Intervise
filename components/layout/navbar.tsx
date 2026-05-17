@@ -31,6 +31,22 @@ export async function Navbar() {
     <nav className="sticky top-0 z-50 border-b border-[#ADBBDA] bg-white">
       <div className="relative mx-auto flex h-16 max-w-7xl items-center px-4 sm:px-6">
 
+        {/* Left: marketing links */}
+        <div className="flex items-center gap-5">
+          <Link
+            href="/signup"
+            className="hidden sm:inline-flex items-center rounded-xl border-2 border-[#3D52A0] px-4 py-1.5 text-sm font-semibold text-[#3D52A0] hover:bg-[#3D52A0] hover:text-white transition-colors"
+          >
+            Try for FREE
+          </Link>
+          <a
+            href="/#pricing"
+            className="text-sm font-medium text-[#8697C4] hover:text-[#3D52A0] transition-colors"
+          >
+            Pricing
+          </a>
+        </div>
+
         {/* Center: wordmark */}
         <div className="absolute left-1/2 -translate-x-1/2">
           <Link
