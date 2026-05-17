@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Navbar } from '@/components/layout/navbar'
 import PricingSection from '@/components/ui/pricing-section'
 import { HeroHighlight } from '@/components/ui/hero-highlight'
+import { InterviewComparison } from '@/components/ui/interview-comparison'
 
 const steps = [
   {
@@ -51,7 +52,7 @@ export default function LandingPage() {
       <Navbar />
 
       {/* Hero */}
-      <HeroHighlight containerClassName="min-h-[calc(100vh-4rem)] px-4 py-20 sm:px-6">
+      <HeroHighlight containerClassName="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4 py-20 sm:px-6">
         <div className="flex flex-col items-center text-center">
           <h1 className="mb-6 max-w-3xl text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl text-[#3D52A0]">
             Your next interview is{' '}
@@ -93,15 +94,8 @@ export default function LandingPage() {
       <div className="border-t border-[#ADBBDA]/40" />
 
       {/* How it works */}
-      <section
-        id="how-it-works"
-        className="relative bg-white py-20 sm:py-24"
-        style={{
-          backgroundImage: 'radial-gradient(circle, rgb(173 187 218) 1px, transparent 1px)',
-          backgroundSize: '20px 20px',
-        }}
-      >
-        <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6">
+      <section id="how-it-works" className="bg-white py-20 sm:py-24">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6">
           <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#8697C4]">
             The process
           </p>
@@ -110,22 +104,13 @@ export default function LandingPage() {
             Three phases, back to back. The whole loop takes under 20 minutes.
           </p>
 
-          <div className="relative space-y-5">
-            {/* Vertical line running through all steps and beyond */}
-            <div
-              className="absolute left-[47px] sm:left-[59px] top-0 w-px pointer-events-none"
-              style={{
-                bottom: '-3.5rem',
-                background: 'linear-gradient(to bottom, #ADBBDA 0%, #ADBBDA 75%, transparent 100%)',
-              }}
-            />
-
+          <div className="space-y-5">
             {steps.map((step, i) => (
               <div
                 key={step.number}
                 className="group grid grid-cols-[auto_1fr] gap-5 rounded-2xl border border-[#ADBBDA] bg-white p-6 shadow-sm hover:border-[#7091E6] hover:shadow-md transition-all sm:gap-8 sm:p-8"
               >
-                {/* Left: number badge */}
+                {/* Left: number + connector */}
                 <div className="flex flex-col items-center">
                   <div
                     className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-base font-bold text-white transition-transform group-hover:scale-105 sm:h-14 sm:w-14 sm:rounded-2xl sm:text-lg"
@@ -133,6 +118,15 @@ export default function LandingPage() {
                   >
                     {step.number}
                   </div>
+                  {i < steps.length - 1 && (
+                    <div
+                      className="mt-4 w-px flex-1"
+                      style={{
+                        background: 'linear-gradient(to bottom, #ADBBDA, transparent)',
+                        minHeight: '1.5rem',
+                      }}
+                    />
+                  )}
                 </div>
 
                 {/* Right: content */}
@@ -171,6 +165,25 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Divider */}
+      <div className="border-t border-[#ADBBDA]/40" />
+
+      {/* Before / After comparison */}
+      <section className="bg-white py-20 sm:py-24">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#8697C4]">
+            The transformation
+          </p>
+          <h2 className="mb-4 text-3xl font-bold text-[#3D52A0] sm:text-4xl">
+            Same candidate. Same question.
+          </h2>
+          <p className="mb-10 max-w-xl text-[#8697C4]">
+            Drag the handle to see exactly what changes after one week with Intervise.
+          </p>
+          <InterviewComparison />
         </div>
       </section>
 
