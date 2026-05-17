@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { Navbar } from '@/components/layout/navbar'
 import PricingSection from '@/components/ui/pricing-section'
-import { HeroHighlight, Highlight } from '@/components/ui/hero-highlight'
+import { HeroHighlight } from '@/components/ui/hero-highlight'
 import { ScrollHint } from '@/components/ui/scroll-hint'
 
 const steps = [
@@ -56,7 +56,7 @@ export default function LandingPage() {
         <div className="flex flex-col items-center text-center">
           <h1 className="mb-6 max-w-3xl text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl text-[#3D52A0]">
             Your next interview is{' '}
-            <Highlight>won before it starts.</Highlight>
+            <span style={{ color: '#7091E6' }}>won</span> before it starts.
           </h1>
 
           <p className="mb-10 max-w-[520px] text-base leading-relaxed text-[#8697C4] sm:text-lg">
@@ -78,6 +78,11 @@ export default function LandingPage() {
               See how it works →
             </Link>
           </div>
+
+          {/* Trust line */}
+          <p className="mt-5 text-xs text-[#ADBBDA] tracking-wide">
+            No card needed · 2 free sessions · Cancel anytime
+          </p>
         </div>
         <ScrollHint />
       </HeroHighlight>
