@@ -56,8 +56,8 @@ export default function LandingPage() {
       <HeroHighlight containerClassName="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4 sm:px-6">
         <div className="flex flex-col items-center text-center">
           <h1 className="mb-6 max-w-3xl text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-            <span style={{ color: '#7091E6' }}>Your next interview is{' '}</span>
-            <span style={{ color: '#3D52A0' }}>won before it starts.</span>
+            <span style={{ color: '#7091E6' }}>Your next interview is won{' '}</span>
+            <span style={{ color: '#3D52A0' }}>before it starts.</span>
           </h1>
 
           <p className="mb-10 max-w-[520px] text-base leading-relaxed text-[#8697C4] sm:text-lg">
