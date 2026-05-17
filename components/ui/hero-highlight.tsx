@@ -70,7 +70,7 @@ export const Highlight = ({
         display: 'inline',
         backgroundImage: 'linear-gradient(90deg, #7091E6, #3D52A0)',
       }}
-      className={cn('relative inline-block rounded-md text-white', className)}
+      className={cn('relative inline-block rounded-full text-white', className)}
     >
       {children}
     </motion.span>
