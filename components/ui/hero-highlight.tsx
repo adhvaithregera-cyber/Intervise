@@ -35,7 +35,7 @@ export const HeroHighlight = ({
     >
       {/* Static dot grid */}
       <div
-        className="absolute inset-0 pointer-events-none opacity-40"
+        className="absolute inset-0 pointer-events-none opacity-25"
         style={dotPattern('rgb(173 187 218)')}
       />
       {/* Mouse-reveal colored dot grid */}
