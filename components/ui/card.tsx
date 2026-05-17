@@ -3,16 +3,19 @@ import type { HTMLAttributes } from 'react'
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
   tinted?: boolean
+  glass?: boolean
 }
 
-export function Card({ className, tinted, children, ...props }: CardProps) {
+export function Card({ className, tinted, glass, children, ...props }: CardProps) {
   return (
     <div
       className={cn(
-        'rounded-xl border p-6',
-        tinted
-          ? 'bg-brand-900/30 border-brand-700/50'
-          : 'bg-surface-raised border-surface-border',
+        'rounded-2xl border p-6',
+        glass
+          ? 'bg-white/60 backdrop-blur-md border-white/70 shadow-sm'
+          : tinted
+          ? 'bg-brand-50 border-brand-100'
+          : 'bg-white border-slate-200 shadow-sm',
         className
       )}
       {...props}

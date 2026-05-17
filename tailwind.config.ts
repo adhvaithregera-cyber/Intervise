@@ -21,14 +21,9 @@ const config: Config = {
           800: '#155e75',
           900: '#164e63',
         },
-        surface: {
-          DEFAULT: '#111111',
-          raised: '#1a1a1a',
-          border: '#2a2a2a',
-        },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Space Grotesk', 'system-ui', 'sans-serif'],
       },
     },
   },
