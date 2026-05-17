@@ -10,16 +10,16 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          50:  '#ecfeff',
-          100: '#cffafe',
-          200: '#a5f3fc',
-          300: '#67e8f9',
-          400: '#22d3ee',
-          500: '#06b6d4',
-          600: '#0891b2',
-          700: '#0e7490',
-          800: '#155e75',
-          900: '#164e63',
+          50:  '#EDE8F5',   // light lavender — backgrounds
+          100: '#ADBBDA',   // soft blue-gray — borders, dividers
+          200: '#8697C4',   // muted blue-gray — secondary text
+          300: '#7091E6',   // periwinkle — accents, links
+          400: '#7091E6',   // periwinkle (same for Tailwind compat)
+          500: '#7091E6',   // periwinkle — hover accents
+          600: '#3D52A0',   // deep navy — primary
+          700: '#3D52A0',   // deep navy
+          800: '#2d3d78',   // darker navy
+          900: '#1e2a52',   // darkest navy
         },
       },
       fontFamily: {

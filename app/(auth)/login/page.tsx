@@ -25,23 +25,24 @@ export default function LoginPage() {
     setLoading(true)
     const supabase = createClient()
     const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) {
-      setError('Invalid email or password.')
-      setLoading(false)
-      return
-    }
+    if (error) { setError('Invalid email or password.'); setLoading(false); return }
     window.location.href = '/dashboard'
   }
 
+  const inputClass = "w-full rounded-xl border border-[#ADBBDA] bg-[#EDE8F5]/50 px-3 py-2.5 text-sm text-[#3D52A0] placeholder-[#8697C4] focus:border-[#7091E6] focus:outline-none focus:ring-2 focus:ring-[#7091E6]/20"
+
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+    <div className="rounded-2xl border border-white/60 bg-white/80 backdrop-blur-xl p-8 shadow-xl shadow-[#3D52A0]/10">
       <div className="mb-8 text-center">
-        <Link href="/" className="text-lg font-bold tracking-widest text-slate-900">INTERVISE</Link>
-        <p className="mt-4 text-2xl font-bold text-slate-900">Welcome back</p>
-        <p className="mt-1 text-sm text-slate-500">Log in to continue practising</p>
+        <Link href="/" className="text-lg font-bold tracking-widest text-[#3D52A0]">INTERVISE</Link>
+        <p className="mt-4 text-2xl font-bold text-[#3D52A0]">Welcome back</p>
+        <p className="mt-1 text-sm text-[#8697C4]">Log in to continue practising</p>
       </div>
 
-      <Button variant="glass" fullWidth onClick={handleGoogleSignIn} className="mb-6 gap-2 border-slate-200">
+      <button
+        onClick={handleGoogleSignIn}
+        className="mb-6 flex w-full items-center justify-center gap-2 rounded-xl border border-[#ADBBDA] bg-white px-4 py-2.5 text-sm font-semibold text-[#3D52A0] hover:bg-[#EDE8F5] transition-colors shadow-sm"
+      >
         <svg className="h-4 w-4" viewBox="0 0 24 24">
           <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
           <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -49,29 +50,25 @@ export default function LoginPage() {
           <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
         </svg>
         Continue with Google
-      </Button>
+      </button>
 
       <div className="relative mb-6">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-slate-200" />
+          <div className="w-full border-t border-[#ADBBDA]" />
         </div>
-        <div className="relative flex justify-center text-xs text-slate-400">
+        <div className="relative flex justify-center text-xs text-[#8697C4]">
           <span className="bg-white px-2">or log in with email</span>
         </div>
       </div>
 
       <form onSubmit={handleEmailLogin} className="space-y-4">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">Email</label>
-          <input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
-            placeholder="you@example.com" />
+          <label className="block text-sm font-medium text-[#3D52A0] mb-1">Email</label>
+          <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={inputClass} placeholder="you@example.com" />
         </div>
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1">Password</label>
-          <input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
-            placeholder="Your password" />
+          <label className="block text-sm font-medium text-[#3D52A0] mb-1">Password</label>
+          <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className={inputClass} placeholder="Your password" />
         </div>
         {error && <p className="text-sm text-red-500">{error}</p>}
         <Button type="submit" fullWidth disabled={loading}>
@@ -79,9 +76,9 @@ export default function LoginPage() {
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-slate-500">
+      <p className="mt-6 text-center text-sm text-[#8697C4]">
         Don&apos;t have an account?{' '}
-        <Link href="/signup" className="font-semibold text-brand-600 hover:text-brand-500">Sign up free</Link>
+        <Link href="/signup" className="font-semibold text-[#3D52A0] hover:text-[#7091E6]">Sign up free</Link>
       </p>
     </div>
   )

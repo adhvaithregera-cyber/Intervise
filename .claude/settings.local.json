@@ -31,7 +31,8 @@
       "Bash(npm list:*)",
       "Bash(npx tsc:*)",
       "Bash(ls C:UsersAdhvaithOneDriveDesktopIntervise/*.ts)",
-      "Bash(grep \"\\\\.ts$\")"
+      "Bash(grep \"\\\\.ts$\")",
+      "Bash(npx next:*)"
     ]
   }
 }

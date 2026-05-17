@@ -12,15 +12,15 @@ const steps = [
   },
   {
     number: '02',
-    title: 'Answer under real pressure',
+    title: 'Answer under pressure',
     description:
-      'Record your voice answer within a countdown timer, just like a real interview. No pauses, no retries.',
+      'Record your voice within a countdown timer, just like a real interview. No pauses, no retries.',
   },
   {
     number: '03',
     title: 'Get instant feedback',
     description:
-      'See your filler word count, words per minute, and overall grade the moment you finish.',
+      'Filler word count, words per minute, and an overall grade — the moment you finish.',
   },
 ]
 
@@ -30,14 +30,7 @@ const plans = [
     price: '₹0',
     period: '',
     description: 'Try it out, no card required.',
-    badge: null,
-    features: [
-      '2 sessions / month',
-      '3 questions per session',
-      'Filler word count',
-      'WPM score',
-      'Easy difficulty only',
-    ],
+    features: ['2 sessions / month', '3 questions per session', 'Filler word count', 'WPM score', 'Easy difficulty only'],
     cta: 'Get started free',
     href: '/signup',
     highlight: false,
@@ -47,15 +40,7 @@ const plans = [
     price: '₹149',
     period: '/mo',
     description: 'For serious job seekers.',
-    badge: 'Most popular',
-    features: [
-      '10 sessions / month',
-      '5 questions per session',
-      'Full filler breakdown',
-      'Eye contact analysis',
-      'All 8 categories',
-      'Easy + Medium difficulty',
-    ],
+    features: ['10 sessions / month', '5 questions per session', 'Full filler breakdown', 'Eye contact analysis', 'All 8 categories', 'Easy + Medium difficulty'],
     cta: 'Start Student plan',
     href: '/signup',
     highlight: true,
@@ -65,15 +50,7 @@ const plans = [
     price: '₹499',
     period: '/mo',
     description: 'For placement season crunch.',
-    badge: null,
-    features: [
-      '30 sessions / month',
-      '5–8 questions per session',
-      'Everything in Student',
-      'Progress trend charts',
-      'Company question sets',
-      'All difficulty levels',
-    ],
+    features: ['30 sessions / month', '5–8 questions per session', 'Everything in Student', 'Progress trend charts', 'Company question sets', 'All difficulty levels'],
     cta: 'Start Pro plan',
     href: '/signup',
     highlight: false,
@@ -82,130 +59,149 @@ const plans = [
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
+    <div className="min-h-screen" style={{ backgroundColor: '#EDE8F5' }}>
       <Navbar />
 
-      {/* Hero — light cyan radial gradient */}
+      {/* Hero */}
       <section
         className="relative overflow-hidden"
         style={{
-          background:
-            'radial-gradient(ellipse 90% 70% at 50% -5%, rgba(6,182,212,0.12) 0%, rgba(248,250,252,0) 65%), #f8fafc',
+          background: 'linear-gradient(160deg, #EDE8F5 0%, #ADBBDA 40%, #7091E6 100%)',
         }}
       >
-        <div className="mx-auto max-w-5xl px-6 py-40 text-center">
-          <h1 className="mx-auto max-w-3xl text-6xl font-bold leading-[1.1] tracking-tight text-slate-900">
-            Your next interview is{' '}
-            <span className="text-brand-500">won before it starts.</span>
+        <div className="mx-auto max-w-6xl px-6 pb-32 pt-24">
+          {/* Large editorial headline */}
+          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-[#3D52A0]/70">
+            Interview Coaching
+          </p>
+          <h1
+            className="mb-8 font-bold leading-none tracking-tight text-[#3D52A0]"
+            style={{ fontSize: 'clamp(4rem, 10vw, 9rem)' }}
+          >
+            INTERVISE
           </h1>
-
-          <p className="mx-auto mt-8 max-w-xl text-lg text-slate-500 leading-relaxed">
-            Structured answer formats. Timed pressure. Instant feedback on filler words and
-            speaking pace.
+          <p className="mb-4 max-w-xl text-xl font-medium text-[#3D52A0]">
+            Your next interview is won before it starts.
+          </p>
+          <p className="mb-12 max-w-lg text-base text-[#3D52A0]/70 leading-relaxed">
+            Structured answer formats. Timed pressure. Instant feedback on filler words and speaking pace — built for placement season.
           </p>
 
           {/* Glassmorphic CTA bar */}
-          <div className="mt-12 inline-flex items-center gap-3 rounded-2xl border border-white/80 bg-white/60 px-3 py-3 shadow-lg shadow-slate-200/60 backdrop-blur-md">
+          <div className="inline-flex items-center gap-3 rounded-2xl border border-white/60 bg-white/40 px-3 py-3 shadow-lg shadow-[#3D52A0]/10 backdrop-blur-md">
             <Link href="/signup">
-              <Button size="lg" className="px-7">
-                Practice for free
-              </Button>
+              <Button size="lg" className="px-8">Practice for free</Button>
             </Link>
             <Link href="#how-it-works">
-              <Button size="lg" variant="ghost" className="px-7">
-                See how it works →
-              </Button>
+              <Button size="lg" variant="ghost" className="px-8">See how it works →</Button>
             </Link>
           </div>
         </div>
-      </section>
 
-      {/* Divider */}
-      <div className="border-t border-slate-200" />
+        {/* Bottom fade to body bg */}
+        <div
+          className="h-16"
+          style={{ background: 'linear-gradient(to bottom, transparent, #EDE8F5)' }}
+        />
+      </section>
 
       {/* How it works */}
       <section id="how-it-works" className="mx-auto max-w-6xl px-6 py-24">
-        <h2 className="mb-3 text-center text-4xl font-bold text-slate-900">How it works</h2>
-        <p className="mb-16 text-center text-slate-500">Three steps. No fluff.</p>
+        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#8697C4]">The process</p>
+        <h2 className="mb-16 text-4xl font-bold text-[#3D52A0]">How it works</h2>
         <div className="grid grid-cols-3 gap-6">
           {steps.map((step) => (
             <div
               key={step.number}
-              className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm hover:border-brand-300 hover:shadow-md transition-all"
+              className="group rounded-2xl border border-[#ADBBDA] bg-white p-8 shadow-sm hover:border-[#7091E6] hover:shadow-md transition-all"
             >
-              <p className="mb-5 text-5xl font-bold text-brand-200">{step.number}</p>
-              <h3 className="mb-3 text-base font-semibold text-slate-900">{step.title}</h3>
-              <p className="text-sm text-slate-500 leading-relaxed">{step.description}</p>
+              <p className="mb-5 text-5xl font-bold text-[#ADBBDA] group-hover:text-[#7091E6] transition-colors">
+                {step.number}
+              </p>
+              <h3 className="mb-3 text-base font-semibold text-[#3D52A0]">{step.title}</h3>
+              <p className="text-sm text-[#8697C4] leading-relaxed">{step.description}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Divider */}
-      <div className="border-t border-slate-200" />
-
       {/* Pricing */}
-      <section id="pricing" className="mx-auto max-w-6xl px-6 py-24">
-        <h2 className="mb-3 text-center text-4xl font-bold text-slate-900">Simple pricing</h2>
-        <p className="mb-16 text-center text-slate-500">
-          Start free. Upgrade when you need more sessions.
-        </p>
-        <div className="grid grid-cols-3 gap-6 items-start">
-          {plans.map((plan) => (
-            <div
-              key={plan.name}
-              className={`flex flex-col rounded-2xl border p-8 transition-all ${
-                plan.highlight
-                  ? 'border-brand-400 bg-white shadow-lg shadow-brand-100'
-                  : 'border-slate-200 bg-white shadow-sm hover:shadow-md'
-              }`}
-            >
-              {/* Glassmorphic accent strip on highlighted plan */}
-              {plan.highlight && (
-                <div className="mb-6 -mx-8 -mt-8 rounded-t-2xl bg-gradient-to-r from-brand-400 to-brand-500 px-8 py-3 text-center text-xs font-semibold uppercase tracking-widest text-white">
-                  Most popular
-                </div>
-              )}
+      <section
+        id="pricing"
+        className="py-24"
+        style={{ background: 'linear-gradient(180deg, #EDE8F5 0%, white 100%)' }}
+      >
+        <div className="mx-auto max-w-6xl px-6">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#8697C4]">Pricing</p>
+          <h2 className="mb-4 text-4xl font-bold text-[#3D52A0]">Simple pricing</h2>
+          <p className="mb-16 text-[#8697C4]">Start free. Upgrade when you need more sessions.</p>
 
-              <div className="mb-6">
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className="text-base font-semibold text-slate-900">{plan.name}</h3>
-                  {plan.badge && !plan.highlight && <Badge variant="brand">{plan.badge}</Badge>}
+          <div className="grid grid-cols-3 gap-6 items-start">
+            {plans.map((plan) => (
+              <div
+                key={plan.name}
+                className={`flex flex-col rounded-2xl border p-8 transition-all ${
+                  plan.highlight
+                    ? 'border-[#7091E6] bg-[#3D52A0] shadow-xl shadow-[#3D52A0]/20'
+                    : 'border-[#ADBBDA] bg-white shadow-sm hover:shadow-md hover:border-[#7091E6]'
+                }`}
+              >
+                {plan.highlight && (
+                  <span className="mb-6 self-start rounded-full bg-[#7091E6]/30 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-white">
+                    Most popular
+                  </span>
+                )}
+                <div className="mb-6">
+                  <h3 className={`mb-1 text-base font-semibold ${plan.highlight ? 'text-white' : 'text-[#3D52A0]'}`}>
+                    {plan.name}
+                  </h3>
+                  <p className={`mb-5 text-sm ${plan.highlight ? 'text-[#ADBBDA]' : 'text-[#8697C4]'}`}>
+                    {plan.description}
+                  </p>
+                  <div className="flex items-baseline gap-1">
+                    <span className={`text-5xl font-bold ${plan.highlight ? 'text-white' : 'text-[#3D52A0]'}`}>
+                      {plan.price}
+                    </span>
+                    {plan.period && (
+                      <span className={`text-sm ${plan.highlight ? 'text-[#ADBBDA]' : 'text-[#8697C4]'}`}>
+                        {plan.period}
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <p className="text-sm text-slate-400 mb-5">{plan.description}</p>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-5xl font-bold text-slate-900">{plan.price}</span>
-                  {plan.period && (
-                    <span className="text-slate-400 text-sm">{plan.period}</span>
-                  )}
-                </div>
+
+                <ul className="mb-8 space-y-3 flex-1">
+                  {plan.features.map((feature) => (
+                    <li key={feature} className={`flex items-start gap-3 text-sm ${plan.highlight ? 'text-[#EDE8F5]' : 'text-[#8697C4]'}`}>
+                      <span className={`font-bold mt-0.5 shrink-0 ${plan.highlight ? 'text-[#7091E6]' : 'text-[#3D52A0]'}`}>✓</span>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+
+                <Link href={plan.href}>
+                  <button
+                    className={`w-full rounded-xl py-3 text-sm font-semibold transition-all ${
+                      plan.highlight
+                        ? 'bg-white text-[#3D52A0] hover:bg-[#EDE8F5] shadow-sm'
+                        : 'border-2 border-[#3D52A0] text-[#3D52A0] hover:bg-[#3D52A0] hover:text-white'
+                    }`}
+                  >
+                    {plan.cta}
+                  </button>
+                </Link>
               </div>
-
-              <ul className="mb-8 space-y-3 flex-1">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-3 text-sm text-slate-600">
-                    <span className="text-brand-500 font-bold mt-0.5 shrink-0">✓</span>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-
-              <Link href={plan.href}>
-                <Button variant={plan.highlight ? 'primary' : 'outline'} fullWidth>
-                  {plan.cta}
-                </Button>
-              </Link>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Footer */}
-      <div className="border-t border-slate-200 bg-white">
-        <footer className="mx-auto max-w-6xl px-6 py-8 text-center text-sm text-slate-400">
+      <footer className="border-t border-[#ADBBDA] bg-white">
+        <div className="mx-auto max-w-6xl px-6 py-8 text-center text-sm text-[#8697C4]">
           © {new Date().getFullYear()} Intervise. Built for placement season.
-        </footer>
-      </div>
+        </div>
+      </footer>
     </div>
   )
 }
