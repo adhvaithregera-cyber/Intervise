@@ -1,0 +1,96 @@
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
+
+export type Tier = 'free' | 'student' | 'pro'
+export type Difficulty = 'easy' | 'medium' | 'mixed'
+export type SessionStatus = 'in_progress' | 'complete' | 'failed'
+
+export type Profile = {
+  id: string
+  full_name: string | null
+  avatar_url: string | null
+  tier: Tier
+  sessions_limit: number
+  sessions_used_this_month: number
+  onboarding_complete: boolean
+  role_type: string | null
+  interview_date: string | null
+  biggest_weakness: string | null
+  created_at: string
+}
+
+export type Question = {
+  id: number
+  rank: number
+  category_id: number
+  category_name: string
+  question_text: string
+  frequency: string
+  answer_format: string
+  time_limit_seconds: number
+  notes: string
+}
+
+export type Session = {
+  id: string
+  user_id: string
+  difficulty: Difficulty
+  status: SessionStatus
+  tier_at_time: string
+  overall_grade: string | null
+  created_at: string
+  completed_at: string | null
+}
+
+export type Answer = {
+  id: string
+  session_id: string
+  question_id: number
+  answer_index: number
+  transcript: string | null
+  transcription_failed: boolean
+  filler_count: number | null
+  filler_breakdown: Record<string, number> | null
+  wpm: number | null
+  eye_contact_pct: number | null
+  duration_seconds: number
+  created_at: string
+}
+
+export type QuestionHistory = {
+  id: string
+  user_id: string
+  question_id: number
+  asked_at: string
+}
+
+export type Database = {
+  public: {
+    Tables: {
+      profiles: {
+        Row: Profile
+        Insert: Omit<Profile, 'created_at'>
+        Update: Partial<Omit<Profile, 'id' | 'created_at'>>
+      }
+      questions: {
+        Row: Question
+        Insert: Question
+        Update: Partial<Question>
+      }
+      sessions: {
+        Row: Session
+        Insert: Omit<Session, 'id' | 'created_at'>
+        Update: Partial<Omit<Session, 'id' | 'user_id' | 'created_at'>>
+      }
+      answers: {
+        Row: Answer
+        Insert: Omit<Answer, 'id' | 'created_at'>
+        Update: Partial<Omit<Answer, 'id' | 'session_id' | 'created_at'>>
+      }
+      question_history: {
+        Row: QuestionHistory
+        Insert: Omit<QuestionHistory, 'id' | 'asked_at'>
+        Update: never
+      }
+    }
+  }
+}
