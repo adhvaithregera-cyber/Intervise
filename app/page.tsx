@@ -1,7 +1,5 @@
 import Link from 'next/link'
 import { Navbar } from '@/components/layout/navbar'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 
 const steps = [
   {
@@ -62,45 +60,46 @@ export default function LandingPage() {
     <div className="min-h-screen" style={{ backgroundColor: '#EDE8F5' }}>
       <Navbar />
 
-      {/* Hero */}
+      {/* Hero — full viewport, centered */}
       <section
-        className="relative overflow-hidden"
+        className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center overflow-hidden text-center"
         style={{
           background: 'linear-gradient(160deg, #EDE8F5 0%, #ADBBDA 40%, #7091E6 100%)',
         }}
       >
-        <div className="mx-auto max-w-6xl px-6 pb-32 pt-24">
-          {/* Large editorial headline */}
-          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-[#3D52A0]/70">
-            Interview Coaching
-          </p>
-          <h1
-            className="mb-8 font-bold leading-none tracking-tight text-[#3D52A0]"
-            style={{ fontSize: 'clamp(4rem, 10vw, 9rem)' }}
+        {/* Hook */}
+        <h1 className="mb-12 max-w-3xl px-6 text-5xl font-bold leading-tight tracking-tight">
+          <span style={{ color: '#3D52A0' }}>Your next interview is </span>
+          <span
+            className="relative"
+            style={{
+              color: '#ffffff',
+              textShadow: '0 2px 24px rgba(61,82,160,0.25)',
+            }}
           >
-            INTERVISE
-          </h1>
-          <p className="mb-4 max-w-xl text-xl font-medium text-[#3D52A0]">
-            Your next interview is won before it starts.
-          </p>
-          <p className="mb-12 max-w-lg text-base text-[#3D52A0]/70 leading-relaxed">
-            Structured answer formats. Timed pressure. Instant feedback on filler words and speaking pace — built for placement season.
-          </p>
+            won before it starts.
+          </span>
+        </h1>
 
-          {/* Glassmorphic CTA bar */}
-          <div className="inline-flex items-center gap-3 rounded-2xl border border-white/60 bg-white/40 px-3 py-3 shadow-lg shadow-[#3D52A0]/10 backdrop-blur-md">
-            <Link href="/signup">
-              <Button size="lg" className="px-8">Practice for free</Button>
-            </Link>
-            <Link href="#how-it-works">
-              <Button size="lg" variant="ghost" className="px-8">See how it works →</Button>
-            </Link>
-          </div>
+        {/* Glassmorphic CTA bar */}
+        <div className="inline-flex items-center gap-3 rounded-2xl border border-white/60 bg-white/40 px-3 py-3 shadow-xl shadow-[#3D52A0]/15 backdrop-blur-md">
+          <Link
+            href="/signup"
+            className="inline-flex items-center rounded-xl bg-[#3D52A0] px-8 py-3 text-base font-semibold text-white shadow-md shadow-[#3D52A0]/30 hover:bg-[#2d3d78] transition-colors"
+          >
+            Practice for free
+          </Link>
+          <Link
+            href="#how-it-works"
+            className="inline-flex items-center rounded-xl px-8 py-3 text-base font-semibold text-[#3D52A0] hover:bg-white/40 transition-colors"
+          >
+            See how it works →
+          </Link>
         </div>
 
-        {/* Bottom fade to body bg */}
+        {/* Bottom fade */}
         <div
-          className="h-16"
+          className="absolute bottom-0 left-0 right-0 h-24"
           style={{ background: 'linear-gradient(to bottom, transparent, #EDE8F5)' }}
         />
       </section>
@@ -179,16 +178,15 @@ export default function LandingPage() {
                   ))}
                 </ul>
 
-                <Link href={plan.href}>
-                  <button
-                    className={`w-full rounded-xl py-3 text-sm font-semibold transition-all ${
-                      plan.highlight
-                        ? 'bg-white text-[#3D52A0] hover:bg-[#EDE8F5] shadow-sm'
-                        : 'border-2 border-[#3D52A0] text-[#3D52A0] hover:bg-[#3D52A0] hover:text-white'
-                    }`}
-                  >
-                    {plan.cta}
-                  </button>
+                <Link
+                  href={plan.href}
+                  className={`block w-full rounded-xl py-3 text-center text-sm font-semibold transition-all ${
+                    plan.highlight
+                      ? 'bg-white text-[#3D52A0] hover:bg-[#EDE8F5]'
+                      : 'border-2 border-[#3D52A0] text-[#3D52A0] hover:bg-[#3D52A0] hover:text-white'
+                  }`}
+                >
+                  {plan.cta}
                 </Link>
               </div>
             ))}
