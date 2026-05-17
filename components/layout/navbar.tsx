@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { NavAuthLinks } from './nav-auth-links'
 
 export async function Navbar() {
   const supabase = await createClient()
@@ -19,31 +20,24 @@ export async function Navbar() {
         </div>
 
         {/* Right: auth links */}
-        <div className="ml-auto flex items-center gap-4">
-          {user ? (
+        {user ? (
+          <NavAuthLinks />
+        ) : (
+          <div className="ml-auto flex items-center gap-4">
             <Link
-              href="/dashboard"
-              className="rounded-xl bg-[#3D52A0] px-4 py-1.5 text-sm font-semibold text-white hover:bg-[#2d3d78] transition-colors"
+              href="/login"
+              className="text-sm font-medium text-[#8697C4] hover:text-[#3D52A0] transition-colors"
             >
-              Dashboard
+              Login
             </Link>
-          ) : (
-            <>
-              <Link
-                href="/login"
-                className="text-sm font-medium text-[#8697C4] hover:text-[#3D52A0] transition-colors"
-              >
-                Login
-              </Link>
-              <Link
-                href="/signup"
-                className="rounded-xl bg-[#3D52A0] px-4 py-1.5 text-sm font-semibold text-white hover:bg-[#2d3d78] transition-colors shadow-sm shadow-[#3D52A0]/20"
-              >
-                Sign up
-              </Link>
-            </>
-          )}
-        </div>
+            <Link
+              href="/signup"
+              className="rounded-xl bg-[#3D52A0] px-4 py-1.5 text-sm font-semibold text-white hover:bg-[#2d3d78] transition-colors shadow-sm shadow-[#3D52A0]/20"
+            >
+              Sign up
+            </Link>
+          </div>
+        )}
       </div>
     </nav>
   )
