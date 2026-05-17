@@ -57,8 +57,24 @@ export default function LandingPage() {
         <div className="flex flex-col items-center text-center">
           <h1 className="mb-6 max-w-3xl text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
             <span style={{ color: '#7091E6' }}>Your next interview is{' '}</span>
-            <span style={{ color: '#3D52A0' }}>won before it starts.</span>
+            <span className="relative inline-block" style={{ color: '#3D52A0' }}>
+              won before it starts.
+              <span
+                className="absolute bottom-0 left-0 h-[3px] rounded-full"
+                style={{
+                  background: 'linear-gradient(90deg, #7091E6, #3D52A0)',
+                  animation: 'underline-sweep 1.1s cubic-bezier(0.22,1,0.36,1) 0.2s both',
+                  width: '100%',
+                }}
+              />
+            </span>
           </h1>
+          <style>{`
+            @keyframes underline-sweep {
+              from { transform: scaleX(0); transform-origin: left; }
+              to   { transform: scaleX(1); transform-origin: left; }
+            }
+          `}</style>
 
           <p className="mb-10 max-w-[520px] text-base leading-relaxed text-[#8697C4] sm:text-lg">
             You practised for weeks. You knew your answers cold. Then the interviewer asked one question — and your mind went blank.
