@@ -11,9 +11,9 @@ const TIER_LABEL: Record<string, string> = {
 }
 
 const TIER_COLOR: Record<string, string> = {
-  free: 'bg-[#8ACBD0]/20 text-[#8ACBD0]',
-  student: 'bg-[#56B6C6]/20 text-[#56B6C6]',
-  pro: 'bg-[#170C79]/20 text-[#170C79]',
+  free: 'bg-[#6BA3C8]/20 text-[#6BA3C8]',
+  student: 'bg-[#F9C125]/20 text-[#F9C125]',
+  pro: 'bg-[#E07A2F]/20 text-[#E07A2F]',
 }
 
 type Props = {
@@ -52,7 +52,7 @@ export function NavAuthLinks({ initials, tier }: Props) {
     <div className="flex items-center gap-4">
       <Link
         href="/dashboard"
-        className="text-sm font-medium text-[#8ACBD0] hover:text-[#170C79] transition-colors"
+        className="text-sm font-medium text-[#6BA3C8] hover:text-[#E07A2F] transition-colors"
       >
         Dashboard
       </Link>
@@ -61,10 +61,10 @@ export function NavAuthLinks({ initials, tier }: Props) {
       <div ref={ref} className="relative">
         <button
           onClick={() => setOpen((v) => !v)}
-          className="flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-[#56B6C6]/50 rounded-full"
+          className="flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-[#F9C125]/50 rounded-full"
           aria-label="Open profile menu"
         >
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#170C79] text-xs font-bold text-white select-none hover:bg-[#0f0955] transition-colors">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E07A2F] text-xs font-bold text-white select-none hover:bg-[#C96A1A] transition-colors">
             {initials}
           </div>
           <span className={`hidden sm:inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${TIER_COLOR[tier] ?? TIER_COLOR.free}`}>
@@ -73,10 +73,10 @@ export function NavAuthLinks({ initials, tier }: Props) {
         </button>
 
         {open && (
-          <div className="absolute right-0 top-10 z-50 w-48 overflow-hidden rounded-xl border border-[#8ACBD0] bg-white shadow-lg shadow-[#170C79]/10">
+          <div className="absolute right-0 top-10 z-50 w-48 overflow-hidden rounded-xl border border-[#6BA3C8] bg-white shadow-lg shadow-[#E07A2F]/10">
             {/* Header */}
-            <div className="border-b border-[#8ACBD0]/60 px-4 py-3">
-              <p className="text-xs font-semibold text-[#170C79]">My Account</p>
+            <div className="border-b border-[#6BA3C8]/60 px-4 py-3">
+              <p className="text-xs font-semibold text-[#E07A2F]">My Account</p>
               <span className={`mt-1 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${TIER_COLOR[tier] ?? TIER_COLOR.free}`}>
                 {TIER_LABEL[tier] ?? 'Free'} Plan
               </span>
@@ -89,7 +89,7 @@ export function NavAuthLinks({ initials, tier }: Props) {
                   key={item.href}
                   href={item.href}
                   onClick={() => setOpen(false)}
-                  className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#170C79] hover:bg-[#EFE3CA] transition-colors"
+                  className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#E07A2F] hover:bg-[#FEFDF0] transition-colors"
                 >
                   {item.label}
                 </Link>
@@ -97,10 +97,10 @@ export function NavAuthLinks({ initials, tier }: Props) {
             </div>
 
             {/* Sign out */}
-            <div className="border-t border-[#8ACBD0]/60 py-1">
+            <div className="border-t border-[#6BA3C8]/60 py-1">
               <button
                 onClick={handleSignOut}
-                className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-[#8ACBD0] hover:bg-[#EFE3CA] hover:text-[#170C79] transition-colors"
+                className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-[#6BA3C8] hover:bg-[#FEFDF0] hover:text-[#E07A2F] transition-colors"
               >
                 Sign out
               </button>

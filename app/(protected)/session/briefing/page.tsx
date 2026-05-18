@@ -35,41 +35,41 @@ export default async function BriefingPage({
     <div className="max-w-2xl mx-auto space-y-8">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-bold text-[#170C79]">Get ready for your session</h1>
-        <p className="mt-1 text-sm text-[#8ACBD0]">3 questions · ~5 minutes</p>
+        <h1 className="text-2xl font-bold text-[#E07A2F]">Get ready for your session</h1>
+        <p className="mt-1 text-sm text-[#6BA3C8]">3 questions · ~5 minutes</p>
       </div>
 
       {/* Format briefing card */}
       <Card tinted className="space-y-3">
         <Badge variant="brand">{formatLabel}</Badge>
-        <h2 className="text-lg font-semibold text-[#170C79]">Your answer format</h2>
-        <p className="text-sm italic text-[#8ACBD0]">{question.answer_format}</p>
-        <p className="text-sm text-[#170C79]">
+        <h2 className="text-lg font-semibold text-[#E07A2F]">Your answer format</h2>
+        <p className="text-sm italic text-[#6BA3C8]">{question.answer_format}</p>
+        <p className="text-sm text-[#E07A2F]">
           Use this structure to organise your answer. Each of your 3 questions will guide you through it.
         </p>
       </Card>
 
       {/* What to expect section */}
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-[#170C79]">What to expect</h2>
+        <h2 className="text-lg font-semibold text-[#E07A2F]">What to expect</h2>
 
         <Card className="flex items-start gap-4">
-          <Clock className="mt-0.5 h-5 w-5 shrink-0 text-[#56B6C6]" />
-          <p className="text-sm text-[#170C79]">
+          <Clock className="mt-0.5 h-5 w-5 shrink-0 text-[#F9C125]" />
+          <p className="text-sm text-[#E07A2F]">
             You&apos;ll have 5 seconds to read each question before recording starts automatically.
           </p>
         </Card>
 
         <Card className="flex items-start gap-4">
-          <Mic className="mt-0.5 h-5 w-5 shrink-0 text-[#56B6C6]" />
-          <p className="text-sm text-[#170C79]">
+          <Mic className="mt-0.5 h-5 w-5 shrink-0 text-[#F9C125]" />
+          <p className="text-sm text-[#E07A2F]">
             Recording stops when the timer runs out. You can also press &apos;Done&apos; at any time to stop early.
           </p>
         </Card>
 
         <Card className="flex items-start gap-4">
-          <BarChart2 className="mt-0.5 h-5 w-5 shrink-0 text-[#56B6C6]" />
-          <p className="text-sm text-[#170C79]">
+          <BarChart2 className="mt-0.5 h-5 w-5 shrink-0 text-[#F9C125]" />
+          <p className="text-sm text-[#E07A2F]">
             After each answer, you&apos;ll see your filler word count and speaking pace instantly.
           </p>
         </Card>

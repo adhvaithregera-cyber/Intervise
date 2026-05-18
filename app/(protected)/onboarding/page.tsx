@@ -83,34 +83,34 @@ export default function OnboardingPage() {
   const optionClass = (active: boolean) =>
     `w-full rounded-2xl border-2 px-5 py-4 text-left text-sm font-medium transition-all ${
       active
-        ? 'border-[#170C79] bg-[#170C79]/5 text-[#170C79] shadow-sm'
-        : 'border-[#8ACBD0] bg-white text-[#170C79] hover:border-[#56B6C6] hover:bg-[#EFE3CA]'
+        ? 'border-[#E07A2F] bg-[#E07A2F]/5 text-[#E07A2F] shadow-sm'
+        : 'border-[#6BA3C8] bg-white text-[#E07A2F] hover:border-[#F9C125] hover:bg-[#FEFDF0]'
     }`
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#EFE3CA] px-4 py-12">
+    <div className="flex min-h-screen items-center justify-center bg-[#FEFDF0] px-4 py-12">
       <div className="w-full max-w-xl">
         {/* Progress bar */}
         <div className="mb-8">
-          <div className="mb-2 flex justify-between text-xs text-[#8ACBD0]">
+          <div className="mb-2 flex justify-between text-xs text-[#6BA3C8]">
             <span>Step {step} of {TOTAL_STEPS}</span>
             <span>{progressPct}%</span>
           </div>
-          <div className="h-1.5 w-full rounded-full bg-[#8ACBD0]/30">
+          <div className="h-1.5 w-full rounded-full bg-[#6BA3C8]/30">
             <div
-              className="h-1.5 rounded-full bg-[#170C79] transition-all duration-500"
+              className="h-1.5 rounded-full bg-[#E07A2F] transition-all duration-500"
               style={{ width: `${progressPct}%` }}
             />
           </div>
         </div>
 
-        <div className="rounded-2xl border border-[#8ACBD0] bg-white p-8 shadow-sm sm:p-10">
+        <div className="rounded-2xl border border-[#6BA3C8] bg-white p-8 shadow-sm sm:p-10">
 
           {/* Step 1: Role */}
           {step === 1 && (
             <div>
-              <h2 className="mb-1 text-2xl font-bold text-[#170C79]">What role are you targeting?</h2>
-              <p className="mb-8 text-sm text-[#8ACBD0]">We&apos;ll tailor your question bank to your field.</p>
+              <h2 className="mb-1 text-2xl font-bold text-[#E07A2F]">What role are you targeting?</h2>
+              <p className="mb-8 text-sm text-[#6BA3C8]">We&apos;ll tailor your question bank to your field.</p>
               <div className="grid grid-cols-2 gap-3">
                 {ROLE_OPTIONS.map((role) => (
                   <button key={role} onClick={() => setRoleType(role)} className={optionClass(roleType === role)}>
@@ -127,11 +127,11 @@ export default function OnboardingPage() {
           {/* Step 2: Interview date */}
           {step === 2 && (
             <div>
-              <h2 className="mb-1 text-2xl font-bold text-[#170C79]">When is your interview?</h2>
-              <p className="mb-8 text-sm text-[#8ACBD0]">Helps us track how much time you have to prepare.</p>
+              <h2 className="mb-1 text-2xl font-bold text-[#E07A2F]">When is your interview?</h2>
+              <p className="mb-8 text-sm text-[#6BA3C8]">Helps us track how much time you have to prepare.</p>
               <button onClick={() => { setJustPracticing(!justPracticing); setInterviewDate('') }} className={optionClass(justPracticing)}>
                 <span className="flex items-center gap-3">
-                  <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${justPracticing ? 'border-[#170C79] bg-[#170C79]' : 'border-[#8ACBD0]'}`}>
+                  <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${justPracticing ? 'border-[#E07A2F] bg-[#E07A2F]' : 'border-[#6BA3C8]'}`}>
                     {justPracticing && <span className="h-2 w-2 rounded-full bg-white" />}
                   </span>
                   I&apos;m just practising — no upcoming interview
@@ -139,13 +139,13 @@ export default function OnboardingPage() {
               </button>
               {!justPracticing && (
                 <div className="mt-4">
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#8ACBD0]">Or pick a date</p>
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#6BA3C8]">Or pick a date</p>
                   <input
                     type="date"
                     value={interviewDate}
                     min={new Date().toISOString().split('T')[0]}
                     onChange={(e) => setInterviewDate(e.target.value)}
-                    className="w-full rounded-xl border-2 border-[#8ACBD0] bg-white px-4 py-3 text-sm text-[#170C79] focus:border-[#170C79] focus:outline-none focus:ring-2 focus:ring-[#170C79]/10"
+                    className="w-full rounded-xl border-2 border-[#6BA3C8] bg-white px-4 py-3 text-sm text-[#E07A2F] focus:border-[#E07A2F] focus:outline-none focus:ring-2 focus:ring-[#E07A2F]/10"
                   />
                 </div>
               )}
@@ -159,8 +159,8 @@ export default function OnboardingPage() {
           {/* Step 3: Biggest weakness */}
           {step === 3 && (
             <div>
-              <h2 className="mb-1 text-2xl font-bold text-[#170C79]">Your biggest interview weakness?</h2>
-              <p className="mb-8 text-sm text-[#8ACBD0]">Honest answers help us focus your drills where it matters most.</p>
+              <h2 className="mb-1 text-2xl font-bold text-[#E07A2F]">Your biggest interview weakness?</h2>
+              <p className="mb-8 text-sm text-[#6BA3C8]">Honest answers help us focus your drills where it matters most.</p>
               <div className="space-y-3">
                 {WEAKNESS_OPTIONS.map((w) => (
                   <button key={w} onClick={() => setBiggestWeakness(w)} className={optionClass(biggestWeakness === w)}>
@@ -178,8 +178,8 @@ export default function OnboardingPage() {
           {/* Step 4: Experience level */}
           {step === 4 && (
             <div>
-              <h2 className="mb-1 text-2xl font-bold text-[#170C79]">How much experience do you have?</h2>
-              <p className="mb-8 text-sm text-[#8ACBD0]">We&apos;ll calibrate question difficulty to your level.</p>
+              <h2 className="mb-1 text-2xl font-bold text-[#E07A2F]">How much experience do you have?</h2>
+              <p className="mb-8 text-sm text-[#6BA3C8]">We&apos;ll calibrate question difficulty to your level.</p>
               <div className="space-y-3">
                 {EXPERIENCE_OPTIONS.map((e) => (
                   <button key={e} onClick={() => setExperienceLevel(e)} className={optionClass(experienceLevel === e)}>
@@ -197,8 +197,8 @@ export default function OnboardingPage() {
           {/* Step 5: Interview type */}
           {step === 5 && (
             <div>
-              <h2 className="mb-1 text-2xl font-bold text-[#170C79]">What type of interviews are you preparing for?</h2>
-              <p className="mb-8 text-sm text-[#8ACBD0]">This shapes which question formats we prioritise.</p>
+              <h2 className="mb-1 text-2xl font-bold text-[#E07A2F]">What type of interviews are you preparing for?</h2>
+              <p className="mb-8 text-sm text-[#6BA3C8]">This shapes which question formats we prioritise.</p>
               <div className="space-y-3">
                 {INTERVIEW_TYPE_OPTIONS.map((t) => (
                   <button key={t} onClick={() => setInterviewType(t)} className={optionClass(interviewType === t)}>
@@ -216,8 +216,8 @@ export default function OnboardingPage() {
           {/* Step 6: Practice frequency */}
           {step === 6 && (
             <div>
-              <h2 className="mb-1 text-2xl font-bold text-[#170C79]">How often do you plan to practise?</h2>
-              <p className="mb-8 text-sm text-[#8ACBD0]">No pressure — just helps us set expectations.</p>
+              <h2 className="mb-1 text-2xl font-bold text-[#E07A2F]">How often do you plan to practise?</h2>
+              <p className="mb-8 text-sm text-[#6BA3C8]">No pressure — just helps us set expectations.</p>
               <div className="space-y-3">
                 {FREQUENCY_OPTIONS.map((f) => (
                   <button key={f} onClick={() => setPracticeFrequency(f)} className={optionClass(practiceFrequency === f)}>
@@ -235,27 +235,27 @@ export default function OnboardingPage() {
           {/* Step 7: Full name + Age */}
           {step === 7 && (
             <div>
-              <h2 className="mb-1 text-2xl font-bold text-[#170C79]">Almost done — tell us about you</h2>
-              <p className="mb-8 text-sm text-[#8ACBD0]">Your name and age help personalise your experience.</p>
+              <h2 className="mb-1 text-2xl font-bold text-[#E07A2F]">Almost done — tell us about you</h2>
+              <p className="mb-8 text-sm text-[#6BA3C8]">Your name and age help personalise your experience.</p>
 
               <div className="space-y-6">
                 {/* Full name */}
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-[#170C79]">Full name</label>
+                  <label className="mb-2 block text-sm font-medium text-[#E07A2F]">Full name</label>
                   <input
                     type="text"
                     placeholder="e.g. Priya Sharma"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="w-full rounded-xl border-2 border-[#8ACBD0] bg-white px-4 py-3 text-sm text-[#170C79] placeholder-[#8ACBD0] focus:border-[#170C79] focus:outline-none focus:ring-2 focus:ring-[#170C79]/10"
+                    className="w-full rounded-xl border-2 border-[#6BA3C8] bg-white px-4 py-3 text-sm text-[#E07A2F] placeholder-[#6BA3C8] focus:border-[#E07A2F] focus:outline-none focus:ring-2 focus:ring-[#E07A2F]/10"
                   />
                 </div>
 
                 {/* Age slider */}
                 <div>
-                  <label className="mb-2 flex items-center justify-between text-sm font-medium text-[#170C79]">
+                  <label className="mb-2 flex items-center justify-between text-sm font-medium text-[#E07A2F]">
                     <span>Age</span>
-                    <span className="text-2xl font-bold text-[#170C79]">{age}</span>
+                    <span className="text-2xl font-bold text-[#E07A2F]">{age}</span>
                   </label>
                   <input
                     type="range"
@@ -263,9 +263,9 @@ export default function OnboardingPage() {
                     max={60}
                     value={age}
                     onChange={(e) => setAge(Number(e.target.value))}
-                    className="w-full accent-[#170C79]"
+                    className="w-full accent-[#E07A2F]"
                   />
-                  <div className="mt-1 flex justify-between text-xs text-[#8ACBD0]">
+                  <div className="mt-1 flex justify-between text-xs text-[#6BA3C8]">
                     <span>16</span>
                     <span>60</span>
                   </div>

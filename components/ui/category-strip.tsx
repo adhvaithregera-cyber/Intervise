@@ -17,10 +17,10 @@ const items = [...categories, ...categories]
 
 function Pill({ num, label }: { num: string; label: string }) {
   return (
-    <span className="inline-flex shrink-0 items-center gap-2 rounded-full border border-[#8ACBD0] bg-white px-4 py-2 shadow-sm">
-      <span className="text-[11px] font-bold text-[#56B6C6]">Cat {num}</span>
-      <span className="h-3 w-px bg-[#8ACBD0]" />
-      <span className="text-[13px] font-semibold text-[#170C79]">{label}</span>
+    <span className="inline-flex shrink-0 items-center gap-2 rounded-full border border-[#6BA3C8] bg-white px-4 py-2 shadow-sm">
+      <span className="text-[11px] font-bold text-[#F9C125]">Cat {num}</span>
+      <span className="h-3 w-px bg-[#6BA3C8]" />
+      <span className="text-[13px] font-semibold text-[#E07A2F]">{label}</span>
     </span>
   )
 }

@@ -33,7 +33,7 @@ export async function Navbar() {
   const showTryFree = !user || tier !== 'free'
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-[#8ACBD0] bg-white">
+    <nav className="sticky top-0 z-50 border-b border-[#6BA3C8] bg-white">
       <div className="relative mx-auto flex h-16 max-w-7xl items-center px-4 sm:px-6">
 
         {/* Left: marketing links */}
@@ -41,14 +41,14 @@ export async function Navbar() {
           {showTryFree && (
             <Link
               href="/signup"
-              className="hidden sm:inline-flex items-center rounded-xl border-2 border-[#170C79] px-4 py-1.5 text-sm font-semibold text-[#170C79] hover:bg-[#170C79] hover:text-white transition-colors"
+              className="hidden sm:inline-flex items-center rounded-xl border-2 border-[#E07A2F] px-4 py-1.5 text-sm font-semibold text-[#E07A2F] hover:bg-[#E07A2F] hover:text-white transition-colors"
             >
               Try for FREE
             </Link>
           )}
           <a
             href="/#pricing"
-            className="text-sm font-medium text-[#8ACBD0] hover:text-[#170C79] transition-colors"
+            className="text-sm font-medium text-[#6BA3C8] hover:text-[#E07A2F] transition-colors"
           >
             Pricing
           </a>
@@ -58,7 +58,7 @@ export async function Navbar() {
         <div className="absolute left-1/2 -translate-x-1/2">
           <Link
             href="/"
-            className="text-base font-bold tracking-widest text-[#170C79] hover:text-[#56B6C6] transition-colors"
+            className="text-base font-bold tracking-widest text-[#E07A2F] hover:text-[#F9C125] transition-colors"
           >
             INTERVISE
           </Link>
@@ -72,13 +72,13 @@ export async function Navbar() {
             <div className="flex items-center gap-4">
               <Link
                 href="/login"
-                className="text-sm font-medium text-[#8ACBD0] hover:text-[#170C79] transition-colors"
+                className="text-sm font-medium text-[#6BA3C8] hover:text-[#E07A2F] transition-colors"
               >
                 Login
               </Link>
               <Link
                 href="/signup"
-                className="rounded-xl bg-[#170C79] px-4 py-1.5 text-sm font-semibold text-white hover:bg-[#0f0955] transition-colors shadow-sm shadow-[#170C79]/20"
+                className="rounded-xl bg-[#E07A2F] px-4 py-1.5 text-sm font-semibold text-white hover:bg-[#C96A1A] transition-colors shadow-sm shadow-[#E07A2F]/20"
               >
                 Sign up
               </Link>

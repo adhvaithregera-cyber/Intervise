@@ -39,19 +39,19 @@ export default function LoginPage() {
     window.location.href = '/dashboard'
   }
 
-  const inputClass = "w-full rounded-xl border border-[#8ACBD0] bg-[#EFE3CA]/50 px-3 py-2.5 text-sm text-[#170C79] placeholder-[#8ACBD0] focus:border-[#56B6C6] focus:outline-none focus:ring-2 focus:ring-[#56B6C6]/20"
+  const inputClass = "w-full rounded-xl border border-[#6BA3C8] bg-[#FEFDF0]/50 px-3 py-2.5 text-sm text-[#E07A2F] placeholder-[#6BA3C8] focus:border-[#F9C125] focus:outline-none focus:ring-2 focus:ring-[#F9C125]/20"
 
   return (
-    <div className="rounded-2xl border border-[#8ACBD0] bg-white p-8 shadow-xl">
+    <div className="rounded-2xl border border-[#6BA3C8] bg-white p-8 shadow-xl">
       <div className="mb-8 text-center">
-        <Link href="/" className="text-lg font-bold tracking-widest text-[#170C79]">INTERVISE</Link>
-        <p className="mt-4 text-2xl font-bold text-[#170C79]">Welcome back</p>
-        <p className="mt-1 text-sm text-[#8ACBD0]">Log in to continue practising</p>
+        <Link href="/" className="text-lg font-bold tracking-widest text-[#E07A2F]">INTERVISE</Link>
+        <p className="mt-4 text-2xl font-bold text-[#E07A2F]">Welcome back</p>
+        <p className="mt-1 text-sm text-[#6BA3C8]">Log in to continue practising</p>
       </div>
 
       <button
         onClick={handleGoogleSignIn}
-        className="mb-6 flex w-full items-center justify-center gap-2 rounded-xl border border-[#8ACBD0] bg-white px-4 py-2.5 text-sm font-semibold text-[#170C79] hover:bg-[#EFE3CA] transition-colors shadow-sm"
+        className="mb-6 flex w-full items-center justify-center gap-2 rounded-xl border border-[#6BA3C8] bg-white px-4 py-2.5 text-sm font-semibold text-[#E07A2F] hover:bg-[#FEFDF0] transition-colors shadow-sm"
       >
         <svg className="h-4 w-4" viewBox="0 0 24 24">
           <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -64,20 +64,20 @@ export default function LoginPage() {
 
       <div className="relative mb-6">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-[#8ACBD0]" />
+          <div className="w-full border-t border-[#6BA3C8]" />
         </div>
-        <div className="relative flex justify-center text-xs text-[#8ACBD0]">
+        <div className="relative flex justify-center text-xs text-[#6BA3C8]">
           <span className="bg-white px-2">or log in with email</span>
         </div>
       </div>
 
       <form onSubmit={handleEmailLogin} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-[#170C79] mb-1">Email</label>
+          <label className="block text-sm font-medium text-[#E07A2F] mb-1">Email</label>
           <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={inputClass} placeholder="you@example.com" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[#170C79] mb-1">Password</label>
+          <label className="block text-sm font-medium text-[#E07A2F] mb-1">Password</label>
           <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className={inputClass} placeholder="Your password" />
         </div>
         {error && <p className="text-sm text-red-500">{error}</p>}
@@ -86,9 +86,9 @@ export default function LoginPage() {
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-[#8ACBD0]">
+      <p className="mt-6 text-center text-sm text-[#6BA3C8]">
         Don&apos;t have an account?{' '}
-        <Link href="/signup" className="font-semibold text-[#170C79] hover:text-[#56B6C6]">Sign up free</Link>
+        <Link href="/signup" className="font-semibold text-[#E07A2F] hover:text-[#F9C125]">Sign up free</Link>
       </p>
     </div>
   )

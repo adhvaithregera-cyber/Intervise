@@ -28,10 +28,10 @@ type Props = {
 }
 
 const inputClass =
-  'w-full rounded-lg border border-[#8ACBD0] bg-white px-3 py-2 text-sm text-[#170C79] placeholder-[#8ACBD0] focus:border-[#56B6C6] focus:outline-none focus:ring-2 focus:ring-[#56B6C6]/20 transition-colors'
+  'w-full rounded-lg border border-[#6BA3C8] bg-white px-3 py-2 text-sm text-[#E07A2F] placeholder-[#6BA3C8] focus:border-[#F9C125] focus:outline-none focus:ring-2 focus:ring-[#F9C125]/20 transition-colors'
 
 const readonlyClass =
-  'w-full rounded-lg border border-[#8ACBD0]/40 bg-[#EFE3CA]/60 px-3 py-2 text-sm text-[#170C79] cursor-not-allowed'
+  'w-full rounded-lg border border-[#6BA3C8]/40 bg-[#FEFDF0]/60 px-3 py-2 text-sm text-[#E07A2F] cursor-not-allowed'
 
 export function ProfileForm({
   fullName,
@@ -101,31 +101,31 @@ export function ProfileForm({
       {/* Personal info */}
       <Card>
         <div className="p-6">
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-[#8ACBD0]">
+          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-[#6BA3C8]">
             Personal Information
           </h2>
           <div className="space-y-4">
             {/* Full name — read only */}
             <div>
-              <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-[#8ACBD0]">
+              <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-[#6BA3C8]">
                 Full name
-                <span className="rounded bg-[#8ACBD0]/10 px-1.5 py-0.5 text-[10px] text-[#8ACBD0]">locked</span>
+                <span className="rounded bg-[#6BA3C8]/10 px-1.5 py-0.5 text-[10px] text-[#6BA3C8]">locked</span>
               </label>
               <input readOnly value={fullName ?? ''} className={readonlyClass} />
             </div>
 
             {/* Email — read only */}
             <div>
-              <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-[#8ACBD0]">
+              <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-[#6BA3C8]">
                 Email
-                <span className="rounded bg-[#8ACBD0]/10 px-1.5 py-0.5 text-[10px] text-[#8ACBD0]">locked</span>
+                <span className="rounded bg-[#6BA3C8]/10 px-1.5 py-0.5 text-[10px] text-[#6BA3C8]">locked</span>
               </label>
               <input readOnly value={email} className={readonlyClass} />
             </div>
 
             {/* Age */}
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-[#8ACBD0]">Age</label>
+              <label className="mb-1.5 block text-xs font-medium text-[#6BA3C8]">Age</label>
               <input
                 type="number"
                 min={1}
@@ -139,19 +139,19 @@ export function ProfileForm({
 
             {/* Password */}
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-[#8ACBD0]">Password</label>
+              <label className="mb-1.5 block text-xs font-medium text-[#6BA3C8]">Password</label>
               {!showPasswordForm ? (
                 <div className="flex items-center gap-3">
                   <input readOnly value="••••••••••••" className={`${readonlyClass} flex-1`} />
                   <button
                     onClick={() => setShowPasswordForm(true)}
-                    className="shrink-0 rounded-lg border border-[#8ACBD0] px-3 py-2 text-xs font-semibold text-[#170C79] hover:bg-[#EFE3CA] transition-colors"
+                    className="shrink-0 rounded-lg border border-[#6BA3C8] px-3 py-2 text-xs font-semibold text-[#E07A2F] hover:bg-[#FEFDF0] transition-colors"
                   >
                     Change
                   </button>
                 </div>
               ) : (
-                <div className="space-y-2 rounded-lg border border-[#8ACBD0]/40 p-3">
+                <div className="space-y-2 rounded-lg border border-[#6BA3C8]/40 p-3">
                   <input
                     type="password"
                     placeholder="New password"
@@ -170,13 +170,13 @@ export function ProfileForm({
                     <button
                       onClick={handlePasswordChange}
                       disabled={changingPassword}
-                      className="rounded-lg bg-[#170C79] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#0f0955] disabled:opacity-50 transition-colors"
+                      className="rounded-lg bg-[#E07A2F] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#C96A1A] disabled:opacity-50 transition-colors"
                     >
                       {changingPassword ? 'Updating…' : 'Update password'}
                     </button>
                     <button
                       onClick={() => { setShowPasswordForm(false); setNewPassword(''); setConfirmPassword(''); setPasswordMsg(null) }}
-                      className="rounded-lg px-3 py-1.5 text-xs font-semibold text-[#8ACBD0] hover:text-[#170C79] transition-colors"
+                      className="rounded-lg px-3 py-1.5 text-xs font-semibold text-[#6BA3C8] hover:text-[#E07A2F] transition-colors"
                     >
                       Cancel
                     </button>
@@ -199,12 +199,12 @@ export function ProfileForm({
       {/* Interview preferences — editable */}
       <Card>
         <div className="p-6">
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-[#8ACBD0]">
+          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-[#6BA3C8]">
             Interview Preferences
           </h2>
           <div className="space-y-4">
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-[#8ACBD0]">Desired job / role</label>
+              <label className="mb-1.5 block text-xs font-medium text-[#6BA3C8]">Desired job / role</label>
               <input
                 type="text"
                 placeholder="e.g. Software Engineer"
@@ -214,7 +214,7 @@ export function ProfileForm({
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-[#8ACBD0]">Interview date</label>
+              <label className="mb-1.5 block text-xs font-medium text-[#6BA3C8]">Interview date</label>
               <input
                 type="date"
                 value={interviewDate}
@@ -223,7 +223,7 @@ export function ProfileForm({
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-[#8ACBD0]">Biggest weakness to work on</label>
+              <label className="mb-1.5 block text-xs font-medium text-[#6BA3C8]">Biggest weakness to work on</label>
               <textarea
                 rows={3}
                 placeholder="e.g. I tend to overexplain..."
@@ -238,7 +238,7 @@ export function ProfileForm({
             <button
               onClick={handleSave}
               disabled={saving}
-              className="rounded-lg bg-[#170C79] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0f0955] disabled:opacity-50 transition-colors"
+              className="rounded-lg bg-[#E07A2F] px-5 py-2 text-sm font-semibold text-white hover:bg-[#C96A1A] disabled:opacity-50 transition-colors"
             >
               {saving ? 'Saving…' : 'Save changes'}
             </button>
@@ -254,24 +254,24 @@ export function ProfileForm({
       {/* Subscription */}
       <Card>
         <div className="p-6">
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-[#8ACBD0]">
+          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-[#6BA3C8]">
             Subscription
           </h2>
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-base font-semibold text-[#170C79]">
+                <span className="text-base font-semibold text-[#E07A2F]">
                   {TIER_LABEL[tier] ?? tier} Plan
                 </span>
                 <Badge variant={TIER_BADGE[tier] ?? 'gray'}>{TIER_LABEL[tier] ?? tier}</Badge>
               </div>
-              <p className="mt-1 text-sm text-[#8ACBD0]">{TIER_SESSIONS[tier]}</p>
+              <p className="mt-1 text-sm text-[#6BA3C8]">{TIER_SESSIONS[tier]}</p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-[#8ACBD0]">Used this month</p>
-              <p className="text-lg font-bold text-[#170C79]">
+              <p className="text-sm text-[#6BA3C8]">Used this month</p>
+              <p className="text-lg font-bold text-[#E07A2F]">
                 {sessionsUsed}{' '}
-                <span className="text-sm font-normal text-[#8ACBD0]">/ {sessionsLimit}</span>
+                <span className="text-sm font-normal text-[#6BA3C8]">/ {sessionsLimit}</span>
               </p>
             </div>
           </div>
