@@ -1,3 +1,5 @@
+import 'server-only'
+
 // Server-only module — relies on ASSEMBLYAI_API_KEY env var (never NEXT_PUBLIC_)
 
 export interface TranscriptionResult {
@@ -22,9 +24,9 @@ const POLL_INTERVAL_MS = 1500
 const MAX_POLLS = 80 // 80 × 1500ms = 120 seconds
 
 function authHeaders(): Record<string, string> {
-  return {
-    Authorization: process.env.ASSEMBLYAI_API_KEY ?? '',
-  }
+  const key = process.env.ASSEMBLYAI_API_KEY
+  if (!key) throw new Error('ASSEMBLYAI_API_KEY is not set')
+  return { Authorization: key }
 }
 
 async function uploadAudio(
@@ -102,9 +104,8 @@ async function pollForCompletion(
       continue
     }
 
-    if (response.status === 429) {
-      return { failed: true, reason: 'rate_limited' }
-    }
+    if (response.status === 429) return { failed: true, reason: 'rate_limited' }
+    if (response.status === 401 || response.status === 403) return { failed: true, reason: 'auth_failed' }
 
     if (!response.ok) {
       // Other HTTP error — continue polling
