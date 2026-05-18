@@ -32,7 +32,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
   const { data: questions } = await supabase.from('questions').select('*').in('id', questionIds)
   const questionMap = Object.fromEntries((questions ?? []).map((q) => [q.id, q]))
 
-  const gradeColor = GRADE_COLORS[session.overall_grade ?? ''] ?? { text: 'text-[#8697C4]', bg: 'bg-[#EDE8F5]' }
+  const gradeColor = GRADE_COLORS[session.overall_grade ?? ''] ?? { text: 'text-[#8ACBD0]', bg: 'bg-[#EFE3CA]' }
 
   const validWpms = (answers ?? []).map((a) => a.wpm).filter((v): v is number => v !== null)
   const avgWpm =
@@ -53,8 +53,8 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
         >
           {session.overall_grade ?? '—'}
         </div>
-        <h1 className="text-2xl font-semibold text-[#3D52A0]">Session complete</h1>
-        <p className="text-[#8697C4] mt-1">
+        <h1 className="text-2xl font-semibold text-[#170C79]">Session complete</h1>
+        <p className="text-[#8ACBD0] mt-1">
           {new Date(session.created_at).toLocaleDateString('en-GB', { dateStyle: 'long' })}
         </p>
       </div>
@@ -62,17 +62,17 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
       {/* Summary stats */}
       <div className="grid grid-cols-3 gap-4 mb-8">
         <Card className="text-center p-4">
-          <p className="text-sm text-[#8697C4]">Avg speaking pace</p>
-          <p className="text-2xl font-bold text-[#3D52A0]">{avgWpm ?? '—'} wpm</p>
-          <p className="text-xs text-[#8697C4]">Target: 130–160</p>
+          <p className="text-sm text-[#8ACBD0]">Avg speaking pace</p>
+          <p className="text-2xl font-bold text-[#170C79]">{avgWpm ?? '—'} wpm</p>
+          <p className="text-xs text-[#8ACBD0]">Target: 130–160</p>
         </Card>
         <Card className="text-center p-4">
-          <p className="text-sm text-[#8697C4]">Total filler words</p>
-          <p className="text-2xl font-bold text-[#3D52A0]">{totalFillers}</p>
+          <p className="text-sm text-[#8ACBD0]">Total filler words</p>
+          <p className="text-2xl font-bold text-[#170C79]">{totalFillers}</p>
         </Card>
         <Card className="text-center p-4">
-          <p className="text-sm text-[#8697C4]">Answers analysed</p>
-          <p className="text-2xl font-bold text-[#3D52A0]">
+          <p className="text-sm text-[#8ACBD0]">Answers analysed</p>
+          <p className="text-2xl font-bold text-[#170C79]">
             {answeredCount} / {(answers ?? []).length}
           </p>
         </Card>
@@ -92,26 +92,26 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
               <Badge variant="brand">{formatLabel}</Badge>
               {question?.category_name && <Badge variant="gray">{question.category_name}</Badge>}
             </div>
-            <p className="font-medium text-[#3D52A0] mb-4">
+            <p className="font-medium text-[#170C79] mb-4">
               {question?.question_text ?? 'Question unavailable'}
             </p>
 
             {answer.transcription_failed ? (
               <div className="flex items-center gap-2">
                 <Badge variant="amber">Transcription failed</Badge>
-                <span className="text-sm text-[#8697C4]">Feedback unavailable for this answer</span>
+                <span className="text-sm text-[#8ACBD0]">Feedback unavailable for this answer</span>
               </div>
             ) : (
               <>
                 <div className="flex gap-8 mb-4">
                   <div>
-                    <p className="text-sm text-[#8697C4]">Speaking pace</p>
+                    <p className="text-sm text-[#8ACBD0]">Speaking pace</p>
                     <p className={cn('text-xl font-bold', wpmColor)}>{answer.wpm ?? '—'} wpm</p>
-                    <p className="text-xs text-[#8697C4]">Target: 130–160</p>
+                    <p className="text-xs text-[#8ACBD0]">Target: 130–160</p>
                   </div>
                   <div>
-                    <p className="text-sm text-[#8697C4]">Filler words</p>
-                    <p className="text-xl font-bold text-[#3D52A0]">{answer.filler_count ?? 0}</p>
+                    <p className="text-sm text-[#8ACBD0]">Filler words</p>
+                    <p className="text-xl font-bold text-[#170C79]">{answer.filler_count ?? 0}</p>
                     {answer.filler_breakdown &&
                       Object.keys(answer.filler_breakdown).length > 0 && (
                         <div className="flex gap-1 flex-wrap mt-1">
@@ -126,12 +126,12 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
                       )}
                   </div>
                   <div>
-                    <p className="text-sm text-[#8697C4]">Duration</p>
-                    <p className="text-xl font-bold text-[#3D52A0]">{answer.duration_seconds}s</p>
+                    <p className="text-sm text-[#8ACBD0]">Duration</p>
+                    <p className="text-xl font-bold text-[#170C79]">{answer.duration_seconds}s</p>
                   </div>
                 </div>
                 {answer.transcript && (
-                  <blockquote className="border-l-4 border-[#ADBBDA] pl-4 text-sm text-[#8697C4] italic line-clamp-3">
+                  <blockquote className="border-l-4 border-[#8ACBD0] pl-4 text-sm text-[#8ACBD0] italic line-clamp-3">
                     &ldquo;{answer.transcript.slice(0, 300)}
                     {answer.transcript.length > 300 ? '...' : ''}&rdquo;
                   </blockquote>

@@ -71,7 +71,7 @@ function PricingSwitch({ onSwitch }: { onSwitch: (value: string) => void }) {
     <div className="flex justify-center">
       <div
         className="relative flex w-fit rounded-full p-1"
-        style={{ backgroundColor: '#3D52A0', border: '1px solid #7091E6' }}
+        style={{ backgroundColor: '#170C79', border: '1px solid #56B6C6' }}
       >
         {['Monthly', 'Yearly'].map((label, i) => {
           const val = String(i)
@@ -82,14 +82,14 @@ function PricingSwitch({ onSwitch }: { onSwitch: (value: string) => void }) {
               onClick={() => handle(val)}
               className={cn(
                 'relative z-10 h-9 rounded-full px-6 text-sm font-semibold transition-colors',
-                active ? 'text-[#3D52A0]' : 'text-white/70 hover:text-white'
+                active ? 'text-[#170C79]' : 'text-white/70 hover:text-white'
               )}
             >
               {active && (
                 <motion.span
                   layoutId="switch"
                   className="absolute inset-0 rounded-full"
-                  style={{ backgroundColor: '#EDE8F5' }}
+                  style={{ backgroundColor: '#EFE3CA' }}
                   transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                 />
               )}
@@ -141,15 +141,15 @@ export default function PricingSection() {
     <section
       id="pricing"
       className="py-24 overflow-hidden"
-      style={{ background: 'linear-gradient(180deg, #EDE8F5 0%, white 100%)' }}
+      style={{ background: 'linear-gradient(180deg, #EFE3CA 0%, white 100%)' }}
     >
       <div className="mx-auto max-w-6xl px-6">
         {/* Heading — word-by-word reveal on scroll */}
         <div ref={headingRef} className="mb-6">
           <ScrollReveal delay={0}>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#8697C4]">Pricing</p>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#8ACBD0]">Pricing</p>
           </ScrollReveal>
-          <h2 className="mb-4 text-4xl font-bold text-[#3D52A0] overflow-hidden">
+          <h2 className="mb-4 text-4xl font-bold text-[#170C79] overflow-hidden">
             <VerticalCutReveal
               splitBy="words"
               staggerDuration={0.12}
@@ -162,7 +162,7 @@ export default function PricingSection() {
             </VerticalCutReveal>
           </h2>
           <ScrollReveal delay={0.25}>
-            <p className="text-[#8697C4]">Start free. Upgrade when you need more sessions.</p>
+            <p className="text-[#8ACBD0]">Start free. Upgrade when you need more sessions.</p>
           </ScrollReveal>
         </div>
 
@@ -179,12 +179,12 @@ export default function PricingSection() {
                 className={cn(
                   'flex h-full flex-col rounded-2xl border p-8 transition-all duration-300',
                   plan.popular
-                    ? 'shadow-2xl shadow-[#7091E6]/40'
-                    : 'border-[#ADBBDA] bg-white shadow-sm hover:shadow-lg hover:border-[#7091E6]'
+                    ? 'shadow-2xl shadow-[#56B6C6]/40'
+                    : 'border-[#8ACBD0] bg-white shadow-sm hover:shadow-lg hover:border-[#56B6C6]'
                 )}
                 style={
                   plan.popular
-                    ? { backgroundColor: '#3D52A0', borderColor: '#7091E6', boxShadow: '0 0 40px 8px rgba(112,145,230,0.35)' }
+                    ? { backgroundColor: '#170C79', borderColor: '#56B6C6', boxShadow: '0 0 40px 8px rgba(112,145,230,0.35)' }
                     : {}
                 }
               >
@@ -200,21 +200,21 @@ export default function PricingSection() {
                   )}
                 </div>
 
-                <h3 className={`mb-1 text-xl font-bold ${plan.popular ? 'text-white' : 'text-[#3D52A0]'}`}>
+                <h3 className={`mb-1 text-xl font-bold ${plan.popular ? 'text-white' : 'text-[#170C79]'}`}>
                   {plan.name}
                 </h3>
-                <p className={`mb-5 text-sm ${plan.popular ? 'text-[#ADBBDA]' : 'text-[#8697C4]'}`}>
+                <p className={`mb-5 text-sm ${plan.popular ? 'text-[#8ACBD0]' : 'text-[#8ACBD0]'}`}>
                   {plan.description}
                 </p>
 
                 {/* Animated price */}
                 <div className="mb-6 flex items-baseline gap-1">
-                  <span className={`text-sm ${plan.popular ? 'text-[#ADBBDA]' : 'text-[#8697C4]'}`}>₹</span>
-                  <span className={`text-5xl font-bold ${plan.popular ? 'text-white' : 'text-[#3D52A0]'}`}>
+                  <span className={`text-sm ${plan.popular ? 'text-[#8ACBD0]' : 'text-[#8ACBD0]'}`}>₹</span>
+                  <span className={`text-5xl font-bold ${plan.popular ? 'text-white' : 'text-[#170C79]'}`}>
                     <NumberFlow value={isYearly ? plan.yearlyPrice : plan.price} />
                   </span>
                   {plan.price > 0 && (
-                    <span className={`text-sm ${plan.popular ? 'text-[#ADBBDA]' : 'text-[#8697C4]'}`}>
+                    <span className={`text-sm ${plan.popular ? 'text-[#8ACBD0]' : 'text-[#8ACBD0]'}`}>
                       /{isYearly ? 'yr' : 'mo'}
                     </span>
                   )}
@@ -226,16 +226,16 @@ export default function PricingSection() {
                   className={cn(
                     'mb-8 block w-full rounded-xl py-3 text-center text-sm font-semibold transition-all',
                     plan.popular
-                      ? 'bg-white text-[#3D52A0] hover:bg-[#EDE8F5]'
-                      : 'border-2 border-[#3D52A0] text-[#3D52A0] hover:bg-[#3D52A0] hover:text-white'
+                      ? 'bg-white text-[#170C79] hover:bg-[#EFE3CA]'
+                      : 'border-2 border-[#170C79] text-[#170C79] hover:bg-[#170C79] hover:text-white'
                   )}
                 >
                   {plan.buttonText}
                 </Link>
 
                 {/* Features */}
-                <div className={`border-t pt-6 ${plan.popular ? 'border-[#7091E6]/40' : 'border-[#ADBBDA]'}`}>
-                  <p className={`mb-3 text-sm font-semibold ${plan.popular ? 'text-white' : 'text-[#3D52A0]'}`}>
+                <div className={`border-t pt-6 ${plan.popular ? 'border-[#56B6C6]/40' : 'border-[#8ACBD0]'}`}>
+                  <p className={`mb-3 text-sm font-semibold ${plan.popular ? 'text-white' : 'text-[#170C79]'}`}>
                     {plan.features[0]}
                   </p>
                   <ul className="space-y-2">
@@ -243,9 +243,9 @@ export default function PricingSection() {
                       <li key={f} className="flex items-center gap-2.5">
                         <span
                           className="h-2 w-2 shrink-0 rounded-full"
-                          style={{ backgroundColor: plan.popular ? '#7091E6' : '#ADBBDA' }}
+                          style={{ backgroundColor: plan.popular ? '#56B6C6' : '#8ACBD0' }}
                         />
-                        <span className={`text-sm ${plan.popular ? 'text-[#EDE8F5]' : 'text-[#8697C4]'}`}>{f}</span>
+                        <span className={`text-sm ${plan.popular ? 'text-[#EFE3CA]' : 'text-[#8ACBD0]'}`}>{f}</span>
                       </li>
                     ))}
                   </ul>

@@ -50,8 +50,8 @@ export default function OnboardingPage() {
   const optionClass = (active: boolean) =>
     `w-full rounded-2xl border-2 px-5 py-4 text-left text-sm font-medium transition-all ${
       active
-        ? 'border-[#3D52A0] bg-[#3D52A0]/5 text-[#3D52A0] shadow-sm'
-        : 'border-[#ADBBDA] bg-white text-[#3D52A0] hover:border-[#7091E6] hover:bg-[#EDE8F5]'
+        ? 'border-[#170C79] bg-[#170C79]/5 text-[#170C79] shadow-sm'
+        : 'border-[#8ACBD0] bg-white text-[#170C79] hover:border-[#56B6C6] hover:bg-[#EFE3CA]'
     }`
 
   return (
@@ -59,23 +59,23 @@ export default function OnboardingPage() {
       <div className="w-full max-w-xl">
         {/* Progress */}
         <div className="mb-10">
-          <div className="mb-2 flex justify-between text-xs text-[#8697C4]">
+          <div className="mb-2 flex justify-between text-xs text-[#8ACBD0]">
             <span>Step {step} of 3</span>
             <span>{Math.round((step / 3) * 100)}%</span>
           </div>
-          <div className="h-1.5 w-full rounded-full bg-[#ADBBDA]/40">
+          <div className="h-1.5 w-full rounded-full bg-[#8ACBD0]/40">
             <div
               className="h-1.5 rounded-full transition-all duration-300"
-              style={{ width: `${(step / 3) * 100}%`, backgroundColor: '#3D52A0' }}
+              style={{ width: `${(step / 3) * 100}%`, backgroundColor: '#170C79' }}
             />
           </div>
         </div>
 
-        <div className="rounded-2xl border border-[#ADBBDA] bg-white p-8 shadow-sm sm:p-10">
+        <div className="rounded-2xl border border-[#8ACBD0] bg-white p-8 shadow-sm sm:p-10">
           {step === 1 && (
             <div>
-              <h2 className="mb-1 text-2xl font-bold text-[#3D52A0]">What role are you targeting?</h2>
-              <p className="mb-8 text-sm text-[#8697C4]">We&apos;ll tailor your question bank to your field.</p>
+              <h2 className="mb-1 text-2xl font-bold text-[#170C79]">What role are you targeting?</h2>
+              <p className="mb-8 text-sm text-[#8ACBD0]">We&apos;ll tailor your question bank to your field.</p>
               <div className="grid grid-cols-2 gap-3">
                 {ROLE_OPTIONS.map((role) => (
                   <button key={role} onClick={() => setRoleType(role)} className={optionClass(roleType === role)}>
@@ -91,8 +91,8 @@ export default function OnboardingPage() {
 
           {step === 2 && (
             <div>
-              <h2 className="mb-1 text-2xl font-bold text-[#3D52A0]">When is your interview?</h2>
-              <p className="mb-8 text-sm text-[#8697C4]">Helps us track how much time you have to prepare.</p>
+              <h2 className="mb-1 text-2xl font-bold text-[#170C79]">When is your interview?</h2>
+              <p className="mb-8 text-sm text-[#8ACBD0]">Helps us track how much time you have to prepare.</p>
 
               {/* Just practicing toggle */}
               <button
@@ -105,7 +105,7 @@ export default function OnboardingPage() {
                 <span className="flex items-center gap-3">
                   <span
                     className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
-                      justPracticing ? 'border-[#3D52A0] bg-[#3D52A0]' : 'border-[#ADBBDA]'
+                      justPracticing ? 'border-[#170C79] bg-[#170C79]' : 'border-[#8ACBD0]'
                     }`}
                   >
                     {justPracticing && (
@@ -118,13 +118,13 @@ export default function OnboardingPage() {
 
               {!justPracticing && (
                 <div className="mt-4">
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#8697C4]">Or pick a date</p>
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#8ACBD0]">Or pick a date</p>
                   <input
                     type="date"
                     value={interviewDate}
                     min={new Date().toISOString().split('T')[0]}
                     onChange={(e) => setInterviewDate(e.target.value)}
-                    className="w-full rounded-xl border-2 border-[#ADBBDA] bg-white px-4 py-3 text-sm text-[#3D52A0] focus:border-[#3D52A0] focus:outline-none focus:ring-2 focus:ring-[#3D52A0]/10"
+                    className="w-full rounded-xl border-2 border-[#8ACBD0] bg-white px-4 py-3 text-sm text-[#170C79] focus:border-[#170C79] focus:outline-none focus:ring-2 focus:ring-[#170C79]/10"
                   />
                 </div>
               )}
@@ -138,8 +138,8 @@ export default function OnboardingPage() {
 
           {step === 3 && (
             <div>
-              <h2 className="mb-1 text-2xl font-bold text-[#3D52A0]">Your biggest interview weakness?</h2>
-              <p className="mb-8 text-sm text-[#8697C4]">Honest answers help us focus your drills where it matters most.</p>
+              <h2 className="mb-1 text-2xl font-bold text-[#170C79]">Your biggest interview weakness?</h2>
+              <p className="mb-8 text-sm text-[#8ACBD0]">Honest answers help us focus your drills where it matters most.</p>
               <div className="space-y-3">
                 {WEAKNESS_OPTIONS.map((w) => (
                   <button key={w} onClick={() => setBiggestWeakness(w)} className={optionClass(biggestWeakness === w)}>

@@ -10,15 +10,15 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          50:  '#EDE8F5',   // light lavender — backgrounds
-          100: '#ADBBDA',   // soft blue-gray — borders, dividers
-          200: '#8697C4',   // muted blue-gray — secondary text
-          300: '#7091E6',   // periwinkle — accents, links
-          400: '#7091E6',   // periwinkle (same for Tailwind compat)
-          500: '#7091E6',   // periwinkle — hover accents
-          600: '#3D52A0',   // deep navy — primary
-          700: '#3D52A0',   // deep navy
-          800: '#2d3d78',   // darker navy
+          50:  '#EFE3CA',   // light lavender — backgrounds
+          100: '#8ACBD0',   // soft blue-gray — borders, dividers
+          200: '#8ACBD0',   // muted blue-gray — secondary text
+          300: '#56B6C6',   // periwinkle — accents, links
+          400: '#56B6C6',   // periwinkle (same for Tailwind compat)
+          500: '#56B6C6',   // periwinkle — hover accents
+          600: '#170C79',   // deep navy — primary
+          700: '#170C79',   // deep navy
+          800: '#0f0955',   // darker navy
           900: '#1e2a52',   // darkest navy
         },
       },

@@ -68,9 +68,9 @@ export const Highlight = ({
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'left bottom',
         display: 'inline',
-        backgroundImage: 'linear-gradient(90deg, #7091E6, #3D52A0)',
+        backgroundImage: 'linear-gradient(90deg, #56B6C6, #170C79)',
       }}
-      className={cn('relative inline-block text-[#7091E6]', className)}
+      className={cn('relative inline-block text-[#56B6C6]', className)}
     >
       {children}
     </motion.span>

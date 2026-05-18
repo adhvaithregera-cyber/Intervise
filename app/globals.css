@@ -7,15 +7,15 @@ html {
 }
 
 :root {
-  --bg: #EDE8F5;
+  --bg: #EFE3CA;
   --surface: #ffffff;
-  --navy: #3D52A0;
-  --periwinkle: #7091E6;
-  --muted: #8697C4;
-  --border: #ADBBDA;
+  --navy: #170C79;
+  --periwinkle: #56B6C6;
+  --muted: #8ACBD0;
+  --border: #8ACBD0;
 }
 
 body {
-  background-color: #EDE8F5;
-  color: #3D52A0;
+  background-color: #EFE3CA;
+  color: #170C79;
 }

@@ -81,14 +81,14 @@ export default function SessionSetupPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-12">
       {/* Page header */}
-      <h1 className="mb-2 text-3xl font-bold text-[#3D52A0]">Set up your session</h1>
-      <p className="mb-10 text-[#8697C4]">
+      <h1 className="mb-2 text-3xl font-bold text-[#170C79]">Set up your session</h1>
+      <p className="mb-10 text-[#8ACBD0]">
         Choose your difficulty and grant the permissions we need to get started.
       </p>
 
       {/* Section 1: Difficulty selector */}
       <section className="mb-10">
-        <h2 className="mb-4 text-lg font-semibold text-[#3D52A0]">Difficulty</h2>
+        <h2 className="mb-4 text-lg font-semibold text-[#170C79]">Difficulty</h2>
         <div className="grid grid-cols-3 gap-4">
           {DIFFICULTY_OPTIONS.map(({ value, title, desc }) => (
             <Card
@@ -97,12 +97,12 @@ export default function SessionSetupPage() {
               className={cn(
                 'cursor-pointer transition-all',
                 difficulty === value
-                  ? 'border-[#3D52A0] bg-[#3D52A0]/5'
-                  : 'hover:border-[#7091E6]'
+                  ? 'border-[#170C79] bg-[#170C79]/5'
+                  : 'hover:border-[#56B6C6]'
               )}
             >
-              <p className="mb-1 font-semibold text-[#3D52A0]">{title}</p>
-              <p className="text-sm text-[#8697C4]">{desc}</p>
+              <p className="mb-1 font-semibold text-[#170C79]">{title}</p>
+              <p className="text-sm text-[#8ACBD0]">{desc}</p>
             </Card>
           ))}
         </div>
@@ -111,10 +111,10 @@ export default function SessionSetupPage() {
       {/* Section 2: Microphone */}
       <section className="mb-8">
         <div className="mb-1 flex items-center gap-2">
-          <h2 className="text-lg font-semibold text-[#3D52A0]">Microphone</h2>
+          <h2 className="text-lg font-semibold text-[#170C79]">Microphone</h2>
           <span className="text-xs font-semibold uppercase tracking-wider text-red-500">Required</span>
         </div>
-        <p className="mb-4 text-sm text-[#8697C4]">
+        <p className="mb-4 text-sm text-[#8ACBD0]">
           Required to record your answers. Audio is transcribed by AssemblyAI and never stored as a raw file.
         </p>
 
@@ -143,10 +143,10 @@ export default function SessionSetupPage() {
       {/* Section 3: Camera */}
       <section className="mb-10">
         <div className="mb-1 flex items-center gap-2">
-          <h2 className="text-lg font-semibold text-[#3D52A0]">Camera</h2>
+          <h2 className="text-lg font-semibold text-[#170C79]">Camera</h2>
           <Badge variant="brand">Student+ feature</Badge>
         </div>
-        <p className="mb-4 text-sm text-[#8697C4]">
+        <p className="mb-4 text-sm text-[#8ACBD0]">
           Used for real-time eye contact analysis. All facial processing happens in your browser — no video is ever
           sent to our servers. Grant for best results.
         </p>
@@ -164,7 +164,7 @@ export default function SessionSetupPage() {
               Grant Camera Access
             </Button>
             {cameraPerm === 'denied' && (
-              <p className="mt-3 text-sm text-[#8697C4]">
+              <p className="mt-3 text-sm text-[#8ACBD0]">
                 That&apos;s okay — eye contact tracking will be skipped.
               </p>
             )}

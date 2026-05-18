@@ -6,7 +6,7 @@ export function ScrollHint() {
   return (
     <a
       href="#how-it-works"
-      className="absolute bottom-8 left-1/2 -translate-x-1/2 text-[#ADBBDA] hover:text-[#7091E6] transition-colors"
+      className="absolute bottom-8 left-1/2 -translate-x-1/2 text-[#8ACBD0] hover:text-[#56B6C6] transition-colors"
       aria-label="Scroll down"
     >
       {/* Mouse outline */}
