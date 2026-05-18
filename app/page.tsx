@@ -4,6 +4,7 @@ import PricingSection from '@/components/ui/pricing-section'
 import { HeroHighlight } from '@/components/ui/hero-highlight'
 import { InterviewComparison } from '@/components/ui/interview-comparison'
 import { CategoryStrip } from '@/components/ui/category-strip'
+import { createClient } from '@/lib/supabase/server'
 
 const steps = [
   {
@@ -47,7 +48,20 @@ const steps = [
   },
 ]
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  let tier: string | null = null
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('tier')
+      .eq('id', user.id)
+      .single()
+    tier = profile?.tier ?? 'free'
+  }
+  const showTryFree = !user || tier !== 'free'
+
   return (
     <div className="min-h-screen bg-white text-[#3D52A0]">
       <Navbar />
@@ -66,12 +80,14 @@ export default function LandingPage() {
 
           {/* CTAs */}
           <div className="flex flex-col items-center gap-3 sm:flex-row">
-            <Link
-              href="/signup"
-              className="inline-flex w-full items-center justify-center rounded-xl bg-[#3D52A0] px-8 py-3 text-base font-semibold text-white shadow-md shadow-[#3D52A0]/20 hover:bg-[#2d3d78] transition-colors sm:w-auto"
-            >
-              Practice for free
-            </Link>
+            {showTryFree && (
+              <Link
+                href="/signup"
+                className="inline-flex w-full items-center justify-center rounded-xl bg-[#3D52A0] px-8 py-3 text-base font-semibold text-white shadow-md shadow-[#3D52A0]/20 hover:bg-[#2d3d78] transition-colors sm:w-auto"
+              >
+                Practice for free
+              </Link>
+            )}
             <Link
               href="#how-it-works"
               className="inline-flex w-full items-center justify-center rounded-xl border-2 border-[#ADBBDA] bg-white px-8 py-3 text-base font-semibold text-[#3D52A0] hover:border-[#7091E6] hover:text-[#7091E6] transition-colors sm:w-auto"

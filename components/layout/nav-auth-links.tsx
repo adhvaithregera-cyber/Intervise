@@ -4,8 +4,21 @@ import Link from 'next/link'
 import { useState, useRef, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
+const TIER_LABEL: Record<string, string> = {
+  free: 'Free',
+  student: 'Student',
+  pro: 'Pro',
+}
+
+const TIER_COLOR: Record<string, string> = {
+  free: 'bg-[#8697C4]/20 text-[#8697C4]',
+  student: 'bg-[#7091E6]/20 text-[#7091E6]',
+  pro: 'bg-[#3D52A0]/20 text-[#3D52A0]',
+}
+
 type Props = {
   initials: string
+  tier: string
 }
 
 const menuItems = [
@@ -14,7 +27,7 @@ const menuItems = [
   { label: 'Settings', href: '/settings' },
 ]
 
-export function NavAuthLinks({ initials }: Props) {
+export function NavAuthLinks({ initials, tier }: Props) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -48,10 +61,15 @@ export function NavAuthLinks({ initials }: Props) {
       <div ref={ref} className="relative">
         <button
           onClick={() => setOpen((v) => !v)}
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-[#3D52A0] text-xs font-bold text-white select-none hover:bg-[#2d3d78] transition-colors focus:outline-none focus:ring-2 focus:ring-[#7091E6]/50"
+          className="flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-[#7091E6]/50 rounded-full"
           aria-label="Open profile menu"
         >
-          {initials}
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#3D52A0] text-xs font-bold text-white select-none hover:bg-[#2d3d78] transition-colors">
+            {initials}
+          </div>
+          <span className={`hidden sm:inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${TIER_COLOR[tier] ?? TIER_COLOR.free}`}>
+            {TIER_LABEL[tier] ?? 'Free'}
+          </span>
         </button>
 
         {open && (
@@ -59,6 +77,9 @@ export function NavAuthLinks({ initials }: Props) {
             {/* Header */}
             <div className="border-b border-[#ADBBDA]/60 px-4 py-3">
               <p className="text-xs font-semibold text-[#3D52A0]">My Account</p>
+              <span className={`mt-1 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${TIER_COLOR[tier] ?? TIER_COLOR.free}`}>
+                {TIER_LABEL[tier] ?? 'Free'} Plan
+              </span>
             </div>
 
             {/* Menu items */}

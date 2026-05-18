@@ -18,14 +18,19 @@ export async function Navbar() {
   const { data: { user } } = await supabase.auth.getUser()
 
   let initials = '?'
+  let tier: string | null = null
   if (user) {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('full_name')
+      .select('full_name, tier')
       .eq('id', user.id)
       .single()
     initials = getInitials(profile?.full_name, user.email)
+    tier = profile?.tier ?? 'free'
   }
+
+  // Show "Try for FREE" only when: not signed in, OR signed in but not on free plan
+  const showTryFree = !user || tier !== 'free'
 
   return (
     <nav className="sticky top-0 z-50 border-b border-[#ADBBDA] bg-white">
@@ -33,12 +38,14 @@ export async function Navbar() {
 
         {/* Left: marketing links */}
         <div className="flex items-center gap-5">
-          <Link
-            href="/signup"
-            className="hidden sm:inline-flex items-center rounded-xl border-2 border-[#3D52A0] px-4 py-1.5 text-sm font-semibold text-[#3D52A0] hover:bg-[#3D52A0] hover:text-white transition-colors"
-          >
-            Try for FREE
-          </Link>
+          {showTryFree && (
+            <Link
+              href="/signup"
+              className="hidden sm:inline-flex items-center rounded-xl border-2 border-[#3D52A0] px-4 py-1.5 text-sm font-semibold text-[#3D52A0] hover:bg-[#3D52A0] hover:text-white transition-colors"
+            >
+              Try for FREE
+            </Link>
+          )}
           <a
             href="/#pricing"
             className="text-sm font-medium text-[#8697C4] hover:text-[#3D52A0] transition-colors"
@@ -60,7 +67,7 @@ export async function Navbar() {
         {/* Right: auth-dependent */}
         <div className="ml-auto">
           {user ? (
-            <NavAuthLinks initials={initials} />
+            <NavAuthLinks initials={initials} tier={tier ?? 'free'} />
           ) : (
             <div className="flex items-center gap-4">
               <Link
