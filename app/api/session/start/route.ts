@@ -13,7 +13,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const body = await request.json()
+  let body: { difficulty?: unknown }
+  try {
+    body = await request.json()
+  } catch {
+    return NextResponse.json({ error: 'invalid_body' }, { status: 400 })
+  }
   const { difficulty } = body
 
   if (!VALID_DIFFICULTIES.includes(difficulty)) {
@@ -66,16 +71,7 @@ export async function POST(request: Request) {
   // Select 3 adaptive questions
   const selectedQuestions = selectAdaptiveQuestions(allQuestions, askedIds, 3)
 
-  // Batch insert into question_history
-  const { error: historyInsertError } = await supabase
-    .from('question_history')
-    .insert(selectedQuestions.map((q) => ({ user_id: user.id, question_id: q.id })))
-
-  if (historyInsertError) {
-    return NextResponse.json({ error: historyInsertError.message }, { status: 500 })
-  }
-
-  // Insert session row
+  // Insert session row first
   const { data: session, error: sessionError } = await supabase
     .from('sessions')
     .insert({
@@ -89,6 +85,15 @@ export async function POST(request: Request) {
 
   if (sessionError || !session) {
     return NextResponse.json({ error: sessionError?.message ?? 'Failed to create session' }, { status: 500 })
+  }
+
+  // Batch insert into question_history only after session is created
+  const { error: historyInsertError } = await supabase
+    .from('question_history')
+    .insert(selectedQuestions.map((q) => ({ user_id: user.id, question_id: q.id })))
+
+  if (historyInsertError) {
+    return NextResponse.json({ error: historyInsertError.message }, { status: 500 })
   }
 
   return NextResponse.json({ sessionId: session.id, questions: selectedQuestions })
