@@ -14,10 +14,10 @@ Desktop-first AI interview coaching web app. Users learn 8 structured answer for
 
 ## Key env vars (.env.local)
 ```
-NEXT_PUBLIC_SUPABASE_URL=https://REDACTED_PROJECT_ID.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=REDACTED_ANON_KEY
-SUPABASE_SERVICE_ROLE_KEY=REDACTED_SERVICE_KEY
-SUPABASE_DB_PASSWORD=REDACTED_DB_PASSWORD
+NEXT_PUBLIC_SUPABASE_URL=<your-supabase-url>
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-anon-key>
+SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
+SUPABASE_DB_PASSWORD=<your-db-password>
 ASSEMBLYAI_API_KEY=<not set yet>
 ```
 
