@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server'
+
+export const maxDuration = 60 // seconds — extends Vercel function timeout (Pro plan)
 import { createClient } from '@/lib/supabase/server'
 import { transcribeAudio, isTranscriptionError } from '@/lib/assemblyai'
 import { analyzeAnswer } from '@/lib/analysis'
@@ -41,6 +43,7 @@ export async function POST(request: Request) {
   }
 
   // Transcribe audio via AssemblyAI
+  console.log(`[transcribe] blob size=${audioFile.size} bytes, type=${audioFile.type}, duration=${parsedDurationSeconds}s`)
   const result = await transcribeAudio(audioFile)
 
   if (isTranscriptionError(result)) {

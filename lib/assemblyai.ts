@@ -21,11 +21,12 @@ export function isTranscriptionError(
 
 const BASE_URL = 'https://api.assemblyai.com/v2'
 const POLL_INTERVAL_MS = 1500
-const MAX_POLLS = 80 // 80 × 1500ms = 120 seconds
+const MAX_POLLS = 25 // 25 × 1500ms ≈ 37.5 seconds (fits within Vercel's function timeout)
 
 function authHeaders(): Record<string, string> {
   const key = process.env.ASSEMBLYAI_API_KEY
   if (!key) throw new Error('ASSEMBLYAI_API_KEY is not set')
+  if (key === 'your_assemblyai_api_key') throw new Error('ASSEMBLYAI_API_KEY is still the placeholder value — replace it with your real key from assemblyai.com')
   return { Authorization: key }
 }
 
@@ -47,7 +48,15 @@ async function uploadAudio(
     return { failed: true, reason: 'upload_failed' }
   }
 
+  if (response.status === 401 || response.status === 403) {
+    const body = await response.text().catch(() => '')
+    console.error(`[assemblyai] upload auth error ${response.status}:`, body)
+    return { failed: true, reason: 'auth_failed' }
+  }
+
   if (!response.ok) {
+    const body = await response.text().catch(() => '')
+    console.error(`[assemblyai] upload HTTP ${response.status}:`, body)
     return { failed: true, reason: 'upload_failed' }
   }
 
@@ -66,7 +75,10 @@ async function requestTranscription(
         ...authHeaders(),
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ audio_url: audioUrl }),
+      body: JSON.stringify({
+        audio_url: audioUrl,
+        speech_models: ['universal-3-pro', 'universal-2'],
+      }),
     })
   } catch {
     return { failed: true, reason: 'request_failed' }
