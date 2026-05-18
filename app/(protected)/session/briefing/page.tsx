@@ -2,9 +2,14 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Clock, Mic, BarChart2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { FadeIn } from '@/components/ui/fade-in'
+
+const CARD_STYLE = {
+  backgroundColor: 'rgba(255,255,255,0.05)',
+  border: '1px solid rgba(249,193,37,0.13)',
+  borderRadius: '1rem',
+}
 
 export default async function BriefingPage({
   searchParams,
@@ -34,53 +39,69 @@ export default async function BriefingPage({
   return (
     <div className="max-w-2xl mx-auto space-y-8">
       {/* Page header */}
-      <div>
-        <h1 className="text-2xl font-bold text-[#E07A2F]">Get ready for your session</h1>
-        <p className="mt-1 text-sm text-[#A0622A]">3 questions · ~5 minutes</p>
-      </div>
+      <FadeIn delay={0}>
+        <div>
+          <h1 className="text-2xl font-bold text-white">Get ready for your session</h1>
+          <p className="mt-1 text-sm text-white/55">3 questions · ~5 minutes</p>
+        </div>
+      </FadeIn>
 
       {/* Format briefing card */}
-      <Card tinted className="space-y-3">
-        <Badge variant="brand">{formatLabel}</Badge>
-        <h2 className="text-lg font-semibold text-[#E07A2F]">Your answer format</h2>
-        <p className="text-sm italic text-[#A0622A]">{question.answer_format}</p>
-        <p className="text-sm text-[#E07A2F]">
-          Use this structure to organise your answer. Each of your 3 questions will guide you through it.
-        </p>
-      </Card>
+      <FadeIn delay={0.08}>
+        <div
+          className="space-y-3 p-6"
+          style={{
+            ...CARD_STYLE,
+            borderLeft: '3px solid #F9C125',
+          }}
+        >
+          <Badge variant="brand">{formatLabel}</Badge>
+          <h2 className="text-lg font-semibold text-white">Your answer format</h2>
+          <p className="text-sm italic text-white/55">{question.answer_format}</p>
+          <p className="text-sm text-white/75">
+            Use this structure to organise your answer. Each of your 3 questions will guide you through it.
+          </p>
+        </div>
+      </FadeIn>
 
       {/* What to expect section */}
-      <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-[#E07A2F]">What to expect</h2>
+      <FadeIn delay={0.16}>
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold text-white">What to expect</h2>
 
-        <Card className="flex items-start gap-4">
-          <Clock className="mt-0.5 h-5 w-5 shrink-0 text-[#F9C125]" />
-          <p className="text-sm text-[#E07A2F]">
-            You&apos;ll have 5 seconds to read each question before recording starts automatically.
-          </p>
-        </Card>
+          <div className="flex items-start gap-4 p-5" style={CARD_STYLE}>
+            <Clock className="mt-0.5 h-5 w-5 shrink-0 text-[#F9C125]" />
+            <p className="text-sm text-white/75">
+              You&apos;ll have 5 seconds to read each question before recording starts automatically.
+            </p>
+          </div>
 
-        <Card className="flex items-start gap-4">
-          <Mic className="mt-0.5 h-5 w-5 shrink-0 text-[#F9C125]" />
-          <p className="text-sm text-[#E07A2F]">
-            Recording stops when the timer runs out. You can also press &apos;Done&apos; at any time to stop early.
-          </p>
-        </Card>
+          <div className="flex items-start gap-4 p-5" style={CARD_STYLE}>
+            <Mic className="mt-0.5 h-5 w-5 shrink-0 text-[#F9C125]" />
+            <p className="text-sm text-white/75">
+              Recording stops when the timer runs out. You can also press &apos;Done&apos; at any time to stop early.
+            </p>
+          </div>
 
-        <Card className="flex items-start gap-4">
-          <BarChart2 className="mt-0.5 h-5 w-5 shrink-0 text-[#F9C125]" />
-          <p className="text-sm text-[#E07A2F]">
-            After each answer, you&apos;ll see your filler word count and speaking pace instantly.
-          </p>
-        </Card>
-      </div>
+          <div className="flex items-start gap-4 p-5" style={CARD_STYLE}>
+            <BarChart2 className="mt-0.5 h-5 w-5 shrink-0 text-[#F9C125]" />
+            <p className="text-sm text-white/75">
+              After each answer, you&apos;ll see your filler word count and speaking pace instantly.
+            </p>
+          </div>
+        </div>
+      </FadeIn>
 
       {/* Start Interview CTA */}
-      <div>
-        <Link href={`/session/live?session_id=${session_id}&q=${q}`}>
-          <Button variant="primary" size="lg">Start Interview</Button>
-        </Link>
-      </div>
+      <FadeIn delay={0.24}>
+        <div>
+          <Link href={`/session/live?session_id=${session_id}&q=${q}`}>
+            <button className="bg-[#F9C125] text-[#1C0A00] font-bold rounded-xl px-8 py-3.5 text-base shadow-lg shadow-[#F9C125]/25 hover:brightness-110 transition-all">
+              Start Interview
+            </button>
+          </Link>
+        </div>
+      </FadeIn>
     </div>
   )
 }
