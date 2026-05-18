@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useState, useRef, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -21,17 +22,13 @@ type Props = {
   tier: string
 }
 
-const menuItems = [
-  { label: 'Dashboard', href: '/dashboard' },
-  { label: 'Profile', href: '/profile' },
-  { label: 'Settings', href: '/settings' },
-]
-
 export function NavAuthLinks({ initials, tier }: Props) {
+  const pathname = usePathname()
+  const isOnDashboard = pathname === '/dashboard'
+
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
-  // Close on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) {
@@ -49,15 +46,24 @@ export function NavAuthLinks({ initials, tier }: Props) {
   }
 
   return (
-    <div className="flex items-center gap-4">
-      <Link
-        href="/dashboard"
+    <div className="flex items-center gap-5">
+      <a
+        href="/#pricing"
         className="text-sm font-medium text-white/65 hover:text-white transition-colors"
       >
-        Dashboard
-      </Link>
+        Pricing
+      </a>
 
-      {/* Avatar + dropdown */}
+      {!isOnDashboard && (
+        <Link
+          href="/dashboard"
+          className="text-sm font-medium text-white/65 hover:text-white transition-colors"
+        >
+          Dashboard
+        </Link>
+      )}
+
+      {/* Avatar + dropdown (Profile) */}
       <div ref={ref} className="relative">
         <button
           onClick={() => setOpen((v) => !v)}
@@ -81,7 +87,6 @@ export function NavAuthLinks({ initials, tier }: Props) {
               boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
             }}
           >
-            {/* Header */}
             <div className="border-b px-4 py-3" style={{ borderColor: 'rgba(249,193,37,0.12)' }}>
               <p className="text-xs font-semibold text-white/50">My Account</p>
               <span className={`mt-1 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${TIER_COLOR[tier] ?? TIER_COLOR.free}`}>
@@ -89,9 +94,11 @@ export function NavAuthLinks({ initials, tier }: Props) {
               </span>
             </div>
 
-            {/* Menu items */}
             <div className="py-1">
-              {menuItems.map((item) => (
+              {[
+                { label: 'Dashboard', href: '/dashboard' },
+                { label: 'Profile', href: '/profile' },
+              ].map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
@@ -103,7 +110,6 @@ export function NavAuthLinks({ initials, tier }: Props) {
               ))}
             </div>
 
-            {/* Sign out */}
             <div className="py-1" style={{ borderTop: '1px solid rgba(249,193,37,0.10)' }}>
               <button
                 onClick={handleSignOut}

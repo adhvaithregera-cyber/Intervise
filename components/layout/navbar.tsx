@@ -29,9 +29,6 @@ export async function Navbar() {
     tier = profile?.tier ?? 'free'
   }
 
-  // Show "Try for FREE" only for non-signed-in users
-  const showTryFree = !user
-
   return (
     <nav
       className="sticky top-0 z-50 border-b"
@@ -41,42 +38,34 @@ export async function Navbar() {
         boxShadow: '0 1px 0 rgba(249,193,37,0.08), 0 4px 24px rgba(0,0,0,0.35)',
       }}
     >
-      <div className="relative mx-auto flex h-16 max-w-7xl items-center px-4 sm:px-6">
+      <div className="mx-auto flex h-16 max-w-7xl items-center px-4 sm:px-6">
 
-        {/* Left: marketing links */}
-        <div className="flex items-center gap-5">
-          {showTryFree && (
-            <Link
-              href="/signup"
-              className="hidden sm:inline-flex items-center rounded-xl border border-[#F9C125]/60 px-4 py-1.5 text-sm font-semibold text-[#F9C125] hover:bg-[#F9C125] hover:text-[#1C0A00] transition-colors"
-            >
-              Try for FREE
-            </Link>
-          )}
-          <a
-            href="/#pricing"
-            className="text-sm font-medium text-white/65 hover:text-white transition-colors"
-          >
-            Pricing
-          </a>
-        </div>
+        {/* Left: wordmark */}
+        <Link
+          href="/"
+          className="text-base font-bold tracking-widest text-[#F9C125] hover:text-white transition-colors"
+        >
+          INTERVISE
+        </Link>
 
-        {/* Center: wordmark */}
-        <div className="absolute left-1/2 -translate-x-1/2">
-          <Link
-            href="/"
-            className="text-base font-bold tracking-widest text-[#F9C125] hover:text-white transition-colors"
-          >
-            INTERVISE
-          </Link>
-        </div>
-
-        {/* Right: auth-dependent */}
-        <div className="ml-auto">
+        {/* Right: all nav links */}
+        <div className="ml-auto flex items-center gap-5">
           {user ? (
             <NavAuthLinks initials={initials} tier={tier ?? 'free'} />
           ) : (
-            <div className="flex items-center gap-4">
+            <>
+              <a
+                href="/#pricing"
+                className="text-sm font-medium text-white/65 hover:text-white transition-colors"
+              >
+                Pricing
+              </a>
+              <Link
+                href="/signup"
+                className="hidden sm:inline-flex items-center rounded-xl border border-[#F9C125]/60 px-4 py-1.5 text-sm font-semibold text-[#F9C125] hover:bg-[#F9C125] hover:text-[#1C0A00] transition-colors"
+              >
+                Try for FREE
+              </Link>
               <Link
                 href="/login"
                 className="text-sm font-medium text-white/65 hover:text-white transition-colors"
@@ -89,7 +78,7 @@ export async function Navbar() {
               >
                 Sign up
               </Link>
-            </div>
+            </>
           )}
         </div>
 

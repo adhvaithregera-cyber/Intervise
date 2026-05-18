@@ -3,7 +3,8 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Badge } from '@/components/ui/badge'
 import { FadeIn } from '@/components/ui/fade-in'
-import type { Session } from '@/types/database'
+import { ProfileEditCard } from './profile-edit-card'
+import { SessionRow } from './session-row'
 
 const TIER_LABELS: Record<string, string> = { free: 'Free', student: 'Student', pro: 'Pro' }
 
@@ -74,16 +75,10 @@ export default async function DashboardPage() {
             </p>
           </div>
 
-          <div className="p-6" style={CARD_STYLE}>
-            <p className="mb-1 text-sm font-medium text-white/40">Role</p>
-            <p className="text-lg font-semibold text-white">{profile.role_type ?? '—'}</p>
-            {profile.interview_date && (
-              <>
-                <p className="mt-4 mb-1 text-sm font-medium text-white/40">Interview date</p>
-                <p className="text-sm font-semibold text-white">{formatDate(profile.interview_date)}</p>
-              </>
-            )}
-          </div>
+          <ProfileEditCard
+            initialRoleType={profile.role_type}
+            initialInterviewDate={profile.interview_date}
+          />
         </div>
       </FadeIn>
 
@@ -121,25 +116,8 @@ export default async function DashboardPage() {
           <h2 className="mb-4 text-lg font-semibold text-white">Recent sessions</h2>
           {recentSessions && recentSessions.length > 0 ? (
             <div className="space-y-3">
-              {recentSessions.map((session: Session) => (
-                <Link key={session.id} href={`/session/report/${session.id}`} className="block">
-                  <div
-                    className="flex items-center justify-between p-5 cursor-pointer hover:brightness-110 transition-all"
-                    style={CARD_STYLE}
-                  >
-                    <div>
-                      <p className="text-sm font-semibold text-white capitalize">{session.difficulty} session</p>
-                      <p className="text-xs text-white/40">{session.completed_at ? formatDate(session.completed_at) : '—'}</p>
-                    </div>
-                    {session.overall_grade ? (
-                      <span className={`text-2xl font-bold ${GRADE_COLORS[session.overall_grade] ?? 'text-white/55'}`}>
-                        {session.overall_grade}
-                      </span>
-                    ) : (
-                      <Badge variant="gray">No grade</Badge>
-                    )}
-                  </div>
-                </Link>
+              {recentSessions.map((session) => (
+                <SessionRow key={session.id} session={session} />
               ))}
             </div>
           ) : (

@@ -37,7 +37,8 @@
       "Bash(git commit:*)",
       "Bash(npm run:*)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
-      "Bash(cat \"C:/Users/Adhvaith/OneDrive/Desktop/Intervise/app/\\(protected\\)/dashboard/page.tsx\")"
+      "Bash(cat \"C:/Users/Adhvaith/OneDrive/Desktop/Intervise/app/\\(protected\\)/dashboard/page.tsx\")",
+      "Bash(cat:*)"
     ]
   }
 }

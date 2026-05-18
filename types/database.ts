@@ -33,6 +33,7 @@ export type Question = {
 export type Session = {
   id: string
   user_id: string
+  name: string | null
   difficulty: Difficulty
   status: SessionStatus
   tier_at_time: string
@@ -80,7 +81,8 @@ export type Database = {
       }
       sessions: {
         Row: Session
-        Insert: Omit<Session, 'id' | 'created_at' | 'overall_grade' | 'completed_at'> & {
+        Insert: Omit<Session, 'id' | 'created_at' | 'name' | 'overall_grade' | 'completed_at'> & {
+          name?: string | null
           overall_grade?: string | null
           completed_at?: string | null
         }
