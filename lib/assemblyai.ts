@@ -139,10 +139,10 @@ export async function transcribeAudio(
   audioBlob: Blob
 ): Promise<TranscriptionResult | TranscriptionError> {
   const uploadResult = await uploadAudio(audioBlob)
-  if (isTranscriptionError(uploadResult)) return uploadResult
+  if ('failed' in uploadResult) return uploadResult
 
   const transcriptRequest = await requestTranscription(uploadResult.upload_url)
-  if (isTranscriptionError(transcriptRequest)) return transcriptRequest
+  if ('failed' in transcriptRequest) return transcriptRequest
 
   return pollForCompletion(transcriptRequest.id)
 }

@@ -21,7 +21,7 @@ export async function POST(request: Request) {
   }
   const { difficulty } = body
 
-  if (!VALID_DIFFICULTIES.includes(difficulty)) {
+  if (!VALID_DIFFICULTIES.includes(difficulty as Difficulty)) {
     return NextResponse.json({ error: 'invalid_difficulty' }, { status: 400 })
   }
 

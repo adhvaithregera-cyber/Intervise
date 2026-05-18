@@ -70,27 +70,44 @@ export type Database = {
         Row: Profile
         Insert: Omit<Profile, 'created_at'>
         Update: Partial<Omit<Profile, 'id' | 'created_at'>>
+        Relationships: []
       }
       questions: {
         Row: Question
         Insert: Question
         Update: Partial<Question>
+        Relationships: []
       }
       sessions: {
         Row: Session
-        Insert: Omit<Session, 'id' | 'created_at'>
+        Insert: Omit<Session, 'id' | 'created_at' | 'overall_grade' | 'completed_at'> & {
+          overall_grade?: string | null
+          completed_at?: string | null
+        }
         Update: Partial<Omit<Session, 'id' | 'user_id' | 'created_at'>>
+        Relationships: []
       }
       answers: {
         Row: Answer
         Insert: Omit<Answer, 'id' | 'created_at'>
         Update: Partial<Omit<Answer, 'id' | 'session_id' | 'created_at'>>
+        Relationships: []
       }
       question_history: {
         Row: QuestionHistory
         Insert: Omit<QuestionHistory, 'id' | 'asked_at'>
-        Update: never
+        Update: Partial<Omit<QuestionHistory, 'id' | 'user_id' | 'asked_at'>>
+        Relationships: []
       }
     }
+    Views: Record<string, never>
+    Functions: {
+      increment_sessions_used: {
+        Args: { user_id: string }
+        Returns: void
+      }
+    }
+    Enums: Record<string, never>
+    CompositeTypes: Record<string, never>
   }
 }
