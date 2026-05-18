@@ -97,11 +97,11 @@ function StepCard({ step, index }: { step: (typeof steps)[number]; index: number
         transition={{ duration: 0.55, delay: index * 0.18 + 0.05, ease: 'easeOut' }}
         className="group mb-5 flex-1 rounded-2xl p-6 sm:p-8 transition-all duration-300"
         style={{
-          background: 'rgba(28,10,0,0.40)',
+          background: 'rgba(255,255,255,0.07)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(249,193,37,0.18)',
-          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07), 0 4px 24px rgba(0,0,0,0.25)',
+          border: '1px solid rgba(249,193,37,0.22)',
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.10), 0 4px 24px rgba(0,0,0,0.20)',
         }}
       >
         {/* Hover shimmer overlay */}
