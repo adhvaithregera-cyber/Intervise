@@ -1,7 +1,7 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export type Tier = 'free' | 'student' | 'pro'
-export type Difficulty = 'easy' | 'medium' | 'mixed'
+export type Difficulty = 'easy' | 'medium' | 'mixed' | 'hard'
 export type SessionStatus = 'in_progress' | 'complete' | 'failed'
 
 export type Profile = {

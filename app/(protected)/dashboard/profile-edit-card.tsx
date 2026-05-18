@@ -2,16 +2,18 @@
 import { useState } from 'react'
 
 const CARD_STYLE = {
-  backgroundColor: 'rgba(255,255,255,0.05)',
-  border: '1px solid rgba(249,193,37,0.13)',
+  backgroundColor: 'rgba(28,10,0,0.75)',
+  backdropFilter: 'blur(16px)',
+  WebkitBackdropFilter: 'blur(16px)',
+  border: '1px solid rgba(249,193,37,0.20)',
   borderRadius: '1rem',
 }
 
 const INPUT_STYLE: React.CSSProperties = {
-  backgroundColor: 'rgba(255,255,255,0.07)',
-  border: '1px solid rgba(249,193,37,0.3)',
+  backgroundColor: 'rgba(249,193,37,0.08)',
+  border: '1px solid rgba(249,193,37,0.35)',
   borderRadius: '0.5rem',
-  color: '#ffffff',
+  color: '#F9C125',
   width: '100%',
   padding: '0.375rem 0.625rem',
   fontSize: '0.875rem',
@@ -54,18 +56,12 @@ export function ProfileEditCard({
       <div className="flex items-start justify-between mb-3">
         <p className="text-xs font-semibold text-[#F9C125] uppercase tracking-widest">Your info</p>
         {!editing ? (
-          <button
-            onClick={() => setEditing(true)}
-            className="text-xs text-white/40 hover:text-white transition-colors"
-          >
+          <button onClick={() => setEditing(true)} className="text-xs text-white/50 hover:text-[#F9C125] transition-colors">
             Edit
           </button>
         ) : (
           <div className="flex gap-2">
-            <button
-              onClick={() => setEditing(false)}
-              className="text-xs text-white/40 hover:text-white transition-colors"
-            >
+            <button onClick={() => setEditing(false)} className="text-xs text-white/50 hover:text-white transition-colors">
               Cancel
             </button>
             <button
@@ -82,30 +78,20 @@ export function ProfileEditCard({
       {editing ? (
         <div className="space-y-3">
           <div>
-            <label className="text-xs text-white/40 mb-1 block">Role</label>
-            <input
-              style={INPUT_STYLE}
-              value={roleType}
-              onChange={e => setRoleType(e.target.value)}
-              placeholder="e.g. Software Engineer"
-            />
+            <label className="text-xs text-white/50 mb-1 block">Role</label>
+            <input style={INPUT_STYLE} value={roleType} onChange={e => setRoleType(e.target.value)} placeholder="e.g. Software Engineer" />
           </div>
           <div>
-            <label className="text-xs text-white/40 mb-1 block">Interview date</label>
-            <input
-              type="date"
-              style={INPUT_STYLE}
-              value={interviewDate}
-              onChange={e => setInterviewDate(e.target.value)}
-            />
+            <label className="text-xs text-white/50 mb-1 block">Interview date</label>
+            <input type="date" style={INPUT_STYLE} value={interviewDate} onChange={e => setInterviewDate(e.target.value)} />
           </div>
         </div>
       ) : (
         <>
-          <p className="text-xs text-white/40 mb-0.5">Role</p>
-          <p className="text-base font-semibold text-white mb-3">{roleType || '—'}</p>
-          <p className="text-xs text-white/40 mb-0.5">Interview date</p>
-          <p className="text-sm font-semibold text-white">{formatDate(interviewDate)}</p>
+          <p className="text-xs text-white/50 mb-0.5">Role</p>
+          <p className="text-base font-semibold text-[#F9C125] mb-3">{roleType || '—'}</p>
+          <p className="text-xs text-white/50 mb-0.5">Interview date</p>
+          <p className="text-sm font-semibold text-[#F9C125]">{formatDate(interviewDate)}</p>
         </>
       )}
     </div>

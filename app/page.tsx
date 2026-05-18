@@ -72,7 +72,7 @@ export default async function LandingPage() {
             ))}
           </div>
 
-          {/* CTAs — "See how it works" is primary dark, "Practice for free" is secondary */}
+          {/* CTAs */}
           <div className="flex flex-col items-center gap-3 sm:flex-row">
             <Link
               href="#how-it-works"
@@ -80,14 +80,12 @@ export default async function LandingPage() {
             >
               See how it works
             </Link>
-            {showTryFree && (
-              <Link
-                href="/signup"
-                className="inline-flex w-full items-center justify-center rounded-xl border-2 border-white/40 bg-white/10 px-8 py-3.5 text-base font-semibold text-white backdrop-blur-sm hover:bg-white/20 transition-colors sm:w-auto"
-              >
-                Practice for free →
-              </Link>
-            )}
+            <Link
+              href={user ? '/session/setup' : '/signup'}
+              className="inline-flex w-full items-center justify-center rounded-xl border-2 border-white/40 bg-white/10 px-8 py-3.5 text-base font-semibold text-white backdrop-blur-sm hover:bg-white/20 transition-colors sm:w-auto"
+            >
+              Start Session
+            </Link>
           </div>
 
           {/* Trust pills */}

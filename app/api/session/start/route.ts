@@ -3,7 +3,34 @@ import { createClient } from '@/lib/supabase/server'
 import { selectAdaptiveQuestions } from '@/lib/questions'
 import type { Difficulty } from '@/types/database'
 
-const VALID_DIFFICULTIES: Difficulty[] = ['easy', 'medium', 'mixed']
+const VALID_DIFFICULTIES: Difficulty[] = ['easy', 'medium', 'mixed', 'hard']
+
+// Difficulties each tier is allowed to submit
+const TIER_ALLOWED_DIFFICULTIES: Record<string, Difficulty[]> = {
+  free: ['easy'],
+  student: ['easy', 'medium', 'mixed'],
+  pro: ['easy', 'medium', 'mixed', 'hard'],
+}
+
+// Questions per session by tier
+const TIER_QUESTION_COUNT: Record<string, number> = {
+  free: 3,
+  student: 5,
+  pro: 5,
+}
+
+// Session limits by tier — source of truth in code, not the DB column
+const TIER_SESSION_LIMITS: Record<string, number> = {
+  free: 2,
+  student: 12,
+  pro: 30,
+}
+
+// Free tier may only see these question categories (no Behavioural = no STAR format)
+const FREE_CATEGORY_IDS = [1] // Identity & Background only
+
+// Hard difficulty draws from curveball/pressure + situational categories
+const HARD_CATEGORY_IDS = [6, 7] // Situational, Curveball / Pressure
 
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -28,7 +55,7 @@ export async function POST(request: Request) {
   // Fetch profile for quota check
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
-    .select('tier, sessions_limit, sessions_used_this_month')
+    .select('tier, sessions_used_this_month')
     .eq('id', user.id)
     .single()
 
@@ -36,15 +63,24 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: profileError?.message ?? 'Profile not found' }, { status: 500 })
   }
 
-  if (profile.sessions_used_this_month >= profile.sessions_limit) {
+  // Derive limit from tier — never trust the DB column which may be stale
+  const sessionsLimit = TIER_SESSION_LIMITS[profile.tier] ?? 2
+
+  if (profile.sessions_used_this_month >= sessionsLimit) {
     return NextResponse.json(
       {
         error: 'quota_exceeded',
-        sessionsLimit: profile.sessions_limit,
+        sessionsLimit,
         sessionsUsed: profile.sessions_used_this_month,
       },
       { status: 403 }
     )
+  }
+
+  // Enforce tier-based difficulty restriction
+  const allowedDifficulties = TIER_ALLOWED_DIFFICULTIES[profile.tier] ?? TIER_ALLOWED_DIFFICULTIES.free
+  if (!allowedDifficulties.includes(difficulty as Difficulty)) {
+    return NextResponse.json({ error: 'difficulty_not_allowed' }, { status: 403 })
   }
 
   // Fetch all questions
@@ -68,8 +104,29 @@ export async function POST(request: Request) {
 
   const askedIds = (history ?? []).map((row) => row.question_id)
 
-  // Select 3 adaptive questions
-  const selectedQuestions = selectAdaptiveQuestions(allQuestions, askedIds, 3)
+  // Filter question pool by tier and difficulty
+  let questionPool = allQuestions
+  if (profile.tier === 'free') {
+    questionPool = questionPool.filter(q => FREE_CATEGORY_IDS.includes(q.category_id))
+  }
+  if (difficulty === 'easy') {
+    questionPool = questionPool.filter(q => q.frequency === 'Universal')
+  } else if (difficulty === 'medium') {
+    questionPool = questionPool.filter(q => q.frequency === 'Universal' || q.frequency === 'Very High')
+  } else if (difficulty === 'hard') {
+    questionPool = questionPool.filter(q => HARD_CATEGORY_IDS.includes(q.category_id))
+  }
+  // 'mixed' = full allowed pool, no extra filter
+
+  // Fall back to full allowed pool if filter leaves too few questions
+  if (questionPool.length < 3) {
+    questionPool = profile.tier === 'free'
+      ? allQuestions.filter(q => FREE_CATEGORY_IDS.includes(q.category_id))
+      : allQuestions
+  }
+
+  const questionCount = TIER_QUESTION_COUNT[profile.tier] ?? 3
+  const selectedQuestions = selectAdaptiveQuestions(questionPool, askedIds, questionCount)
 
   // Insert session row first
   const { data: session, error: sessionError } = await supabase

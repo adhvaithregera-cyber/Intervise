@@ -14,8 +14,10 @@ const GRADE_TEXT: Record<string, string> = {
 }
 
 const CARD_STYLE = {
-  backgroundColor: 'rgba(255,255,255,0.05)',
-  border: '1px solid rgba(249,193,37,0.13)',
+  backgroundColor: 'rgba(28,10,0,0.75)',
+  backdropFilter: 'blur(16px)',
+  WebkitBackdropFilter: 'blur(16px)',
+  border: '1px solid rgba(249,193,37,0.20)',
   borderRadius: '1rem',
 }
 
@@ -53,14 +55,17 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
           <div
             className={cn('inline-flex items-center justify-center w-24 h-24 rounded-full text-5xl font-bold mb-4', gradeTextColor)}
             style={{
-              backgroundColor: 'rgba(255,255,255,0.06)',
-              border: '1px solid rgba(249,193,37,0.2)',
+              backgroundColor: 'rgba(28,10,0,0.80)',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
+              border: '1.5px solid rgba(249,193,37,0.40)',
+              boxShadow: '0 4px 24px rgba(28,10,0,0.35)',
             }}
           >
             {session.overall_grade ?? '—'}
           </div>
           <h1 className="text-2xl font-semibold text-white">Session complete</h1>
-          <p className="text-white/50 mt-1">
+          <p className="text-[#1C0A00] font-medium mt-1">
             {new Date(session.created_at).toLocaleDateString('en-GB', { dateStyle: 'long' })}
           </p>
         </div>
@@ -70,16 +75,16 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
       <FadeIn delay={0.08}>
         <div className="grid grid-cols-3 gap-4 mb-8">
           <div className="text-center p-4" style={CARD_STYLE}>
-            <p className="text-sm text-white/50">Avg speaking pace</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-[#F9C125]/70">Avg speaking pace</p>
             <p className="text-2xl font-bold text-white">{avgWpm ?? '—'} wpm</p>
-            <p className="text-xs text-white/40">Target: 130–160</p>
+            <p className="text-xs text-white/60">Target: 130–160</p>
           </div>
           <div className="text-center p-4" style={CARD_STYLE}>
-            <p className="text-sm text-white/50">Total filler words</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-[#F9C125]/70">Total filler words</p>
             <p className="text-2xl font-bold text-white">{totalFillers}</p>
           </div>
           <div className="text-center p-4" style={CARD_STYLE}>
-            <p className="text-sm text-white/50">Answers analysed</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-[#F9C125]/70">Answers analysed</p>
             <p className="text-2xl font-bold text-white">
               {answeredCount} / {(answers ?? []).length}
             </p>
@@ -109,18 +114,18 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
               {answer.transcription_failed ? (
                 <div className="flex items-center gap-2">
                   <Badge variant="amber">Transcription failed</Badge>
-                  <span className="text-sm text-white/50">Feedback unavailable for this answer</span>
+                  <span className="text-sm text-white/70">Feedback unavailable for this answer</span>
                 </div>
               ) : (
                 <>
                   <div className="flex gap-8 mb-4">
                     <div>
-                      <p className="text-sm text-white/50">Speaking pace</p>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-[#F9C125]/70">Speaking pace</p>
                       <p className={cn('text-xl font-bold', wpmColor)}>{answer.wpm ?? '—'} wpm</p>
-                      <p className="text-xs text-white/40">Target: 130–160</p>
+                      <p className="text-xs text-white/60">Target: 130–160</p>
                     </div>
                     <div>
-                      <p className="text-sm text-white/50">Filler words</p>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-[#F9C125]/70">Filler words</p>
                       <p className="text-xl font-bold text-white">{answer.filler_count ?? 0}</p>
                       {answer.filler_breakdown &&
                         Object.keys(answer.filler_breakdown).length > 0 && (
@@ -136,22 +141,10 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
                         )}
                     </div>
                     <div>
-                      <p className="text-sm text-white/50">Duration</p>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-[#F9C125]/70">Duration</p>
                       <p className="text-xl font-bold text-white">{answer.duration_seconds}s</p>
                     </div>
                   </div>
-                  {answer.transcript && (
-                    <blockquote
-                      className="pl-4 text-sm italic line-clamp-3"
-                      style={{
-                        borderLeft: '3px solid rgba(249,193,37,0.4)',
-                        color: 'rgba(255,255,255,0.55)',
-                      }}
-                    >
-                      &ldquo;{answer.transcript.slice(0, 300)}
-                      {answer.transcript.length > 300 ? '...' : ''}&rdquo;
-                    </blockquote>
-                  )}
                 </>
               )}
             </div>
@@ -168,7 +161,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
             </button>
           </Link>
           <Link href="/dashboard">
-            <button className="rounded-xl border border-white/20 px-6 py-3 text-base text-white/80 hover:bg-white/5 transition-colors">
+            <button className="rounded-xl border border-[#1C0A00]/40 bg-[#1C0A00]/10 px-6 py-3 text-base font-semibold text-[#1C0A00] hover:bg-[#1C0A00]/20 transition-colors">
               Back to Dashboard
             </button>
           </Link>

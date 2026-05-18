@@ -6,8 +6,10 @@ import { Badge } from '@/components/ui/badge'
 import { FadeIn } from '@/components/ui/fade-in'
 
 const CARD_STYLE = {
-  backgroundColor: 'rgba(255,255,255,0.05)',
-  border: '1px solid rgba(249,193,37,0.13)',
+  backgroundColor: 'rgba(28,10,0,0.75)',
+  backdropFilter: 'blur(16px)',
+  WebkitBackdropFilter: 'blur(16px)',
+  border: '1px solid rgba(249,193,37,0.20)',
   borderRadius: '1rem',
 }
 
@@ -42,7 +44,7 @@ export default async function BriefingPage({
       <FadeIn delay={0}>
         <div>
           <h1 className="text-2xl font-bold text-white">Get ready for your session</h1>
-          <p className="mt-1 text-sm text-white/55">3 questions · ~5 minutes</p>
+          <p className="mt-1 text-sm text-[#1C0A00] font-medium">3 questions · ~5 minutes</p>
         </div>
       </FadeIn>
 
@@ -57,8 +59,8 @@ export default async function BriefingPage({
         >
           <Badge variant="brand">{formatLabel}</Badge>
           <h2 className="text-lg font-semibold text-white">Your answer format</h2>
-          <p className="text-sm italic text-white/55">{question.answer_format}</p>
-          <p className="text-sm text-white/75">
+          <p className="text-sm italic text-[#F9C125]/80">{question.answer_format}</p>
+          <p className="text-sm text-white/80">
             Use this structure to organise your answer. Each of your 3 questions will guide you through it.
           </p>
         </div>
@@ -71,21 +73,21 @@ export default async function BriefingPage({
 
           <div className="flex items-start gap-4 p-5" style={CARD_STYLE}>
             <Clock className="mt-0.5 h-5 w-5 shrink-0 text-[#F9C125]" />
-            <p className="text-sm text-white/75">
+            <p className="text-sm text-white/80">
               You&apos;ll have 5 seconds to read each question before recording starts automatically.
             </p>
           </div>
 
           <div className="flex items-start gap-4 p-5" style={CARD_STYLE}>
             <Mic className="mt-0.5 h-5 w-5 shrink-0 text-[#F9C125]" />
-            <p className="text-sm text-white/75">
+            <p className="text-sm text-white/80">
               Recording stops when the timer runs out. You can also press &apos;Done&apos; at any time to stop early.
             </p>
           </div>
 
           <div className="flex items-start gap-4 p-5" style={CARD_STYLE}>
             <BarChart2 className="mt-0.5 h-5 w-5 shrink-0 text-[#F9C125]" />
-            <p className="text-sm text-white/75">
+            <p className="text-sm text-white/80">
               After each answer, you&apos;ll see your filler word count and speaking pace instantly.
             </p>
           </div>

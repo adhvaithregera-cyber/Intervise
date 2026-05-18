@@ -4,13 +4,15 @@ import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 
 const CARD_STYLE = {
-  backgroundColor: 'rgba(255,255,255,0.05)',
-  border: '1px solid rgba(249,193,37,0.13)',
+  backgroundColor: 'rgba(28,10,0,0.75)',
+  backdropFilter: 'blur(16px)',
+  WebkitBackdropFilter: 'blur(16px)',
+  border: '1px solid rgba(249,193,37,0.20)',
   borderRadius: '1rem',
 }
 
 const GRADE_COLORS: Record<string, string> = {
-  A: 'text-green-400', B: 'text-[#F9C125]', C: 'text-amber-400', D: 'text-orange-400', F: 'text-red-400',
+  A: 'text-green-300', B: 'text-[#F9C125]', C: 'text-amber-300', D: 'text-orange-300', F: 'text-red-300',
 }
 
 function formatDate(iso: string) {
@@ -65,7 +67,7 @@ export function SessionRow({
               placeholder="Session name..."
               className="flex-1 min-w-0 rounded-lg px-3 py-1 text-sm font-semibold text-white outline-none"
               style={{
-                backgroundColor: 'rgba(255,255,255,0.08)',
+                backgroundColor: 'rgba(249,193,37,0.10)',
                 border: '1px solid rgba(249,193,37,0.4)',
               }}
             />
@@ -78,19 +80,19 @@ export function SessionRow({
             </button>
             <button
               onClick={() => { setName(savedName); setEditing(false) }}
-              className="text-xs text-white/40 hover:text-white transition-colors shrink-0"
+              className="text-xs text-white/50 hover:text-white transition-colors shrink-0"
             >
               Cancel
             </button>
           </div>
         ) : (
           <div className="flex items-center gap-2 group">
-            <Link href={`/session/report/${session.id}`} className="text-sm font-semibold text-white hover:text-[#F9C125] transition-colors truncate">
+            <Link href={`/session/report/${session.id}`} className="text-sm font-semibold text-[#F9C125] hover:text-white transition-colors truncate">
               {displayName}
             </Link>
             <button
               onClick={() => setEditing(true)}
-              className="text-white/20 hover:text-white/60 transition-colors opacity-0 group-hover:opacity-100 shrink-0"
+              className="text-[#F9C125]/30 hover:text-[#F9C125]/70 transition-colors opacity-0 group-hover:opacity-100 shrink-0"
               title="Rename"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -100,15 +102,23 @@ export function SessionRow({
             </button>
           </div>
         )}
-        <p className="text-xs text-white/40 mt-0.5">{session.completed_at ? formatDate(session.completed_at) : '—'}</p>
+        <p className="text-xs text-white/50 mt-0.5">{session.completed_at ? formatDate(session.completed_at) : '—'}</p>
       </div>
-      {session.overall_grade ? (
-        <span className={`text-2xl font-bold ml-4 ${GRADE_COLORS[session.overall_grade] ?? 'text-white/55'}`}>
-          {session.overall_grade}
-        </span>
-      ) : (
-        <Badge variant="gray">No grade</Badge>
-      )}
+      <div className="flex items-center gap-4 ml-4 shrink-0">
+        {session.overall_grade ? (
+          <span className={`text-2xl font-bold ${GRADE_COLORS[session.overall_grade] ?? 'text-white/60'}`}>
+            {session.overall_grade}
+          </span>
+        ) : (
+          <Badge variant="gray">No grade</Badge>
+        )}
+        <Link
+          href={`/session/report/${session.id}`}
+          className="rounded-lg border border-[#F9C125]/40 px-3 py-1.5 text-xs font-semibold text-[#F9C125] hover:bg-[#F9C125]/10 transition-colors"
+        >
+          View Report
+        </Link>
+      </div>
     </div>
   )
 }

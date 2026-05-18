@@ -17,7 +17,7 @@ export default async function ProfilePage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
-      <h1 className="mb-8 text-2xl font-bold text-[#E07A2F]">Profile</h1>
+      <h1 className="mb-8 text-2xl font-bold text-white">Profile</h1>
       <ProfileForm
         fullName={profile.full_name}
         email={user.email ?? ''}

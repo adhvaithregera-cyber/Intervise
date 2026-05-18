@@ -64,14 +64,17 @@ supabase/seed.sql                 75 questions seeded
 ## DB tables
 `profiles`, `questions`, `sessions`, `answers`, `question_history`
 - `profiles.tier`: `free | student | pro`
-- Tier limits: Free=2 sessions/mo, Student=10, Pro=30
+- Tier limits: Free=2 sessions/mo (7-day history), Student=12 (30-day history), Pro=30 (unlimited history)
+- Difficulty gating: Free=Easy only, Student=Easy/Medium/Mixed, Pro=All+Hard
+- Question counts: Free=3, Student=5, Pro=5
+- Category pools: Free=category 1 only (Identity & Background — no STAR/Behavioural), Student/Pro=all 8
 - Adaptive question selection: unasked first, fallback to asked pool
 
 ## Pricing
 | Plan | Price | Sessions |
 |---|---|---|
 | Free | ₹0 | 2/mo |
-| Student | ₹149/mo | 10/mo |
+| Student | ₹199/mo | 12/mo |
 | Pro | ₹499/mo | 30/mo |
 
 ## Plan B — remaining tasks

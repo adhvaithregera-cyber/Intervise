@@ -54,18 +54,24 @@ export async function Navbar() {
             <NavAuthLinks initials={initials} tier={tier ?? 'free'} />
           ) : (
             <>
-              <a
-                href="/#pricing"
-                className="text-sm font-medium text-white/65 hover:text-white transition-colors"
-              >
-                Pricing
-              </a>
               <Link
                 href="/signup"
                 className="hidden sm:inline-flex items-center rounded-xl border border-[#F9C125]/60 px-4 py-1.5 text-sm font-semibold text-[#F9C125] hover:bg-[#F9C125] hover:text-[#1C0A00] transition-colors"
               >
                 Try for FREE
               </Link>
+              <Link
+                href="/"
+                className="text-sm font-medium text-white/65 hover:text-white transition-colors"
+              >
+                Home
+              </Link>
+              <a
+                href="/#pricing"
+                className="text-sm font-medium text-white/65 hover:text-white transition-colors"
+              >
+                Pricing
+              </a>
               <Link
                 href="/login"
                 className="text-sm font-medium text-white/65 hover:text-white transition-colors"

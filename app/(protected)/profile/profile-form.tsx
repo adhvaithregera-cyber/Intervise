@@ -1,19 +1,37 @@
 'use client'
 
 import { useState } from 'react'
-import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { createClient } from '@/lib/supabase/client'
 
 const TIER_LABEL: Record<string, string> = { free: 'Free', student: 'Student', pro: 'Pro' }
 const TIER_SESSIONS: Record<string, string> = {
   free: '2 sessions / month',
-  student: '10 sessions / month',
+  student: '12 sessions / month',
   pro: '30 sessions / month',
 }
-const TIER_BADGE: Record<string, 'gray' | 'brand' | 'green'> = {
-  free: 'gray', student: 'brand', pro: 'green',
+
+const CARD_STYLE: React.CSSProperties = {
+  backgroundColor: 'rgba(28,10,0,0.75)',
+  backdropFilter: 'blur(16px)',
+  WebkitBackdropFilter: 'blur(16px)',
+  border: '1px solid rgba(249,193,37,0.20)',
+  borderRadius: '1rem',
 }
+
+const inputClass =
+  'w-full rounded-lg px-3 py-2 text-sm text-[#F9C125] placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-[#F9C125]/30 transition-colors'
+
+const inputStyle: React.CSSProperties = {
+  backgroundColor: 'rgba(249,193,37,0.08)',
+  border: '1px solid rgba(249,193,37,0.30)',
+}
+
+const readonlyStyle: React.CSSProperties = {
+  backgroundColor: 'rgba(255,255,255,0.04)',
+  border: '1px solid rgba(249,193,37,0.12)',
+}
+
+const labelClass = 'mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#F9C125]/70'
 
 type Props = {
   fullName: string | null
@@ -26,12 +44,6 @@ type Props = {
   sessionsUsed: number
   sessionsLimit: number
 }
-
-const inputClass =
-  'w-full rounded-lg border border-[#A0622A] bg-white px-3 py-2 text-sm text-[#E07A2F] placeholder-[#A0622A] focus:border-[#F9C125] focus:outline-none focus:ring-2 focus:ring-[#F9C125]/20 transition-colors'
-
-const readonlyClass =
-  'w-full rounded-lg border border-[#A0622A]/40 bg-[#FEFDF0]/60 px-3 py-2 text-sm text-[#E07A2F] cursor-not-allowed'
 
 export function ProfileForm({
   fullName,
@@ -51,7 +63,6 @@ export function ProfileForm({
   const [saving, setSaving] = useState(false)
   const [saveMsg, setSaveMsg] = useState<string | null>(null)
 
-  // Password change state
   const [showPasswordForm, setShowPasswordForm] = useState(false)
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -72,14 +83,8 @@ export function ProfileForm({
   }
 
   async function handlePasswordChange() {
-    if (newPassword !== confirmPassword) {
-      setPasswordMsg('Passwords do not match.')
-      return
-    }
-    if (newPassword.length < 6) {
-      setPasswordMsg('Password must be at least 6 characters.')
-      return
-    }
+    if (newPassword !== confirmPassword) { setPasswordMsg('Passwords do not match.'); return }
+    if (newPassword.length < 6) { setPasswordMsg('Password must be at least 6 characters.'); return }
     setChangingPassword(true)
     setPasswordMsg(null)
     const supabase = createClient()
@@ -99,33 +104,28 @@ export function ProfileForm({
   return (
     <div className="space-y-4">
       {/* Personal info */}
-      <Card>
+      <div style={CARD_STYLE}>
         <div className="p-6">
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-[#A0622A]">
+          <h2 className="mb-4 text-xs font-semibold uppercase tracking-widest text-[#F9C125]">
             Personal Information
           </h2>
           <div className="space-y-4">
-            {/* Full name — read only */}
             <div>
-              <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-[#A0622A]">
-                Full name
-                <span className="rounded bg-[#A0622A]/10 px-1.5 py-0.5 text-[10px] text-[#A0622A]">locked</span>
+              <label className={labelClass}>
+                Full name <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] text-white/40 normal-case tracking-normal">locked</span>
               </label>
-              <input readOnly value={fullName ?? ''} className={readonlyClass} />
+              <input readOnly value={fullName ?? ''} className={inputClass} style={readonlyStyle} />
             </div>
 
-            {/* Email — read only */}
             <div>
-              <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-[#A0622A]">
-                Email
-                <span className="rounded bg-[#A0622A]/10 px-1.5 py-0.5 text-[10px] text-[#A0622A]">locked</span>
+              <label className={labelClass}>
+                Email <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] text-white/40 normal-case tracking-normal">locked</span>
               </label>
-              <input readOnly value={email} className={readonlyClass} />
+              <input readOnly value={email} className={inputClass} style={readonlyStyle} />
             </div>
 
-            {/* Age */}
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-[#A0622A]">Age</label>
+              <label className={labelClass}>Age</label>
               <input
                 type="number"
                 min={1}
@@ -134,30 +134,31 @@ export function ProfileForm({
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
                 className={inputClass}
+                style={inputStyle}
               />
             </div>
 
-            {/* Password */}
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-[#A0622A]">Password</label>
+              <label className={labelClass}>Password</label>
               {!showPasswordForm ? (
                 <div className="flex items-center gap-3">
-                  <input readOnly value="••••••••••••" className={`${readonlyClass} flex-1`} />
+                  <input readOnly value="••••••••••••" className={`${inputClass} flex-1`} style={readonlyStyle} />
                   <button
                     onClick={() => setShowPasswordForm(true)}
-                    className="shrink-0 rounded-lg border border-[#A0622A] px-3 py-2 text-xs font-semibold text-[#E07A2F] hover:bg-[#FEFDF0] transition-colors"
+                    className="shrink-0 rounded-lg border border-[#F9C125]/40 px-3 py-2 text-xs font-semibold text-[#F9C125] hover:bg-[#F9C125]/10 transition-colors"
                   >
                     Change
                   </button>
                 </div>
               ) : (
-                <div className="space-y-2 rounded-lg border border-[#A0622A]/40 p-3">
+                <div className="space-y-2 rounded-lg p-3" style={{ border: '1px solid rgba(249,193,37,0.25)', backgroundColor: 'rgba(249,193,37,0.05)' }}>
                   <input
                     type="password"
                     placeholder="New password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     className={inputClass}
+                    style={inputStyle}
                   />
                   <input
                     type="password"
@@ -165,71 +166,75 @@ export function ProfileForm({
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     className={inputClass}
+                    style={inputStyle}
                   />
                   <div className="flex gap-2 pt-1">
                     <button
                       onClick={handlePasswordChange}
                       disabled={changingPassword}
-                      className="rounded-lg bg-[#E07A2F] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#C96A1A] disabled:opacity-50 transition-colors"
+                      className="rounded-lg bg-[#F9C125] px-3 py-1.5 text-xs font-bold text-[#1C0A00] hover:brightness-110 disabled:opacity-50 transition-all"
                     >
                       {changingPassword ? 'Updating…' : 'Update password'}
                     </button>
                     <button
                       onClick={() => { setShowPasswordForm(false); setNewPassword(''); setConfirmPassword(''); setPasswordMsg(null) }}
-                      className="rounded-lg px-3 py-1.5 text-xs font-semibold text-[#A0622A] hover:text-[#E07A2F] transition-colors"
+                      className="rounded-lg px-3 py-1.5 text-xs font-semibold text-white/50 hover:text-white transition-colors"
                     >
                       Cancel
                     </button>
                   </div>
                   {passwordMsg && (
-                    <p className={`text-xs ${passwordMsg === 'Password updated!' ? 'text-green-600' : 'text-red-500'}`}>
+                    <p className={`text-xs ${passwordMsg === 'Password updated!' ? 'text-green-400' : 'text-red-400'}`}>
                       {passwordMsg}
                     </p>
                   )}
                 </div>
               )}
               {passwordMsg && !showPasswordForm && (
-                <p className="mt-1 text-xs text-green-600">{passwordMsg}</p>
+                <p className="mt-1 text-xs text-green-400">{passwordMsg}</p>
               )}
             </div>
           </div>
         </div>
-      </Card>
+      </div>
 
-      {/* Interview preferences — editable */}
-      <Card>
+      {/* Interview preferences */}
+      <div style={CARD_STYLE}>
         <div className="p-6">
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-[#A0622A]">
+          <h2 className="mb-4 text-xs font-semibold uppercase tracking-widest text-[#F9C125]">
             Interview Preferences
           </h2>
           <div className="space-y-4">
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-[#A0622A]">Desired job / role</label>
+              <label className={labelClass}>Desired job / role</label>
               <input
                 type="text"
                 placeholder="e.g. Software Engineer"
                 value={roleType}
                 onChange={(e) => setRoleType(e.target.value)}
                 className={inputClass}
+                style={inputStyle}
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-[#A0622A]">Interview date</label>
+              <label className={labelClass}>Interview date</label>
               <input
                 type="date"
                 value={interviewDate}
                 onChange={(e) => setInterviewDate(e.target.value)}
                 className={inputClass}
+                style={inputStyle}
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-[#A0622A]">Biggest weakness to work on</label>
+              <label className={labelClass}>Biggest weakness to work on</label>
               <textarea
                 rows={3}
                 placeholder="e.g. I tend to overexplain..."
                 value={biggestWeakness}
                 onChange={(e) => setBiggestWeakness(e.target.value)}
                 className={`${inputClass} resize-none`}
+                style={inputStyle}
               />
             </div>
           </div>
@@ -238,45 +243,40 @@ export function ProfileForm({
             <button
               onClick={handleSave}
               disabled={saving}
-              className="rounded-lg bg-[#E07A2F] px-5 py-2 text-sm font-semibold text-white hover:bg-[#C96A1A] disabled:opacity-50 transition-colors"
+              className="rounded-lg bg-[#F9C125] px-5 py-2 text-sm font-bold text-[#1C0A00] hover:brightness-110 disabled:opacity-50 transition-all"
             >
               {saving ? 'Saving…' : 'Save changes'}
             </button>
             {saveMsg && (
-              <span className={`text-sm ${saveMsg === 'Saved!' ? 'text-green-600' : 'text-red-500'}`}>
+              <span className={`text-sm ${saveMsg === 'Saved!' ? 'text-green-400' : 'text-red-400'}`}>
                 {saveMsg}
               </span>
             )}
           </div>
         </div>
-      </Card>
+      </div>
 
       {/* Subscription */}
-      <Card>
+      <div style={CARD_STYLE}>
         <div className="p-6">
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-[#A0622A]">
+          <h2 className="mb-4 text-xs font-semibold uppercase tracking-widest text-[#F9C125]">
             Subscription
           </h2>
           <div className="flex items-center justify-between">
             <div>
-              <div className="flex items-center gap-2">
-                <span className="text-base font-semibold text-[#E07A2F]">
-                  {TIER_LABEL[tier] ?? tier} Plan
-                </span>
-                <Badge variant={TIER_BADGE[tier] ?? 'gray'}>{TIER_LABEL[tier] ?? tier}</Badge>
-              </div>
-              <p className="mt-1 text-sm text-[#A0622A]">{TIER_SESSIONS[tier]}</p>
+              <p className="text-base font-bold text-white">{TIER_LABEL[tier] ?? tier} Plan</p>
+              <p className="mt-1 text-sm text-[#F9C125]/70">{TIER_SESSIONS[tier]}</p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-[#A0622A]">Used this month</p>
-              <p className="text-lg font-bold text-[#E07A2F]">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[#F9C125]/70">Used this month</p>
+              <p className="text-2xl font-bold text-white">
                 {sessionsUsed}{' '}
-                <span className="text-sm font-normal text-[#A0622A]">/ {sessionsLimit}</span>
+                <span className="text-sm font-normal text-white/50">/ {sessionsLimit}</span>
               </p>
             </div>
           </div>
         </div>
-      </Card>
+      </div>
     </div>
   )
 }
