@@ -44,6 +44,7 @@ export async function POST(request: Request) {
   const result = await transcribeAudio(audioFile)
 
   if (isTranscriptionError(result)) {
+    console.error('[transcribe] AssemblyAI error:', result.reason)
     const { error: insertError } = await supabase.from('answers').insert({
       session_id: sessionId,
       question_id: parseInt(questionId),
