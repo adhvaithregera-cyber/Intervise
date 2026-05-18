@@ -4,18 +4,15 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 4rem; /* offset for sticky navbar */
-  overflow-x: hidden;
+  scroll-padding-top: 4rem;
 }
 
 body {
-  overflow-x: hidden;
-  overscroll-behavior-y: none; /* prevents bounce jank on Safari/Chrome */
+  overflow-x: clip; /* clips horizontal overflow without blocking vertical scroll */
   background-color: #1C0A00;
   color: #ffffff;
 }
 
-/* Smooth framer-motion defaults */
 * {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
