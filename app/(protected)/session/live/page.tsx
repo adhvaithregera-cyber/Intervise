@@ -44,6 +44,7 @@ export default function LiveSessionPage() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
   const micStreamRef = useRef<MediaStream | null>(null)
+  const cameraStreamRef = useRef<MediaStream | null>(null)
   const prepTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const answerTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const videoRef = useRef<HTMLVideoElement | null>(null)
@@ -91,6 +92,7 @@ export default function LiveSessionPage() {
         if (perm.state === 'granted') {
           const camStream = await navigator.mediaDevices.getUserMedia({ video: true })
           setCameraStream(camStream)
+          cameraStreamRef.current = camStream
         }
       } catch {
         // camera is optional — silently skip
@@ -103,7 +105,7 @@ export default function LiveSessionPage() {
 
     return () => {
       micStreamRef.current?.getTracks().forEach(t => t.stop())
-      cameraStream?.getTracks().forEach(t => t.stop())
+      cameraStreamRef.current?.getTracks().forEach(t => t.stop())
       if (prepTimerRef.current) clearInterval(prepTimerRef.current)
       if (answerTimerRef.current) clearInterval(answerTimerRef.current)
       if (mediaRecorderRef.current?.state === 'recording') mediaRecorderRef.current.stop()
@@ -330,6 +332,12 @@ export default function LiveSessionPage() {
       {phase === 'completing' && (
         <div className="flex items-center justify-center min-h-[60vh]">
           <p className="text-[#8697C4]">Calculating your results...</p>
+        </div>
+      )}
+
+      {phase === 'done' && (
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <p className="text-[#8697C4]">Redirecting to your results...</p>
         </div>
       )}
 
