@@ -224,7 +224,7 @@ export default function LiveSessionPage() {
       {/* Phase content */}
       {phase === 'loading' && (
         <div className="flex items-center justify-center min-h-[60vh]">
-          <p className="text-[#6BA3C8]">Loading your session...</p>
+          <p className="text-[#A0622A]">Loading your session...</p>
         </div>
       )}
 
@@ -237,20 +237,20 @@ export default function LiveSessionPage() {
 
       {phase === 'prep' && (
         <div className="max-w-2xl mx-auto text-center py-16">
-          <p className="text-[#6BA3C8] text-sm uppercase tracking-widest mb-4">
+          <p className="text-[#A0622A] text-sm uppercase tracking-widest mb-4">
             Question {currentIndex + 1} of {questions.length}
           </p>
           <h2 className="text-2xl font-semibold text-[#E07A2F] mb-8">
             {questions[currentIndex]?.question_text}
           </h2>
           <div className="text-6xl font-bold text-[#E07A2F] mb-4">{prepCount}</div>
-          <p className="text-[#6BA3C8]">Recording starts automatically...</p>
+          <p className="text-[#A0622A]">Recording starts automatically...</p>
         </div>
       )}
 
       {phase === 'recording' && (
         <div className="max-w-2xl mx-auto text-center py-16">
-          <p className="text-[#6BA3C8] text-sm uppercase tracking-widest mb-4">
+          <p className="text-[#A0622A] text-sm uppercase tracking-widest mb-4">
             Question {currentIndex + 1} of {questions.length}
           </p>
           <h2 className="text-2xl font-semibold text-[#E07A2F] mb-8">
@@ -259,7 +259,7 @@ export default function LiveSessionPage() {
           <div className="flex items-center justify-center gap-2 mb-6">
             <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse" />
             <span className="text-red-500 font-medium">Recording</span>
-            <span className="text-[#6BA3C8] ml-4">{answerTimeLeft}s remaining</span>
+            <span className="text-[#A0622A] ml-4">{answerTimeLeft}s remaining</span>
           </div>
           <Button variant="outline" onClick={stopRecording}>Done</Button>
         </div>
@@ -267,7 +267,7 @@ export default function LiveSessionPage() {
 
       {phase === 'analyzing' && (
         <div className="flex items-center justify-center min-h-[60vh]">
-          <p className="text-[#6BA3C8]">Analysing your answer...</p>
+          <p className="text-[#A0622A]">Analysing your answer...</p>
         </div>
       )}
 
@@ -280,7 +280,7 @@ export default function LiveSessionPage() {
             <Card className="mb-6 p-6">
               <div className="flex gap-8 justify-center">
                 <div className="text-center">
-                  <p className="text-sm text-[#6BA3C8] mb-1">Speaking pace</p>
+                  <p className="text-sm text-[#A0622A] mb-1">Speaking pace</p>
                   <p className={cn(
                     'text-2xl font-bold',
                     lastResult.wpm && lastResult.wpm >= 130 && lastResult.wpm <= 160
@@ -289,10 +289,10 @@ export default function LiveSessionPage() {
                   )}>
                     {lastResult.wpm ?? '—'} wpm
                   </p>
-                  <p className="text-xs text-[#6BA3C8]">Target: 130–160 wpm</p>
+                  <p className="text-xs text-[#A0622A]">Target: 130–160 wpm</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-sm text-[#6BA3C8] mb-1">Filler words</p>
+                  <p className="text-sm text-[#A0622A] mb-1">Filler words</p>
                   <p className="text-2xl font-bold text-[#E07A2F]">{lastResult.fillerCount ?? '—'}</p>
                   {lastResult.fillerBreakdown && Object.keys(lastResult.fillerBreakdown).length > 0 && (
                     <div className="flex gap-1 flex-wrap justify-center mt-1">
@@ -307,7 +307,7 @@ export default function LiveSessionPage() {
           ) : lastResult?.transcriptionFailed ? (
             <Card className="mb-6 p-6 text-center">
               <Badge variant="amber">Transcription unavailable</Badge>
-              <p className="text-[#6BA3C8] mt-2 text-sm">
+              <p className="text-[#A0622A] mt-2 text-sm">
                 We couldn&apos;t process this answer. You can still continue.
               </p>
             </Card>
@@ -331,19 +331,19 @@ export default function LiveSessionPage() {
 
       {phase === 'completing' && (
         <div className="flex items-center justify-center min-h-[60vh]">
-          <p className="text-[#6BA3C8]">Calculating your results...</p>
+          <p className="text-[#A0622A]">Calculating your results...</p>
         </div>
       )}
 
       {phase === 'done' && (
         <div className="flex items-center justify-center min-h-[60vh]">
-          <p className="text-[#6BA3C8]">Redirecting to your results...</p>
+          <p className="text-[#A0622A]">Redirecting to your results...</p>
         </div>
       )}
 
       {/* Camera corner — always rendered when stream is available */}
       {cameraStream && (
-        <div className="fixed bottom-6 right-6 rounded-2xl overflow-hidden border-2 border-[#6BA3C8] shadow-lg w-40 h-28 z-50">
+        <div className="fixed bottom-6 right-6 rounded-2xl overflow-hidden border-2 border-[#A0622A] shadow-lg w-40 h-28 z-50">
           <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover" />
         </div>
       )}

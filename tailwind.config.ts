@@ -11,8 +11,8 @@ const config: Config = {
       colors: {
         brand: {
           50:  '#FEFDF0',   // light lavender — backgrounds
-          100: '#6BA3C8',   // soft blue-gray — borders, dividers
-          200: '#6BA3C8',   // muted blue-gray — secondary text
+          100: '#A0622A',   // soft blue-gray — borders, dividers
+          200: '#A0622A',   // muted blue-gray — secondary text
           300: '#F9C125',   // periwinkle — accents, links
           400: '#F9C125',   // periwinkle (same for Tailwind compat)
           500: '#F9C125',   // periwinkle — hover accents

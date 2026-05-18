@@ -32,7 +32,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
   const { data: questions } = await supabase.from('questions').select('*').in('id', questionIds)
   const questionMap = Object.fromEntries((questions ?? []).map((q) => [q.id, q]))
 
-  const gradeColor = GRADE_COLORS[session.overall_grade ?? ''] ?? { text: 'text-[#6BA3C8]', bg: 'bg-[#FEFDF0]' }
+  const gradeColor = GRADE_COLORS[session.overall_grade ?? ''] ?? { text: 'text-[#A0622A]', bg: 'bg-[#FEFDF0]' }
 
   const validWpms = (answers ?? []).map((a) => a.wpm).filter((v): v is number => v !== null)
   const avgWpm =
@@ -54,7 +54,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
           {session.overall_grade ?? '—'}
         </div>
         <h1 className="text-2xl font-semibold text-[#E07A2F]">Session complete</h1>
-        <p className="text-[#6BA3C8] mt-1">
+        <p className="text-[#A0622A] mt-1">
           {new Date(session.created_at).toLocaleDateString('en-GB', { dateStyle: 'long' })}
         </p>
       </div>
@@ -62,16 +62,16 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
       {/* Summary stats */}
       <div className="grid grid-cols-3 gap-4 mb-8">
         <Card className="text-center p-4">
-          <p className="text-sm text-[#6BA3C8]">Avg speaking pace</p>
+          <p className="text-sm text-[#A0622A]">Avg speaking pace</p>
           <p className="text-2xl font-bold text-[#E07A2F]">{avgWpm ?? '—'} wpm</p>
-          <p className="text-xs text-[#6BA3C8]">Target: 130–160</p>
+          <p className="text-xs text-[#A0622A]">Target: 130–160</p>
         </Card>
         <Card className="text-center p-4">
-          <p className="text-sm text-[#6BA3C8]">Total filler words</p>
+          <p className="text-sm text-[#A0622A]">Total filler words</p>
           <p className="text-2xl font-bold text-[#E07A2F]">{totalFillers}</p>
         </Card>
         <Card className="text-center p-4">
-          <p className="text-sm text-[#6BA3C8]">Answers analysed</p>
+          <p className="text-sm text-[#A0622A]">Answers analysed</p>
           <p className="text-2xl font-bold text-[#E07A2F]">
             {answeredCount} / {(answers ?? []).length}
           </p>
@@ -99,18 +99,18 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
             {answer.transcription_failed ? (
               <div className="flex items-center gap-2">
                 <Badge variant="amber">Transcription failed</Badge>
-                <span className="text-sm text-[#6BA3C8]">Feedback unavailable for this answer</span>
+                <span className="text-sm text-[#A0622A]">Feedback unavailable for this answer</span>
               </div>
             ) : (
               <>
                 <div className="flex gap-8 mb-4">
                   <div>
-                    <p className="text-sm text-[#6BA3C8]">Speaking pace</p>
+                    <p className="text-sm text-[#A0622A]">Speaking pace</p>
                     <p className={cn('text-xl font-bold', wpmColor)}>{answer.wpm ?? '—'} wpm</p>
-                    <p className="text-xs text-[#6BA3C8]">Target: 130–160</p>
+                    <p className="text-xs text-[#A0622A]">Target: 130–160</p>
                   </div>
                   <div>
-                    <p className="text-sm text-[#6BA3C8]">Filler words</p>
+                    <p className="text-sm text-[#A0622A]">Filler words</p>
                     <p className="text-xl font-bold text-[#E07A2F]">{answer.filler_count ?? 0}</p>
                     {answer.filler_breakdown &&
                       Object.keys(answer.filler_breakdown).length > 0 && (
@@ -126,12 +126,12 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
                       )}
                   </div>
                   <div>
-                    <p className="text-sm text-[#6BA3C8]">Duration</p>
+                    <p className="text-sm text-[#A0622A]">Duration</p>
                     <p className="text-xl font-bold text-[#E07A2F]">{answer.duration_seconds}s</p>
                   </div>
                 </div>
                 {answer.transcript && (
-                  <blockquote className="border-l-4 border-[#6BA3C8] pl-4 text-sm text-[#6BA3C8] italic line-clamp-3">
+                  <blockquote className="border-l-4 border-[#A0622A] pl-4 text-sm text-[#A0622A] italic line-clamp-3">
                     &ldquo;{answer.transcript.slice(0, 300)}
                     {answer.transcript.length > 300 ? '...' : ''}&rdquo;
                   </blockquote>

@@ -33,7 +33,7 @@ export async function Navbar() {
   const showTryFree = !user || tier !== 'free'
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-[#6BA3C8] bg-white">
+    <nav className="sticky top-0 z-50 border-b border-[#A0622A] bg-white">
       <div className="relative mx-auto flex h-16 max-w-7xl items-center px-4 sm:px-6">
 
         {/* Left: marketing links */}
@@ -48,7 +48,7 @@ export async function Navbar() {
           )}
           <a
             href="/#pricing"
-            className="text-sm font-medium text-[#6BA3C8] hover:text-[#E07A2F] transition-colors"
+            className="text-sm font-medium text-[#A0622A] hover:text-[#E07A2F] transition-colors"
           >
             Pricing
           </a>
@@ -72,7 +72,7 @@ export async function Navbar() {
             <div className="flex items-center gap-4">
               <Link
                 href="/login"
-                className="text-sm font-medium text-[#6BA3C8] hover:text-[#E07A2F] transition-colors"
+                className="text-sm font-medium text-[#A0622A] hover:text-[#E07A2F] transition-colors"
               >
                 Login
               </Link>

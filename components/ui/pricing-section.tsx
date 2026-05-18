@@ -141,15 +141,15 @@ export default function PricingSection() {
     <section
       id="pricing"
       className="py-24 overflow-hidden"
-      style={{ background: 'linear-gradient(180deg, #FEFDF0 0%, white 100%)' }}
+      style={{ background: 'none' }}
     >
       <div className="mx-auto max-w-6xl px-6">
         {/* Heading — word-by-word reveal on scroll */}
         <div ref={headingRef} className="mb-6">
           <ScrollReveal delay={0}>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#6BA3C8]">Pricing</p>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">Pricing</p>
           </ScrollReveal>
-          <h2 className="mb-4 text-4xl font-bold text-[#E07A2F] overflow-hidden">
+          <h2 className="mb-4 text-4xl font-bold text-white overflow-hidden">
             <VerticalCutReveal
               splitBy="words"
               staggerDuration={0.12}
@@ -162,7 +162,7 @@ export default function PricingSection() {
             </VerticalCutReveal>
           </h2>
           <ScrollReveal delay={0.25}>
-            <p className="text-[#6BA3C8]">Start free. Upgrade when you need more sessions.</p>
+            <p className="text-white/70">Start free. Upgrade when you need more sessions.</p>
           </ScrollReveal>
         </div>
 
@@ -180,7 +180,7 @@ export default function PricingSection() {
                   'flex h-full flex-col rounded-2xl border p-8 transition-all duration-300',
                   plan.popular
                     ? 'shadow-2xl shadow-[#F9C125]/40'
-                    : 'border-[#6BA3C8] bg-white shadow-sm hover:shadow-lg hover:border-[#F9C125]'
+                    : 'border-[#A0622A] bg-white shadow-sm hover:shadow-lg hover:border-[#F9C125]'
                 )}
                 style={
                   plan.popular
@@ -203,18 +203,18 @@ export default function PricingSection() {
                 <h3 className={`mb-1 text-xl font-bold ${plan.popular ? 'text-white' : 'text-[#E07A2F]'}`}>
                   {plan.name}
                 </h3>
-                <p className={`mb-5 text-sm ${plan.popular ? 'text-[#6BA3C8]' : 'text-[#6BA3C8]'}`}>
+                <p className={`mb-5 text-sm ${plan.popular ? 'text-[#A0622A]' : 'text-[#A0622A]'}`}>
                   {plan.description}
                 </p>
 
                 {/* Animated price */}
                 <div className="mb-6 flex items-baseline gap-1">
-                  <span className={`text-sm ${plan.popular ? 'text-[#6BA3C8]' : 'text-[#6BA3C8]'}`}>₹</span>
+                  <span className={`text-sm ${plan.popular ? 'text-[#A0622A]' : 'text-[#A0622A]'}`}>₹</span>
                   <span className={`text-5xl font-bold ${plan.popular ? 'text-white' : 'text-[#E07A2F]'}`}>
                     <NumberFlow value={isYearly ? plan.yearlyPrice : plan.price} />
                   </span>
                   {plan.price > 0 && (
-                    <span className={`text-sm ${plan.popular ? 'text-[#6BA3C8]' : 'text-[#6BA3C8]'}`}>
+                    <span className={`text-sm ${plan.popular ? 'text-[#A0622A]' : 'text-[#A0622A]'}`}>
                       /{isYearly ? 'yr' : 'mo'}
                     </span>
                   )}
@@ -234,7 +234,7 @@ export default function PricingSection() {
                 </Link>
 
                 {/* Features */}
-                <div className={`border-t pt-6 ${plan.popular ? 'border-[#F9C125]/40' : 'border-[#6BA3C8]'}`}>
+                <div className={`border-t pt-6 ${plan.popular ? 'border-[#F9C125]/40' : 'border-[#A0622A]'}`}>
                   <p className={`mb-3 text-sm font-semibold ${plan.popular ? 'text-white' : 'text-[#E07A2F]'}`}>
                     {plan.features[0]}
                   </p>
@@ -243,9 +243,9 @@ export default function PricingSection() {
                       <li key={f} className="flex items-center gap-2.5">
                         <span
                           className="h-2 w-2 shrink-0 rounded-full"
-                          style={{ backgroundColor: plan.popular ? '#F9C125' : '#6BA3C8' }}
+                          style={{ backgroundColor: plan.popular ? '#F9C125' : '#A0622A' }}
                         />
-                        <span className={`text-sm ${plan.popular ? 'text-[#FEFDF0]' : 'text-[#6BA3C8]'}`}>{f}</span>
+                        <span className={`text-sm ${plan.popular ? 'text-[#FEFDF0]' : 'text-[#A0622A]'}`}>{f}</span>
                       </li>
                     ))}
                   </ul>

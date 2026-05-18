@@ -38,11 +38,11 @@ export default function SignupPage() {
     }
   }
 
-  const inputClass = "w-full rounded-xl border border-[#6BA3C8] bg-[#FEFDF0]/50 px-3 py-2.5 text-sm text-[#E07A2F] placeholder-[#6BA3C8] focus:border-[#F9C125] focus:outline-none focus:ring-2 focus:ring-[#F9C125]/20"
+  const inputClass = "w-full rounded-xl border border-[#A0622A] bg-[#FEFDF0]/50 px-3 py-2.5 text-sm text-[#E07A2F] placeholder-[#A0622A] focus:border-[#F9C125] focus:outline-none focus:ring-2 focus:ring-[#F9C125]/20"
 
   if (confirmed) {
     return (
-      <div className="rounded-2xl border border-[#6BA3C8] bg-white p-8 shadow-xl text-center">
+      <div className="rounded-2xl border border-[#A0622A] bg-white p-8 shadow-xl text-center">
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#FEFDF0]">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E07A2F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="2" y="4" width="20" height="16" rx="2" />
@@ -50,10 +50,10 @@ export default function SignupPage() {
           </svg>
         </div>
         <h2 className="mb-2 text-xl font-bold text-[#E07A2F]">Check your inbox</h2>
-        <p className="mb-6 text-sm text-[#6BA3C8]">
+        <p className="mb-6 text-sm text-[#A0622A]">
           We sent a confirmation link to <span className="font-semibold text-[#E07A2F]">{email}</span>. Click it to activate your account and get started.
         </p>
-        <p className="text-xs text-[#6BA3C8]">
+        <p className="text-xs text-[#A0622A]">
           Already confirmed?{' '}
           <Link href="/login" className="font-semibold text-[#E07A2F] hover:text-[#F9C125]">Log in</Link>
         </p>
@@ -62,16 +62,16 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="rounded-2xl border border-[#6BA3C8] bg-white p-8 shadow-xl">
+    <div className="rounded-2xl border border-[#A0622A] bg-white p-8 shadow-xl">
       <div className="mb-8 text-center">
         <Link href="/" className="text-lg font-bold tracking-widest text-[#E07A2F]">INTERVISE</Link>
         <p className="mt-4 text-2xl font-bold text-[#E07A2F]">Create your account</p>
-        <p className="mt-1 text-sm text-[#6BA3C8]">Start practising interviews for free</p>
+        <p className="mt-1 text-sm text-[#A0622A]">Start practising interviews for free</p>
       </div>
 
       <button
         onClick={handleGoogleSignIn}
-        className="mb-6 flex w-full items-center justify-center gap-2 rounded-xl border border-[#6BA3C8] bg-white px-4 py-2.5 text-sm font-semibold text-[#E07A2F] hover:bg-[#FEFDF0] transition-colors shadow-sm"
+        className="mb-6 flex w-full items-center justify-center gap-2 rounded-xl border border-[#A0622A] bg-white px-4 py-2.5 text-sm font-semibold text-[#E07A2F] hover:bg-[#FEFDF0] transition-colors shadow-sm"
       >
         <svg className="h-4 w-4" viewBox="0 0 24 24">
           <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -84,9 +84,9 @@ export default function SignupPage() {
 
       <div className="relative mb-6">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-[#6BA3C8]" />
+          <div className="w-full border-t border-[#A0622A]" />
         </div>
-        <div className="relative flex justify-center text-xs text-[#6BA3C8]">
+        <div className="relative flex justify-center text-xs text-[#A0622A]">
           <span className="bg-white px-2">or sign up with email</span>
         </div>
       </div>
@@ -106,7 +106,7 @@ export default function SignupPage() {
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-[#6BA3C8]">
+      <p className="mt-6 text-center text-sm text-[#A0622A]">
         Already have an account?{' '}
         <Link href="/login" className="font-semibold text-[#E07A2F] hover:text-[#F9C125]">Log in</Link>
       </p>

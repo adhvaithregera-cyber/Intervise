@@ -62,136 +62,135 @@ export default async function LandingPage() {
   const showTryFree = !user || tier !== 'free'
 
   return (
-    <div className="min-h-screen bg-[#FEFDF0] text-[#1C1200]">
+    <div className="min-h-screen text-[#1C0A00]">
       <Navbar />
 
-      {/* Hero — full-height warm gradient */}
+      {/* ── HERO — solid orange + radial glow centred on headline ── */}
       <section
-        className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center overflow-hidden px-4 sm:px-6"
-        style={{ background: 'linear-gradient(135deg, #E07A2F 0%, #F9C125 55%, #FEFDF0 100%)' }}
+        className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center overflow-hidden px-4 pb-32 sm:px-6"
+        style={{ backgroundColor: '#E07A2F' }}
       >
-        {/* Decorative blobs */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -left-24 -top-24 h-96 w-96 rounded-full bg-white/10 blur-3xl" />
-          <div className="absolute -bottom-16 -right-16 h-80 w-80 rounded-full bg-[#E07A2F]/30 blur-2xl" />
-          <div className="absolute right-1/4 top-1/3 h-48 w-48 rounded-full bg-white/20 blur-2xl" />
-        </div>
+        {/* Radial golden glow centred on the text */}
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background: 'radial-gradient(ellipse 75% 60% at 50% 44%, rgba(249,193,37,0.50) 0%, rgba(249,193,37,0.15) 45%, transparent 70%)',
+          }}
+        />
 
-        <div className="relative z-10 flex flex-col items-center text-center">
+        <div className="relative z-10 flex flex-col items-center text-center pt-24 sm:pt-32">
           {/* Badge */}
-          <span className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/30 px-4 py-1.5 text-xs font-semibold text-white backdrop-blur-sm">
-            <span className="h-1.5 w-1.5 rounded-full bg-white" />
+          <span className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/25 px-4 py-1.5 text-xs font-semibold text-white backdrop-blur-sm">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#F9C125]" />
             AI-powered interview coaching
           </span>
 
-          <h1 className="mb-6 max-w-3xl text-5xl font-extrabold leading-tight tracking-tight text-white sm:text-6xl lg:text-7xl">
+          <h1 className="mb-5 max-w-3xl text-5xl font-extrabold leading-tight tracking-tight text-white sm:text-6xl lg:text-7xl">
             Your next interview<br />
-            <span className="text-[#1C1200]">is won before it starts.</span>
+            <span className="text-[#1C0A00]">is won before it starts.</span>
           </h1>
 
-          <p className="mb-10 max-w-[520px] text-base leading-relaxed text-white/80 sm:text-lg">
+          <p className="mb-8 max-w-[520px] text-base leading-relaxed text-white/80 sm:text-lg">
             You practised for weeks. You knew your answers cold. Then the interviewer asked one question — and your mind went blank.
           </p>
+
+          {/* Stat cards — placed high, right after headline block */}
+          <div className="mb-10 flex flex-wrap justify-center gap-3">
+            {[
+              { value: '8', label: 'Answer formats' },
+              { value: 'A–F', label: 'Instant grade' },
+              { value: 'WPM', label: 'Speed tracked' },
+            ].map((s) => (
+              <div
+                key={s.label}
+                className="flex flex-col items-center rounded-2xl bg-white/25 px-7 py-3.5 backdrop-blur-sm"
+              >
+                <span className="text-xl font-black text-white">{s.value}</span>
+                <span className="text-[11px] text-white/75">{s.label}</span>
+              </div>
+            ))}
+          </div>
 
           {/* CTAs */}
           <div className="flex flex-col items-center gap-3 sm:flex-row">
             {showTryFree && (
               <Link
                 href="/signup"
-                className="inline-flex w-full items-center justify-center rounded-xl bg-[#1C1200] px-8 py-3.5 text-base font-bold text-white shadow-lg shadow-black/20 hover:bg-black transition-colors sm:w-auto"
+                className="inline-flex w-full items-center justify-center rounded-xl bg-[#1C0A00] px-8 py-3.5 text-base font-bold text-white shadow-lg shadow-black/25 hover:bg-black transition-colors sm:w-auto"
               >
                 Practice for free →
               </Link>
             )}
             <Link
               href="#how-it-works"
-              className="inline-flex w-full items-center justify-center rounded-xl border-2 border-white/60 bg-white/20 px-8 py-3.5 text-base font-semibold text-white backdrop-blur-sm hover:bg-white/30 transition-colors sm:w-auto"
+              className="inline-flex w-full items-center justify-center rounded-xl border-2 border-white/50 bg-white/15 px-8 py-3.5 text-base font-semibold text-white backdrop-blur-sm hover:bg-white/25 transition-colors sm:w-auto"
             >
               See how it works
             </Link>
           </div>
 
           {/* Trust pills */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             {['No card needed', '2 free sessions', 'Cancel anytime'].map((t) => (
-              <span key={t} className="rounded-full bg-white/25 px-4 py-1.5 text-xs font-medium text-white backdrop-blur-sm">
+              <span
+                key={t}
+                className="rounded-full bg-white/20 px-4 py-1.5 text-xs font-medium text-white/90 backdrop-blur-sm"
+              >
                 {t}
               </span>
             ))}
           </div>
-
-          {/* Floating stat cards */}
-          <div className="mt-12 flex flex-wrap justify-center gap-4">
-            {[
-              { value: '8', label: 'Answer formats' },
-              { value: 'A–F', label: 'Instant grade' },
-              { value: 'WPM', label: 'Speed tracked' },
-            ].map((s) => (
-              <div key={s.label} className="flex flex-col items-center rounded-2xl bg-white/30 px-6 py-4 backdrop-blur-sm">
-                <span className="text-2xl font-black text-white">{s.value}</span>
-                <span className="text-xs text-white/80">{s.label}</span>
-              </div>
-            ))}
-          </div>
         </div>
 
-        {/* Bottom fade into page */}
-        <div className="absolute bottom-0 left-0 right-0 h-24" style={{ background: 'linear-gradient(to bottom, transparent, #FEFDF0)' }} />
+        {/* Gradient fade into shade-2 */}
+        <div
+          className="absolute bottom-0 left-0 right-0 h-32"
+          style={{ background: 'linear-gradient(to bottom, transparent, #E88535)' }}
+        />
       </section>
 
-      {/* Category strip — bleeds from hero into How It Works */}
-      <div className="relative z-10 -mt-6 border-y border-[#6BA3C8]/40">
+      {/* Category strip on shade-2 orange */}
+      <div className="border-y border-white/20" style={{ backgroundColor: '#E88535' }}>
         <CategoryStrip />
       </div>
 
-      {/* How it works */}
-      <section id="how-it-works" className="bg-[#FEFDF0] py-20 sm:py-24">
+      {/* ── HOW IT WORKS — shade 2 ── */}
+      <section
+        id="how-it-works"
+        className="relative py-20 sm:py-24"
+        style={{ backgroundColor: '#E88535' }}
+      >
         <div className="mx-auto max-w-4xl px-4 sm:px-6">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#6BA3C8]">
-            The process
-          </p>
-          <h2 className="mb-4 text-3xl font-bold text-[#E07A2F] sm:text-4xl">How it works</h2>
-          <p className="mb-12 max-w-xl text-[#6BA3C8]">
-            Three phases, back to back. The whole loop takes under 20 minutes.
-          </p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">The process</p>
+          <h2 className="mb-4 text-3xl font-bold text-white sm:text-4xl">How it works</h2>
+          <p className="mb-12 max-w-xl text-white/70">Three phases, back to back. The whole loop takes under 20 minutes.</p>
 
           <div className="space-y-5">
             {steps.map((step, i) => (
               <div
                 key={step.number}
-                className="group grid grid-cols-[auto_1fr] gap-5 rounded-2xl border border-[#6BA3C8] bg-white p-6 shadow-sm hover:border-[#F9C125] hover:shadow-md transition-all sm:gap-8 sm:p-8"
+                className="group grid grid-cols-[auto_1fr] gap-5 rounded-2xl border border-white/25 bg-white/15 p-6 backdrop-blur-sm hover:bg-white/25 transition-all sm:gap-8 sm:p-8"
               >
-                {/* Left: number + connector */}
                 <div className="flex flex-col items-center">
                   <div
-                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-base font-bold text-white transition-transform group-hover:scale-105 sm:h-14 sm:w-14 sm:rounded-2xl sm:text-lg"
-                    style={{ backgroundColor: '#E07A2F' }}
+                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-base font-black text-[#E07A2F] transition-transform group-hover:scale-105 sm:h-14 sm:w-14 sm:rounded-2xl sm:text-lg"
+                    style={{ backgroundColor: '#FEFDF0' }}
                   >
                     {step.number}
                   </div>
                   {i < steps.length - 1 && (
-                    <div
-                      className="mt-4 w-px flex-1"
-                      style={{
-                        background: 'linear-gradient(to bottom, #6BA3C8, transparent)',
-                        minHeight: '1.5rem',
-                      }}
-                    />
+                    <div className="mt-4 w-px flex-1 bg-white/30" style={{ minHeight: '1.5rem' }} />
                   )}
                 </div>
-
-                {/* Right: content */}
                 <div>
                   <div className="mb-3 flex flex-wrap items-center gap-2 sm:gap-3">
-                    <h3 className="text-lg font-bold text-[#E07A2F] sm:text-xl">{step.title}</h3>
-                    <span className="rounded-full border border-[#6BA3C8] bg-[#FEFDF0] px-3 py-0.5 text-xs font-semibold text-[#6BA3C8]">
-                      {step.tag}
-                    </span>
+                    <h3 className="text-lg font-bold text-white sm:text-xl">{step.title}</h3>
+                    <span className="rounded-full bg-white/20 px-3 py-0.5 text-xs font-semibold text-white/80">{step.tag}</span>
                   </div>
-                  <p className="mb-5 text-sm leading-relaxed text-[#6BA3C8]">{step.description}</p>
+                  <p className="mb-5 text-sm leading-relaxed text-white/70">{step.description}</p>
                   <ul className="mb-4 space-y-2">
                     {step.details.map((d) => (
-                      <li key={d} className="flex items-start gap-2.5 text-sm text-[#E07A2F]">
+                      <li key={d} className="flex items-start gap-2.5 text-sm text-white/90">
                         <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#F9C125]" />
                         {d}
                       </li>
@@ -200,16 +199,11 @@ export default async function LandingPage() {
                   {step.formats.length > 0 && (
                     <div className="flex flex-wrap gap-2">
                       {step.formats.map((f) => (
-                        <span
-                          key={f}
-                          className="rounded-xl border border-[#F9C125]/40 bg-[#F9C125]/10 px-3 py-1 text-xs font-semibold text-[#E07A2F]"
-                        >
+                        <span key={f} className="rounded-xl bg-[#F9C125]/30 px-3 py-1 text-xs font-semibold text-white">
                           {f}
                         </span>
                       ))}
-                      <span className="rounded-xl border border-[#6BA3C8] bg-[#FEFDF0] px-3 py-1 text-xs font-semibold text-[#6BA3C8]">
-                        +3 more
-                      </span>
+                      <span className="rounded-xl bg-white/15 px-3 py-1 text-xs font-semibold text-white/70">+3 more</span>
                     </div>
                   )}
                 </div>
@@ -217,64 +211,49 @@ export default async function LandingPage() {
             ))}
           </div>
         </div>
+        {/* Fade into shade 3 */}
+        <div className="absolute bottom-0 left-0 right-0 h-16" style={{ background: 'linear-gradient(to bottom, transparent, #D97228)' }} />
       </section>
 
-      {/* Divider */}
-      <div className="border-t border-[#6BA3C8]/40" />
-
-      {/* Before / After comparison */}
-      <section className="bg-[#FEFDF0] py-20 sm:py-24">
+      {/* ── COMPARISON — shade 3 ── */}
+      <section className="relative py-20 sm:py-24" style={{ backgroundColor: '#D97228' }}>
         <div className="mx-auto max-w-5xl px-4 sm:px-6">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#6BA3C8]">
-            The transformation
-          </p>
-          <h2 className="mb-4 text-3xl font-bold text-[#E07A2F] sm:text-4xl">
-            Same candidate. Same question.
-          </h2>
-          <p className="mb-10 max-w-xl text-[#6BA3C8]">
-            Drag the handle to see exactly what changes after one week with Intervise.
-          </p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">The transformation</p>
+          <h2 className="mb-4 text-3xl font-bold text-white sm:text-4xl">Same candidate. Same question.</h2>
+          <p className="mb-10 max-w-xl text-white/70">Drag the handle to see exactly what changes after one week with Intervise.</p>
           <InterviewComparison />
         </div>
+        {/* Fade into shade 4 */}
+        <div className="absolute bottom-0 left-0 right-0 h-16" style={{ background: 'linear-gradient(to bottom, transparent, #CB6820)' }} />
       </section>
 
-      {/* Gradient bridge into Pricing */}
-      <div className="h-16 bg-[#FEFDF0]" />
+      {/* ── PRICING — shade 4 ── */}
+      <div style={{ backgroundColor: '#CB6820' }}>
+        <PricingSection />
+      </div>
 
-      {/* Pricing — animated */}
-      <PricingSection />
-
-      {/* Divider */}
-      <div className="border-t border-[#6BA3C8]/40" />
-
-      {/* Final CTA banner */}
-      <section className="bg-[#FEFDF0]/40 px-4 py-20 text-center sm:px-6 sm:py-24">
-        <h2 className="mb-4 text-3xl font-bold text-[#E07A2F] sm:text-4xl">
+      {/* ── FINAL CTA — shade 5 ── */}
+      <section className="px-4 py-20 text-center sm:px-6 sm:py-24" style={{ backgroundColor: '#BF601A' }}>
+        <h2 className="mb-4 text-3xl font-extrabold text-white sm:text-4xl">
           Your interview is closer than you think.
         </h2>
-        <p className="mb-8 text-[#6BA3C8]">
-          Start practising today — free, no card required.
-        </p>
+        <p className="mb-8 text-white/70">Start practising today — free, no card required.</p>
         <Link
           href="/signup"
-          className="inline-flex items-center rounded-xl bg-[#E07A2F] px-10 py-4 text-base font-semibold text-white shadow-lg shadow-[#E07A2F]/20 hover:bg-[#C96A1A] transition-colors"
+          className="inline-flex items-center rounded-xl bg-[#1C0A00] px-10 py-4 text-base font-bold text-white shadow-lg shadow-black/25 hover:bg-black transition-colors"
         >
-          Start FREE
+          Start FREE →
         </Link>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-[#6BA3C8] bg-[#FEFDF0]">
-        <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 px-4 py-6 text-center text-sm text-[#6BA3C8] sm:flex-row sm:justify-between sm:px-6 sm:text-left">
+      <footer className="border-t border-white/10" style={{ backgroundColor: '#1C0A00' }}>
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 px-4 py-6 text-center text-sm text-white/40 sm:flex-row sm:justify-between sm:px-6 sm:text-left">
           <span>© 2026 Intervise</span>
           <div className="flex items-center gap-4">
-            <Link href="/privacy" className="hover:text-[#E07A2F] transition-colors">
-              Privacy Policy
-            </Link>
-            <span className="text-[#6BA3C8]">·</span>
-            <Link href="/terms" className="hover:text-[#E07A2F] transition-colors">
-              Terms of Service
-            </Link>
+            <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <span>·</span>
+            <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
           </div>
         </div>
       </footer>

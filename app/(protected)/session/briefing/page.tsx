@@ -36,14 +36,14 @@ export default async function BriefingPage({
       {/* Page header */}
       <div>
         <h1 className="text-2xl font-bold text-[#E07A2F]">Get ready for your session</h1>
-        <p className="mt-1 text-sm text-[#6BA3C8]">3 questions · ~5 minutes</p>
+        <p className="mt-1 text-sm text-[#A0622A]">3 questions · ~5 minutes</p>
       </div>
 
       {/* Format briefing card */}
       <Card tinted className="space-y-3">
         <Badge variant="brand">{formatLabel}</Badge>
         <h2 className="text-lg font-semibold text-[#E07A2F]">Your answer format</h2>
-        <p className="text-sm italic text-[#6BA3C8]">{question.answer_format}</p>
+        <p className="text-sm italic text-[#A0622A]">{question.answer_format}</p>
         <p className="text-sm text-[#E07A2F]">
           Use this structure to organise your answer. Each of your 3 questions will guide you through it.
         </p>

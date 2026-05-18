@@ -82,7 +82,7 @@ export default function SessionSetupPage() {
     <div className="mx-auto max-w-2xl px-4 py-12">
       {/* Page header */}
       <h1 className="mb-2 text-3xl font-bold text-[#E07A2F]">Set up your session</h1>
-      <p className="mb-10 text-[#6BA3C8]">
+      <p className="mb-10 text-[#A0622A]">
         Choose your difficulty and grant the permissions we need to get started.
       </p>
 
@@ -102,7 +102,7 @@ export default function SessionSetupPage() {
               )}
             >
               <p className="mb-1 font-semibold text-[#E07A2F]">{title}</p>
-              <p className="text-sm text-[#6BA3C8]">{desc}</p>
+              <p className="text-sm text-[#A0622A]">{desc}</p>
             </Card>
           ))}
         </div>
@@ -114,7 +114,7 @@ export default function SessionSetupPage() {
           <h2 className="text-lg font-semibold text-[#E07A2F]">Microphone</h2>
           <span className="text-xs font-semibold uppercase tracking-wider text-red-500">Required</span>
         </div>
-        <p className="mb-4 text-sm text-[#6BA3C8]">
+        <p className="mb-4 text-sm text-[#A0622A]">
           Required to record your answers. Audio is transcribed by AssemblyAI and never stored as a raw file.
         </p>
 
@@ -146,7 +146,7 @@ export default function SessionSetupPage() {
           <h2 className="text-lg font-semibold text-[#E07A2F]">Camera</h2>
           <Badge variant="brand">Student+ feature</Badge>
         </div>
-        <p className="mb-4 text-sm text-[#6BA3C8]">
+        <p className="mb-4 text-sm text-[#A0622A]">
           Used for real-time eye contact analysis. All facial processing happens in your browser — no video is ever
           sent to our servers. Grant for best results.
         </p>
@@ -164,7 +164,7 @@ export default function SessionSetupPage() {
               Grant Camera Access
             </Button>
             {cameraPerm === 'denied' && (
-              <p className="mt-3 text-sm text-[#6BA3C8]">
+              <p className="mt-3 text-sm text-[#A0622A]">
                 That&apos;s okay — eye contact tracking will be skipped.
               </p>
             )}
