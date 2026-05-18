@@ -316,9 +316,13 @@ export default function LiveSessionPage() {
         )}
 
         {phase === 'analyzing' && (
-          <div className="text-center">
-            <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-white/80 text-lg">Analysing your answer...</p>
+          <div className="generating-loader-wrapper">
+            <div className="generating-loader-text">
+              {'Generating transcript'.split('').map((char, i) => (
+                <span key={i} className="generating-loader-letter">{char === ' ' ? '\u00A0' : char}</span>
+              ))}
+            </div>
+            <div className="generating-loader-bar" />
           </div>
         )}
 
