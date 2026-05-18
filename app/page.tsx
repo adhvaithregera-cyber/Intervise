@@ -63,7 +63,7 @@ export default async function LandingPage() {
   const showTryFree = !user || tier !== 'free'
 
   return (
-    <div className="min-h-screen bg-white text-[#170C79]">
+    <div className="min-h-screen bg-[#EFE3CA] text-[#170C79]">
       <Navbar />
 
       {/* Hero */}
@@ -113,7 +113,7 @@ export default async function LandingPage() {
       </div>
 
       {/* How it works */}
-      <section id="how-it-works" className="py-20 sm:py-24" style={{ background: 'linear-gradient(to bottom, #F6F3FA 0%, #F6F3FA 80%, #ffffff 100%)' }}>
+      <section id="how-it-works" className="py-20 sm:py-24" style={{ background: 'linear-gradient(to bottom, #EFE3CA 0%, #EFE3CA 80%, #e8dbbf 100%)' }}>
         <div className="mx-auto max-w-4xl px-4 sm:px-6">
           <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#8ACBD0]">
             The process
@@ -191,7 +191,7 @@ export default async function LandingPage() {
       <div className="border-t border-[#8ACBD0]/40" />
 
       {/* Before / After comparison */}
-      <section className="bg-white py-20 sm:py-24">
+      <section className="bg-[#EFE3CA] py-20 sm:py-24">
         <div className="mx-auto max-w-5xl px-4 sm:px-6">
           <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#8ACBD0]">
             The transformation
@@ -207,7 +207,7 @@ export default async function LandingPage() {
       </section>
 
       {/* Gradient bridge into Pricing */}
-      <div className="h-24" style={{ background: 'linear-gradient(to bottom, #ffffff, #EFE3CA)' }} />
+      <div className="h-24" style={{ background: 'linear-gradient(to bottom, #EFE3CA, #e4d9b8)' }} />
 
       {/* Pricing — animated */}
       <PricingSection />
@@ -232,7 +232,7 @@ export default async function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-[#8ACBD0] bg-white">
+      <footer className="border-t border-[#8ACBD0] bg-[#EFE3CA]">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 px-4 py-6 text-center text-sm text-[#8ACBD0] sm:flex-row sm:justify-between sm:px-6 sm:text-left">
           <span>© 2026 Intervise</span>
           <div className="flex items-center gap-4">
