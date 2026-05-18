@@ -97,11 +97,11 @@ function StepCard({ step, index }: { step: (typeof steps)[number]; index: number
         transition={{ duration: 0.55, delay: index * 0.18 + 0.05, ease: 'easeOut' }}
         className="group mb-5 flex-1 rounded-2xl p-6 sm:p-8 transition-all duration-300"
         style={{
-          background: 'rgba(255,255,255,0.10)',
+          background: 'rgba(28,10,0,0.40)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255,255,255,0.18)',
-          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.12), 0 4px 24px rgba(0,0,0,0.10)',
+          border: '1px solid rgba(249,193,37,0.18)',
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07), 0 4px 24px rgba(0,0,0,0.25)',
         }}
       >
         {/* Hover shimmer overlay */}
@@ -166,20 +166,12 @@ export function HowItWorks() {
       className="relative py-20 sm:py-24 overflow-hidden"
       style={{ backgroundColor: '#E88535' }}
     >
-      {/* Dot grid pattern */}
+      {/* Dot grid only — no vignette overlay */}
       <div
         className="pointer-events-none absolute inset-0 z-0"
         style={{
           backgroundImage: 'radial-gradient(rgba(255,255,255,0.07) 1.5px, transparent 1.5px)',
           backgroundSize: '26px 26px',
-        }}
-      />
-
-      {/* Subtle radial vignette to keep dot grid from feeling flat */}
-      <div
-        className="pointer-events-none absolute inset-0 z-0"
-        style={{
-          background: 'radial-gradient(ellipse 80% 70% at 50% 50%, transparent 40%, rgba(224,122,47,0.6) 100%)',
         }}
       />
 

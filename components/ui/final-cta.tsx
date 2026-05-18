@@ -13,19 +13,12 @@ export function FinalCta({ showSignup }: { showSignup: boolean }) {
       className="relative overflow-hidden px-4 py-20 text-center sm:px-6 sm:py-28"
       style={{ backgroundColor: '#BF601A' }}
     >
-      {/* Dot grid */}
+      {/* Dot grid only — no vignette to avoid gradient banding */}
       <div
         className="pointer-events-none absolute inset-0 z-0"
         style={{
-          backgroundImage: 'radial-gradient(rgba(255,255,255,0.06) 1.5px, transparent 1.5px)',
+          backgroundImage: 'radial-gradient(rgba(255,255,255,0.07) 1.5px, transparent 1.5px)',
           backgroundSize: '26px 26px',
-        }}
-      />
-      {/* Dark centre vignette for focus */}
-      <div
-        className="pointer-events-none absolute inset-0 z-0"
-        style={{
-          background: 'radial-gradient(ellipse 70% 80% at 50% 50%, rgba(28,10,0,0.35) 0%, transparent 70%)',
         }}
       />
 

@@ -20,7 +20,7 @@ export default async function LandingPage() {
       .single()
     tier = profile?.tier ?? 'free'
   }
-  const showTryFree = !user || tier !== 'free'
+  const showTryFree = !user
 
   return (
     <div className="min-h-screen text-[#1C0A00]">
@@ -72,22 +72,22 @@ export default async function LandingPage() {
             ))}
           </div>
 
-          {/* CTAs */}
+          {/* CTAs — "See how it works" is primary dark, "Practice for free" is secondary */}
           <div className="flex flex-col items-center gap-3 sm:flex-row">
+            <Link
+              href="#how-it-works"
+              className="inline-flex w-full items-center justify-center rounded-xl bg-[#1C0A00] px-8 py-3.5 text-base font-bold text-white shadow-lg shadow-black/25 hover:bg-black transition-colors sm:w-auto"
+            >
+              See how it works
+            </Link>
             {showTryFree && (
               <Link
                 href="/signup"
-                className="inline-flex w-full items-center justify-center rounded-xl bg-[#1C0A00] px-8 py-3.5 text-base font-bold text-white shadow-lg shadow-black/25 hover:bg-black transition-colors sm:w-auto"
+                className="inline-flex w-full items-center justify-center rounded-xl border-2 border-white/40 bg-white/10 px-8 py-3.5 text-base font-semibold text-white backdrop-blur-sm hover:bg-white/20 transition-colors sm:w-auto"
               >
                 Practice for free →
               </Link>
             )}
-            <Link
-              href="#how-it-works"
-              className="inline-flex w-full items-center justify-center rounded-xl border-2 border-white/50 bg-white/15 px-8 py-3.5 text-base font-semibold text-white backdrop-blur-sm hover:bg-white/25 transition-colors sm:w-auto"
-            >
-              See how it works
-            </Link>
           </div>
 
           {/* Trust pills */}
@@ -103,28 +103,24 @@ export default async function LandingPage() {
           </div>
         </div>
 
-        {/* Gradient fade into shade-2 */}
+        {/* Gradient fade into dark category strip */}
         <div
           className="absolute bottom-0 left-0 right-0 h-32"
-          style={{ background: 'linear-gradient(to bottom, transparent, #E88535)' }}
+          style={{ background: 'linear-gradient(to bottom, transparent, #1C0A00)' }}
         />
       </section>
 
-      {/* Category strip */}
-      <div className="border-y border-white/20" style={{ backgroundColor: '#E88535' }}>
-        <CategoryStrip />
-      </div>
+      {/* Category strip — dark band */}
+      <CategoryStrip />
 
-      {/* ── HOW IT WORKS — glassmorphic animated steps ── */}
+      {/* ── HOW IT WORKS ── */}
       <HowItWorks />
 
       {/* ── COMPARISON ── */}
       <ComparisonSection />
 
-      {/* ── PRICING ── */}
-      <div style={{ backgroundColor: '#CB6820' }}>
-        <PricingSection />
-      </div>
+      {/* ── PRICING — dark section ── */}
+      <PricingSection />
 
       {/* ── FINAL CTA ── */}
       <FinalCta showSignup={showTryFree} />

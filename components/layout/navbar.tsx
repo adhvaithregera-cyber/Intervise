@@ -29,8 +29,8 @@ export async function Navbar() {
     tier = profile?.tier ?? 'free'
   }
 
-  // Show "Try for FREE" only when: not signed in, OR signed in but not on free plan
-  const showTryFree = !user || tier !== 'free'
+  // Show "Try for FREE" only for non-signed-in users
+  const showTryFree = !user
 
   return (
     <nav

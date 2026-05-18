@@ -13,19 +13,12 @@ export function ComparisonSection() {
       className="relative overflow-hidden py-20 sm:py-24"
       style={{ backgroundColor: '#D97228' }}
     >
-      {/* Dot grid */}
+      {/* Dot grid only — no vignette overlay to avoid gradient banding at section edges */}
       <div
         className="pointer-events-none absolute inset-0 z-0"
         style={{
-          backgroundImage: 'radial-gradient(rgba(255,255,255,0.06) 1.5px, transparent 1.5px)',
+          backgroundImage: 'radial-gradient(rgba(255,255,255,0.07) 1.5px, transparent 1.5px)',
           backgroundSize: '26px 26px',
-        }}
-      />
-      {/* Vignette */}
-      <div
-        className="pointer-events-none absolute inset-0 z-0"
-        style={{
-          background: 'radial-gradient(ellipse 80% 70% at 50% 50%, transparent 40%, rgba(217,114,40,0.65) 100%)',
         }}
       />
 
@@ -64,10 +57,10 @@ export function ComparisonSection() {
         </motion.div>
       </div>
 
-      {/* Fade into pricing */}
+      {/* Fade into dark pricing section */}
       <div
         className="absolute bottom-0 left-0 right-0 h-16"
-        style={{ background: 'linear-gradient(to bottom, transparent, #CB6820)' }}
+        style={{ background: 'linear-gradient(to bottom, transparent, #1C0A00)' }}
       />
     </section>
   )
