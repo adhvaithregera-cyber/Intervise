@@ -1,7 +1,5 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 
@@ -31,6 +29,28 @@ type AnswerResult = {
   transcriptionFailed: boolean
 }
 
+function calculateStars(wpm: number | null, fillerCount: number | null): number {
+  let total = 0
+  let count = 0
+  if (wpm !== null) {
+    if (wpm >= 130 && wpm <= 160) total += 5
+    else if ((wpm >= 110 && wpm < 130) || (wpm > 160 && wpm <= 180)) total += 4
+    else if ((wpm >= 90 && wpm < 110) || (wpm > 180 && wpm <= 200)) total += 3
+    else if (wpm >= 70) total += 2
+    else total += 1
+    count++
+  }
+  if (fillerCount !== null) {
+    if (fillerCount <= 1) total += 5
+    else if (fillerCount <= 3) total += 4
+    else if (fillerCount <= 6) total += 3
+    else if (fillerCount <= 10) total += 2
+    else total += 1
+    count++
+  }
+  return count > 0 ? Math.round(total / count) : 3
+}
+
 export default function LiveSessionPage() {
   const [phase, setPhase] = useState<LivePhase>('loading')
   const [questions, setQuestions] = useState<Question[]>([])
@@ -50,7 +70,6 @@ export default function LiveSessionPage() {
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const answerStartTimeRef = useRef<number>(0)
 
-  // Initialization
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const sessionId = params.get('session_id')
@@ -72,11 +91,9 @@ export default function LiveSessionPage() {
         setErrorMessage('Could not load questions.')
         return
       }
-      // Re-sort to match URL order
       const sorted = questionIds.map(id => data.find(q => q.id === id)!).filter(Boolean)
       setQuestions(sorted as Question[])
 
-      // Request mic
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
         micStreamRef.current = stream
@@ -86,7 +103,6 @@ export default function LiveSessionPage() {
         return
       }
 
-      // Check camera (non-blocking)
       try {
         const perm = await navigator.permissions.query({ name: 'camera' as PermissionName })
         if (perm.state === 'granted') {
@@ -95,7 +111,7 @@ export default function LiveSessionPage() {
           cameraStreamRef.current = camStream
         }
       } catch {
-        // camera is optional — silently skip
+        // camera is optional
       }
 
       setPhase('prep')
@@ -112,7 +128,6 @@ export default function LiveSessionPage() {
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Prep countdown
   useEffect(() => {
     if (phase !== 'prep') return
     setPrepCount(5)
@@ -129,7 +144,6 @@ export default function LiveSessionPage() {
     return () => clearInterval(id)
   }, [phase, currentIndex]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Camera video binding
   useEffect(() => {
     if (videoRef.current && cameraStream) {
       videoRef.current.srcObject = cameraStream
@@ -177,7 +191,7 @@ export default function LiveSessionPage() {
     if (answerTimerRef.current) clearInterval(answerTimerRef.current)
     if (mediaRecorderRef.current?.state === 'recording') {
       setPhase('analyzing')
-      mediaRecorderRef.current.stop() // triggers onstop → submitAnswer
+      mediaRecorderRef.current.stop()
     }
   }
 
@@ -219,134 +233,207 @@ export default function LiveSessionPage() {
     }
   }
 
+  const card = {
+    background: 'rgba(28,10,0,0.45)',
+    backdropFilter: 'blur(16px)',
+    WebkitBackdropFilter: 'blur(16px)',
+    border: '1px solid rgba(249,193,37,0.25)',
+    borderRadius: '1rem',
+  }
+
   return (
-    <>
-      {/* Phase content */}
-      {phase === 'loading' && (
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <p className="text-[#A0622A]">Loading your session...</p>
-        </div>
-      )}
+    <div
+      className="relative min-h-[calc(100vh-4rem)] overflow-hidden"
+      style={{ backgroundColor: '#E07A2F' }}
+    >
+      {/* Radial golden glow */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: 'radial-gradient(ellipse 75% 60% at 50% 40%, rgba(249,193,37,0.45) 0%, rgba(249,193,37,0.12) 50%, transparent 75%)',
+        }}
+      />
+      {/* Dot grid */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          backgroundImage: 'radial-gradient(rgba(255,255,255,0.08) 1.5px, transparent 1.5px)',
+          backgroundSize: '26px 26px',
+        }}
+      />
 
-      {phase === 'error' && (
-        <div className="max-w-md mx-auto text-center py-20">
-          <p className="text-red-500 mb-4">{errorMessage}</p>
-          <Button variant="outline" onClick={() => window.location.href = '/session/setup'}>Back to Setup</Button>
-        </div>
-      )}
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] px-4 py-12">
 
-      {phase === 'prep' && (
-        <div className="max-w-2xl mx-auto text-center py-16">
-          <p className="text-[#A0622A] text-sm uppercase tracking-widest mb-4">
-            Question {currentIndex + 1} of {questions.length}
-          </p>
-          <h2 className="text-2xl font-semibold text-[#E07A2F] mb-8">
-            {questions[currentIndex]?.question_text}
-          </h2>
-          <div className="text-6xl font-bold text-[#E07A2F] mb-4">{prepCount}</div>
-          <p className="text-[#A0622A]">Recording starts automatically...</p>
-        </div>
-      )}
+        {phase === 'loading' && (
+          <p className="text-white/80 text-lg">Loading your session...</p>
+        )}
 
-      {phase === 'recording' && (
-        <div className="max-w-2xl mx-auto text-center py-16">
-          <p className="text-[#A0622A] text-sm uppercase tracking-widest mb-4">
-            Question {currentIndex + 1} of {questions.length}
-          </p>
-          <h2 className="text-2xl font-semibold text-[#E07A2F] mb-8">
-            {questions[currentIndex]?.question_text}
-          </h2>
-          <div className="flex items-center justify-center gap-2 mb-6">
-            <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse" />
-            <span className="text-red-500 font-medium">Recording</span>
-            <span className="text-[#A0622A] ml-4">{answerTimeLeft}s remaining</span>
+        {phase === 'error' && (
+          <div className="max-w-md text-center">
+            <p className="text-white mb-6 text-lg">{errorMessage}</p>
+            <button
+              onClick={() => window.location.href = '/session/setup'}
+              className="rounded-xl bg-[#1C0A00] px-8 py-3 text-sm font-bold text-white hover:bg-black transition-colors"
+            >
+              Back to Setup
+            </button>
           </div>
-          <Button variant="outline" onClick={stopRecording}>Done</Button>
-        </div>
-      )}
+        )}
 
-      {phase === 'analyzing' && (
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <p className="text-[#A0622A]">Analysing your answer...</p>
-        </div>
-      )}
+        {phase === 'prep' && (
+          <div className="max-w-2xl w-full text-center">
+            <p className="text-white/70 text-xs uppercase tracking-[0.2em] mb-3">
+              Question {currentIndex + 1} of {questions.length}
+            </p>
+            <h2 className="text-2xl font-bold text-white mb-10 leading-snug">
+              {questions[currentIndex]?.question_text}
+            </h2>
+            <div className="text-8xl font-black text-[#1C0A00] mb-4">{prepCount}</div>
+            <p className="text-white/70">Recording starts automatically...</p>
+          </div>
+        )}
 
-      {phase === 'between' && (
-        <div className="max-w-2xl mx-auto py-16">
-          <h2 className="text-2xl font-semibold text-[#E07A2F] mb-6 text-center">
-            Answer {currentIndex + 1} complete
-          </h2>
-          {lastResult && !lastResult.transcriptionFailed ? (
-            <Card className="mb-6 p-6">
-              <div className="flex gap-8 justify-center">
-                <div className="text-center">
-                  <p className="text-sm text-[#A0622A] mb-1">Speaking pace</p>
-                  <p className={cn(
-                    'text-2xl font-bold',
-                    lastResult.wpm && lastResult.wpm >= 130 && lastResult.wpm <= 160
-                      ? 'text-green-600'
-                      : 'text-amber-500'
-                  )}>
-                    {lastResult.wpm ?? '—'} wpm
-                  </p>
-                  <p className="text-xs text-[#A0622A]">Target: 130–160 wpm</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-sm text-[#A0622A] mb-1">Filler words</p>
-                  <p className="text-2xl font-bold text-[#E07A2F]">{lastResult.fillerCount ?? '—'}</p>
-                  {lastResult.fillerBreakdown && Object.keys(lastResult.fillerBreakdown).length > 0 && (
-                    <div className="flex gap-1 flex-wrap justify-center mt-1">
-                      {Object.entries(lastResult.fillerBreakdown).map(([word, count]) => (
-                        <Badge key={word} variant="gray">{word} ×{count}</Badge>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </Card>
-          ) : lastResult?.transcriptionFailed ? (
-            <Card className="mb-6 p-6 text-center">
-              <Badge variant="amber">Transcription unavailable</Badge>
-              <p className="text-[#A0622A] mt-2 text-sm">
-                We couldn&apos;t process this answer. You can still continue.
-              </p>
-            </Card>
-          ) : null}
+        {phase === 'recording' && (
+          <div className="max-w-2xl w-full text-center">
+            <p className="text-white/70 text-xs uppercase tracking-[0.2em] mb-3">
+              Question {currentIndex + 1} of {questions.length}
+            </p>
+            <h2 className="text-2xl font-bold text-white mb-10 leading-snug">
+              {questions[currentIndex]?.question_text}
+            </h2>
+            <div className="flex items-center justify-center gap-3 mb-8">
+              <div className="w-3 h-3 rounded-full bg-red-400 animate-pulse" />
+              <span className="text-white font-semibold">Recording</span>
+              <span className="text-white/60 text-sm ml-2">{answerTimeLeft}s remaining</span>
+            </div>
+            <button
+              onClick={stopRecording}
+              className="rounded-xl border-2 border-white/40 bg-white/10 px-10 py-3 text-base font-semibold text-white backdrop-blur-sm hover:bg-white/20 transition-colors"
+            >
+              Done
+            </button>
+          </div>
+        )}
+
+        {phase === 'analyzing' && (
           <div className="text-center">
-            {currentIndex < questions.length - 1 ? (
-              <Button
-                variant="primary"
-                onClick={() => { setCurrentIndex(i => i + 1); setPhase('prep') }}
-              >
-                Next Question
-              </Button>
-            ) : (
-              <Button variant="primary" onClick={completeSession}>
-                See My Results
-              </Button>
-            )}
+            <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-white/80 text-lg">Analysing your answer...</p>
           </div>
-        </div>
-      )}
+        )}
 
-      {phase === 'completing' && (
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <p className="text-[#A0622A]">Calculating your results...</p>
-        </div>
-      )}
+        {phase === 'between' && (
+          <div className="max-w-2xl w-full">
+            <div className="text-center mb-8">
+              <p className="text-white/70 text-xs uppercase tracking-[0.2em] mb-2">
+                Answer {currentIndex + 1} of {questions.length} complete
+              </p>
+              <h2 className="text-3xl font-bold text-white">Here&apos;s how you did</h2>
+            </div>
 
-      {phase === 'done' && (
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <p className="text-[#A0622A]">Redirecting to your results...</p>
-        </div>
-      )}
+            {lastResult && !lastResult.transcriptionFailed ? (
+              <>
+                {/* Star rating */}
+                <div className="flex justify-center gap-1 mb-8">
+                  {Array.from({ length: 5 }).map((_, i) => {
+                    const stars = calculateStars(lastResult.wpm, lastResult.fillerCount)
+                    return (
+                      <span
+                        key={i}
+                        className="text-4xl"
+                        style={{ color: i < stars ? '#F9C125' : 'rgba(255,255,255,0.2)' }}
+                      >
+                        ★
+                      </span>
+                    )
+                  })}
+                </div>
 
-      {/* Camera corner — always rendered when stream is available */}
+                {/* Metrics row */}
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="p-6 text-center" style={card}>
+                    <p className="text-xs text-white/55 uppercase tracking-widest mb-2">Speaking pace</p>
+                    <p className={cn(
+                      'text-4xl font-black mb-1',
+                      lastResult.wpm && lastResult.wpm >= 130 && lastResult.wpm <= 160
+                        ? 'text-green-400'
+                        : 'text-amber-300'
+                    )}>
+                      {lastResult.wpm ?? '—'}
+                    </p>
+                    <p className="text-white/50 text-xs">wpm · target 130–160</p>
+                  </div>
+                  <div className="p-6 text-center" style={card}>
+                    <p className="text-xs text-white/55 uppercase tracking-widest mb-2">Filler words</p>
+                    <p className="text-4xl font-black text-white mb-1">{lastResult.fillerCount ?? '—'}</p>
+                    {lastResult.fillerBreakdown && Object.keys(lastResult.fillerBreakdown).length > 0 && (
+                      <div className="flex gap-1 flex-wrap justify-center mt-2">
+                        {Object.entries(lastResult.fillerBreakdown).map(([word, count]) => (
+                          <span
+                            key={word}
+                            className="rounded-full px-2 py-0.5 text-xs font-semibold text-white"
+                            style={{ background: 'rgba(249,193,37,0.25)', border: '1px solid rgba(249,193,37,0.35)' }}
+                          >
+                            {word} ×{count}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Transcript */}
+                {lastResult.transcript && (
+                  <div className="p-6 mb-8" style={card}>
+                    <p className="text-xs text-white/55 uppercase tracking-widest mb-3">What you said</p>
+                    <p className="text-white/85 text-sm leading-relaxed">{lastResult.transcript}</p>
+                  </div>
+                )}
+              </>
+            ) : lastResult?.transcriptionFailed ? (
+              <div className="p-6 text-center mb-8" style={card}>
+                <Badge variant="amber">Transcription unavailable</Badge>
+                <p className="text-white/60 mt-3 text-sm">
+                  We couldn&apos;t process this answer. You can still continue.
+                </p>
+              </div>
+            ) : null}
+
+            <div className="text-center">
+              {currentIndex < questions.length - 1 ? (
+                <button
+                  onClick={() => { setCurrentIndex(i => i + 1); setPhase('prep') }}
+                  className="rounded-xl bg-[#1C0A00] px-10 py-3.5 text-base font-bold text-white hover:bg-black transition-colors shadow-lg"
+                >
+                  Next Question
+                </button>
+              ) : (
+                <button
+                  onClick={completeSession}
+                  className="rounded-xl bg-[#1C0A00] px-10 py-3.5 text-base font-bold text-white hover:bg-black transition-colors shadow-lg"
+                >
+                  See My Results
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {(phase === 'completing' || phase === 'done') && (
+          <div className="text-center">
+            <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-white/80 text-lg">Calculating your results...</p>
+          </div>
+        )}
+      </div>
+
+      {/* Camera corner */}
       {cameraStream && (
-        <div className="fixed bottom-6 right-6 rounded-2xl overflow-hidden border-2 border-[#A0622A] shadow-lg w-40 h-28 z-50">
+        <div className="fixed bottom-6 right-6 rounded-2xl overflow-hidden shadow-xl w-40 h-28 z-50"
+          style={{ border: '2px solid rgba(249,193,37,0.4)' }}>
           <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover" />
         </div>
       )}
-    </>
+    </div>
   )
 }
