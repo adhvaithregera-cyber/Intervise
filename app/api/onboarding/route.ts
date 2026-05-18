@@ -10,7 +10,7 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json()
-  const { role_type, interview_date, biggest_weakness, full_name, age, experience_level, interview_type, practice_frequency } = body
+  const { role_type, interview_date, biggest_weakness, full_name } = body
 
   if (!role_type || !biggest_weakness || !full_name) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -20,7 +20,6 @@ export async function POST(request: Request) {
     .from('profiles')
     .update({
       full_name,
-      age: age ? Number(age) : null,
       role_type,
       interview_date: interview_date || null,
       biggest_weakness,

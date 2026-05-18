@@ -7,17 +7,15 @@ export async function PATCH(request: Request) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await request.json()
-  const { age, role_type, interview_date, biggest_weakness } = body
-
-  const updates: Record<string, unknown> = {}
-  if (age !== undefined) updates.age = age === '' ? null : Number(age)
-  if (role_type !== undefined) updates.role_type = role_type || null
-  if (interview_date !== undefined) updates.interview_date = interview_date || null
-  if (biggest_weakness !== undefined) updates.biggest_weakness = biggest_weakness || null
+  const { role_type, interview_date, biggest_weakness } = body
 
   const { error } = await supabase
     .from('profiles')
-    .update(updates)
+    .update({
+      ...(role_type !== undefined && { role_type: role_type || null }),
+      ...(interview_date !== undefined && { interview_date: interview_date || null }),
+      ...(biggest_weakness !== undefined && { biggest_weakness: biggest_weakness || null }),
+    })
     .eq('id', user.id)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
