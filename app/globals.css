@@ -4,18 +4,26 @@
 
 html {
   scroll-behavior: smooth;
-}
-
-:root {
-  --bg: #FEFDF0;
-  --surface: #ffffff;
-  --navy: #E07A2F;
-  --periwinkle: #F9C125;
-  --muted: #A0622A;
-  --border: #A0622A;
+  scroll-padding-top: 4rem; /* offset for sticky navbar */
+  overflow-x: hidden;
 }
 
 body {
-  background-color: #FEFDF0;
-  color: #E07A2F;
+  overflow-x: hidden;
+  overscroll-behavior-y: none; /* prevents bounce jank on Safari/Chrome */
+  background-color: #1C0A00;
+  color: #ffffff;
+}
+
+/* Smooth framer-motion defaults */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:root {
+  --orange: #E07A2F;
+  --yellow: #F9C125;
+  --dark: #1C0A00;
+  --muted: #A0622A;
 }

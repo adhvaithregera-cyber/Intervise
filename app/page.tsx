@@ -103,9 +103,9 @@ export default async function LandingPage() {
           </div>
         </div>
 
-        {/* Gradient fade into dark category strip */}
+        {/* Short downward fade into dark category strip — no upward gradient */}
         <div
-          className="absolute bottom-0 left-0 right-0 h-32"
+          className="absolute bottom-0 left-0 right-0 h-20"
           style={{ background: 'linear-gradient(to bottom, transparent, #1C0A00)' }}
         />
       </section>

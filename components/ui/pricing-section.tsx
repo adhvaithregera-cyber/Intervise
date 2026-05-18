@@ -302,6 +302,12 @@ export default function PricingSection() {
           ))}
         </div>
       </div>
+
+      {/* Downward fade into CTA section (orange) */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-20 pointer-events-none"
+        style={{ background: 'linear-gradient(to bottom, transparent, #BF601A)' }}
+      />
     </section>
   )
 }

@@ -164,7 +164,7 @@ export function HowItWorks() {
     <section
       id="how-it-works"
       className="relative py-20 sm:py-24 overflow-hidden"
-      style={{ backgroundColor: '#E88535' }}
+      style={{ backgroundColor: '#1C0A00' }}
     >
       {/* Dot grid only — no vignette overlay */}
       <div
@@ -210,9 +210,9 @@ export function HowItWorks() {
         </div>
       </div>
 
-      {/* Fade into next section */}
+      {/* Fade downward into comparison (orange) */}
       <div
-        className="absolute bottom-0 left-0 right-0 h-16"
+        className="absolute bottom-0 left-0 right-0 h-20"
         style={{ background: 'linear-gradient(to bottom, transparent, #D97228)' }}
       />
     </section>
