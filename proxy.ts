@@ -16,11 +16,11 @@ export async function proxy(request: NextRequest) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
           supabaseResponse = NextResponse.next({ request })
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
+            supabaseResponse.cookies.set(name, value, options),
           )
         },
       },
-    }
+    },
   )
 
   const {
@@ -28,11 +28,11 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   const { pathname } = request.nextUrl
-  const isPublicPath = pathname === '/' || pathname === '/login' || pathname === '/signup'
+  const isPublicPath   = pathname === '/' || pathname === '/login' || pathname === '/signup'
   const isAuthCallback = pathname.startsWith('/auth/')
-  const isApiPath = pathname.startsWith('/api/')
+  const isApiPath      = pathname.startsWith('/api/')
 
-  // Allow auth callbacks and API routes through — no redirects on API paths
+  // Allow auth callbacks and API routes through
   if (isAuthCallback || isApiPath) return supabaseResponse
 
   // Redirect unauthenticated users away from protected routes
@@ -45,16 +45,36 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
-  // Onboarding guard: redirect to /onboarding if not complete
-  if (user && pathname !== '/onboarding' && !isPublicPath) {
+  if (user && !isPublicPath) {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('onboarding_complete')
+      .select('onboarding_complete, tier')
       .eq('id', user.id)
       .single()
 
-    if (profile && !profile.onboarding_complete) {
+    // Onboarding guard
+    if (profile && !profile.onboarding_complete && pathname !== '/onboarding') {
       return NextResponse.redirect(new URL('/onboarding', request.url))
+    }
+
+    // ── Tier-based URL access control ─────────────────────────────────────
+    // Prevent users from bypassing the UI by crafting URLs to gated features.
+    // The API routes enforce these too, but this guard gives a proper error page.
+    if (profile) {
+      const tier = profile.tier ?? 'free'
+
+      // Session pages require onboarding to be complete and a valid tier
+      const isSessionPath = pathname.startsWith('/session/')
+
+      // /session/report/[id] — ownership is verified in the page's server component
+      // /session/briefing    — ownership is verified in the page's server component
+      // /session/live        — Supabase RLS prevents cross-user data access
+
+      // Block entirely unknown tiers from accessing session features
+      const VALID_TIERS = new Set(['free', 'student', 'pro'])
+      if (isSessionPath && !VALID_TIERS.has(tier)) {
+        return NextResponse.redirect(new URL('/unauthorized', request.url))
+      }
     }
   }
 

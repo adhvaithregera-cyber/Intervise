@@ -1,36 +1,19 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { selectAdaptiveQuestions } from '@/lib/questions'
+import { checkRateLimit, RATE_LIMITS } from '@/lib/ratelimit'
+import { sessionStartSchema } from '@/lib/validation'
 import type { Difficulty } from '@/types/database'
-
-const VALID_DIFFICULTIES: Difficulty[] = ['easy', 'medium', 'mixed', 'hard']
-
-// Difficulties each tier is allowed to submit
-const TIER_ALLOWED_DIFFICULTIES: Record<string, Difficulty[]> = {
-  free: ['easy'],
-  student: ['easy', 'medium', 'mixed'],
-  pro: ['easy', 'medium', 'mixed', 'hard'],
-}
 
 // Questions per session by tier
 const TIER_QUESTION_COUNT: Record<string, number> = {
-  free: 3,
+  free:    3,
   student: 5,
-  pro: 5,
+  pro:     5,
 }
 
-// Session limits by tier — source of truth in code, not the DB column
-const TIER_SESSION_LIMITS: Record<string, number> = {
-  free: 2,
-  student: 12,
-  pro: 30,
-}
-
-// Free tier may only see these question categories (no Behavioural = no STAR format)
-const FREE_CATEGORY_IDS = [1] // Identity & Background only
-
-// Hard difficulty draws from curveball/pressure + situational categories
-const HARD_CATEGORY_IDS = [6, 7] // Situational, Curveball / Pressure
+const FREE_CATEGORY_IDS = [1]     // Identity & Background only
+const HARD_CATEGORY_IDS = [6, 7]  // Situational, Curveball / Pressure
 
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -40,71 +23,62 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  let body: { difficulty?: unknown }
+  // ── Rate limit ──────────────────────────────────────────────────────────
+  const rl = checkRateLimit(`${user.id}:sessionStart`, RATE_LIMITS.sessionStart)
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please wait before starting another session.' },
+      { status: 429, headers: { 'Retry-After': String(Math.ceil((rl.retryAfterMs ?? 60000) / 1000)) } },
+    )
+  }
+
+  // ── Parse & validate body ───────────────────────────────────────────────
+  let rawBody: unknown
   try {
-    body = await request.json()
+    rawBody = await request.json()
   } catch {
-    return NextResponse.json({ error: 'invalid_body' }, { status: 400 })
-  }
-  const { difficulty } = body
-
-  if (!VALID_DIFFICULTIES.includes(difficulty as Difficulty)) {
-    return NextResponse.json({ error: 'invalid_difficulty' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
   }
 
-  // Fetch profile for quota check
-  const { data: profile, error: profileError } = await supabase
+  const parsed = sessionStartSchema.safeParse(rawBody)
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: 'Invalid request', details: parsed.error.flatten().fieldErrors },
+      { status: 400 },
+    )
+  }
+  const { difficulty } = parsed.data
+
+  // ── Fetch profile for question selection ────────────────────────────────
+  // (Tier also validated inside the atomic RPC — this read is only for
+  //  question filtering, not for security decisions.)
+  const { data: profile } = await supabase
     .from('profiles')
     .select('tier, sessions_used_this_month')
     .eq('id', user.id)
     .single()
 
-  if (profileError || !profile) {
-    return NextResponse.json({ error: profileError?.message ?? 'Profile not found' }, { status: 500 })
+  if (!profile) {
+    return NextResponse.json({ error: 'Profile not found' }, { status: 500 })
   }
 
-  // Derive limit from tier — never trust the DB column which may be stale
-  const sessionsLimit = TIER_SESSION_LIMITS[profile.tier] ?? 2
-
-  if (profile.sessions_used_this_month >= sessionsLimit) {
-    return NextResponse.json(
-      {
-        error: 'quota_exceeded',
-        sessionsLimit,
-        sessionsUsed: profile.sessions_used_this_month,
-      },
-      { status: 403 }
-    )
-  }
-
-  // Enforce tier-based difficulty restriction
-  const allowedDifficulties = TIER_ALLOWED_DIFFICULTIES[profile.tier] ?? TIER_ALLOWED_DIFFICULTIES.free
-  if (!allowedDifficulties.includes(difficulty as Difficulty)) {
-    return NextResponse.json({ error: 'difficulty_not_allowed' }, { status: 403 })
-  }
-
-  // Fetch all questions
-  const { data: allQuestions, error: questionsError } = await supabase
-    .from('questions')
-    .select('*')
+  // ── Fetch questions & history ────────────────────────────────────────────
+  const [{ data: allQuestions, error: questionsError }, { data: history, error: historyError }] =
+    await Promise.all([
+      supabase.from('questions').select('*'),
+      supabase.from('question_history').select('question_id').eq('user_id', user.id),
+    ])
 
   if (questionsError || !allQuestions) {
-    return NextResponse.json({ error: questionsError?.message ?? 'Failed to fetch questions' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to load questions' }, { status: 500 })
   }
-
-  // Fetch user's question history
-  const { data: history, error: historyError } = await supabase
-    .from('question_history')
-    .select('question_id')
-    .eq('user_id', user.id)
-
   if (historyError) {
-    return NextResponse.json({ error: historyError.message }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to load history' }, { status: 500 })
   }
 
-  const askedIds = (history ?? []).map((row) => row.question_id)
+  const askedIds = (history ?? []).map(row => row.question_id)
 
-  // Filter question pool by tier and difficulty
+  // ── Filter question pool by tier and difficulty ─────────────────────────
   let questionPool = allQuestions
   if (profile.tier === 'free') {
     questionPool = questionPool.filter(q => FREE_CATEGORY_IDS.includes(q.category_id))
@@ -116,9 +90,7 @@ export async function POST(request: Request) {
   } else if (difficulty === 'hard') {
     questionPool = questionPool.filter(q => HARD_CATEGORY_IDS.includes(q.category_id))
   }
-  // 'mixed' = full allowed pool, no extra filter
 
-  // Fall back to full allowed pool if filter leaves too few questions
   if (questionPool.length < 3) {
     questionPool = profile.tier === 'free'
       ? allQuestions.filter(q => FREE_CATEGORY_IDS.includes(q.category_id))
@@ -128,30 +100,36 @@ export async function POST(request: Request) {
   const questionCount = TIER_QUESTION_COUNT[profile.tier] ?? 3
   const selectedQuestions = selectAdaptiveQuestions(questionPool, askedIds, questionCount)
 
-  // Insert session row first
-  const { data: session, error: sessionError } = await supabase
-    .from('sessions')
-    .insert({
-      user_id: user.id,
-      difficulty: difficulty as Difficulty,
-      status: 'in_progress',
-      tier_at_time: profile.tier,
-    })
-    .select('id')
-    .single()
+  // ── Atomic: quota check + session creation in one locked transaction ─────
+  // create_session_atomic() (SECURITY DEFINER) re-reads tier from DB so it
+  // cannot be spoofed. It also holds a row lock, eliminating the race condition
+  // where two concurrent requests both pass the quota check.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: sessionId, error: rpcError } = await (supabase as any)
+    .rpc('create_session_atomic', { p_difficulty: difficulty })
 
-  if (sessionError || !session) {
-    return NextResponse.json({ error: sessionError?.message ?? 'Failed to create session' }, { status: 500 })
+  if (rpcError) {
+    const msg = rpcError.message ?? ''
+    if (msg.includes('quota_exceeded')) {
+      return NextResponse.json(
+        { error: 'quota_exceeded', sessionsLimit: TIER_QUESTION_COUNT[profile.tier] },
+        { status: 403 },
+      )
+    }
+    if (msg.includes('difficulty_not_allowed')) {
+      return NextResponse.json({ error: 'difficulty_not_allowed' }, { status: 403 })
+    }
+    // Log the real error server-side; never expose DB internals to the client
+    console.error('[session/start] create_session_atomic error:', msg)
+    return NextResponse.json({ error: 'Failed to create session' }, { status: 500 })
   }
 
-  // Batch insert into question_history only after session is created
-  const { error: historyInsertError } = await supabase
+  // ── Record question history ──────────────────────────────────────────────
+  await supabase
     .from('question_history')
-    .insert(selectedQuestions.map((q) => ({ user_id: user.id, question_id: q.id })))
+    .insert(selectedQuestions.map(q => ({ user_id: user.id, question_id: q.id })))
+  // Non-fatal if this fails — session still works, adaptive selection just
+  // won't exclude these questions next time.
 
-  if (historyInsertError) {
-    return NextResponse.json({ error: historyInsertError.message }, { status: 500 })
-  }
-
-  return NextResponse.json({ sessionId: session.id, questions: selectedQuestions })
+  return NextResponse.json({ sessionId, questions: selectedQuestions })
 }

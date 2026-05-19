@@ -1,7 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import HCaptcha from '@hcaptcha/react-hcaptcha'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 
@@ -11,6 +12,8 @@ export default function SignupPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [confirmed, setConfirmed] = useState(false)
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+  const captchaRef = useRef<HCaptcha>(null)
 
   async function handleGoogleSignIn() {
     const supabase = createClient()
@@ -22,10 +25,20 @@ export default function SignupPage() {
 
   async function handleEmailSignup(e: React.FormEvent) {
     e.preventDefault()
+    if (!captchaToken) return
     setError(null)
     setLoading(true)
     const supabase = createClient()
-    const { data, error } = await supabase.auth.signUp({ email, password })
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { captchaToken },
+    })
+
+    // Always reset the widget so the token can't be reused
+    captchaRef.current?.resetCaptcha()
+    setCaptchaToken(null)
+
     if (error) { setError(error.message); setLoading(false); return }
 
     if (data.session) {
@@ -100,8 +113,18 @@ export default function SignupPage() {
           <label className="block text-sm font-medium text-[#E07A2F] mb-1">Password</label>
           <input type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} className={inputClass} placeholder="Min. 8 characters" />
         </div>
+
+        <div className="flex justify-center">
+          <HCaptcha
+            ref={captchaRef}
+            sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY!}
+            onVerify={(token) => setCaptchaToken(token)}
+            onExpire={() => setCaptchaToken(null)}
+          />
+        </div>
+
         {error && <p className="text-sm text-red-500">{error}</p>}
-        <Button type="submit" fullWidth disabled={loading}>
+        <Button type="submit" fullWidth disabled={loading || !captchaToken}>
           {loading ? 'Creating account…' : 'Create account'}
         </Button>
       </form>

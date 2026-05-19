@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button'
 const TOTAL_STEPS = 7
 
 const ROLE_OPTIONS = [
-  'Software Engineering', 'Product Management', 'Data Science / Analytics',
-  'Business / Consulting', 'Finance / Banking', 'Marketing', 'Design (UX/UI)', 'Other',
+  'Software Engineering', 'Product Management', 'Data Science / ML',
+  'Business / Strategy', 'Finance / Consulting', 'Marketing', 'Design (UX/UI)', 'Other',
 ]
 
 const WEAKNESS_OPTIONS = [
@@ -31,22 +31,22 @@ const FREQUENCY_OPTIONS = [
 export default function OnboardingPage() {
   const [step, setStep] = useState(1)
 
-  // Step 1
-  const [roleType, setRoleType] = useState('')
-  // Step 2
-  const [interviewDate, setInterviewDate] = useState('')
-  const [justPracticing, setJustPracticing] = useState(false)
-  // Step 3
-  const [biggestWeakness, setBiggestWeakness] = useState('')
-  // Step 4
-  const [experienceLevel, setExperienceLevel] = useState('')
-  // Step 5
-  const [interviewType, setInterviewType] = useState('')
-  // Step 6
-  const [practiceFrequency, setPracticeFrequency] = useState('')
-  // Step 7
+  // Step 1: Name + Age
   const [fullName, setFullName] = useState('')
   const [age, setAge] = useState(22)
+  // Step 2: Role
+  const [roleType, setRoleType] = useState('')
+  // Step 3: Interview date
+  const [interviewDate, setInterviewDate] = useState('')
+  const [justPracticing, setJustPracticing] = useState(false)
+  // Step 4: Biggest weakness
+  const [biggestWeakness, setBiggestWeakness] = useState('')
+  // Step 5: Experience level
+  const [experienceLevel, setExperienceLevel] = useState('')
+  // Step 6: Interview type
+  const [interviewType, setInterviewType] = useState('')
+  // Step 7: Practice frequency
+  const [practiceFrequency, setPracticeFrequency] = useState('')
 
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -54,7 +54,7 @@ export default function OnboardingPage() {
   const progressPct = Math.round((step / TOTAL_STEPS) * 100)
 
   async function handleSubmit() {
-    if (!fullName.trim()) return
+    if (!practiceFrequency) return
     setError(null)
     setSubmitting(true)
     const res = await fetch('/api/onboarding', {
@@ -106,8 +106,52 @@ export default function OnboardingPage() {
 
         <div className="rounded-2xl border border-[#A0622A] bg-white p-8 shadow-sm sm:p-10">
 
-          {/* Step 1: Role */}
+          {/* Step 1: Full name + Age */}
           {step === 1 && (
+            <div>
+              <h2 className="mb-1 text-2xl font-bold text-[#E07A2F]">Let&apos;s start with you</h2>
+              <p className="mb-8 text-sm text-[#A0622A]">Your name and age help us personalise your experience.</p>
+
+              <div className="space-y-6">
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-[#E07A2F]">Full name</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Priya Sharma"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    className="w-full rounded-xl border-2 border-[#A0622A] bg-white px-4 py-3 text-sm text-[#E07A2F] placeholder-[#A0622A] focus:border-[#E07A2F] focus:outline-none focus:ring-2 focus:ring-[#E07A2F]/10"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 flex items-center justify-between text-sm font-medium text-[#E07A2F]">
+                    <span>Age</span>
+                    <span className="text-2xl font-bold text-[#E07A2F]">{age}</span>
+                  </label>
+                  <input
+                    type="range"
+                    min={16}
+                    max={60}
+                    value={age}
+                    onChange={(e) => setAge(Number(e.target.value))}
+                    className="w-full accent-[#E07A2F]"
+                  />
+                  <div className="mt-1 flex justify-between text-xs text-[#A0622A]">
+                    <span>16</span>
+                    <span>60</span>
+                  </div>
+                </div>
+              </div>
+
+              <Button className="mt-8" fullWidth disabled={!fullName.trim()} onClick={() => setStep(2)}>
+                Continue
+              </Button>
+            </div>
+          )}
+
+          {/* Step 2: Role */}
+          {step === 2 && (
             <div>
               <h2 className="mb-1 text-2xl font-bold text-[#E07A2F]">What role are you targeting?</h2>
               <p className="mb-8 text-sm text-[#A0622A]">We&apos;ll tailor your question bank to your field.</p>
@@ -118,14 +162,15 @@ export default function OnboardingPage() {
                   </button>
                 ))}
               </div>
-              <Button className="mt-8" fullWidth disabled={!roleType} onClick={() => setStep(2)}>
-                Continue
-              </Button>
+              <div className="mt-8 flex gap-3">
+                <Button variant="ghost" onClick={() => setStep(1)}>Back</Button>
+                <Button fullWidth disabled={!roleType} onClick={() => setStep(3)}>Continue</Button>
+              </div>
             </div>
           )}
 
-          {/* Step 2: Interview date */}
-          {step === 2 && (
+          {/* Step 3: Interview date */}
+          {step === 3 && (
             <div>
               <h2 className="mb-1 text-2xl font-bold text-[#E07A2F]">When is your interview?</h2>
               <p className="mb-8 text-sm text-[#A0622A]">Helps us track how much time you have to prepare.</p>
@@ -150,14 +195,14 @@ export default function OnboardingPage() {
                 </div>
               )}
               <div className="mt-8 flex gap-3">
-                <Button variant="ghost" onClick={() => setStep(1)}>Back</Button>
-                <Button fullWidth onClick={() => setStep(3)}>Continue</Button>
+                <Button variant="ghost" onClick={() => setStep(2)}>Back</Button>
+                <Button fullWidth onClick={() => setStep(4)}>Continue</Button>
               </div>
             </div>
           )}
 
-          {/* Step 3: Biggest weakness */}
-          {step === 3 && (
+          {/* Step 4: Biggest weakness */}
+          {step === 4 && (
             <div>
               <h2 className="mb-1 text-2xl font-bold text-[#E07A2F]">Your biggest interview weakness?</h2>
               <p className="mb-8 text-sm text-[#A0622A]">Honest answers help us focus your drills where it matters most.</p>
@@ -169,14 +214,14 @@ export default function OnboardingPage() {
                 ))}
               </div>
               <div className="mt-8 flex gap-3">
-                <Button variant="ghost" onClick={() => setStep(2)}>Back</Button>
-                <Button fullWidth disabled={!biggestWeakness} onClick={() => setStep(4)}>Continue</Button>
+                <Button variant="ghost" onClick={() => setStep(3)}>Back</Button>
+                <Button fullWidth disabled={!biggestWeakness} onClick={() => setStep(5)}>Continue</Button>
               </div>
             </div>
           )}
 
-          {/* Step 4: Experience level */}
-          {step === 4 && (
+          {/* Step 5: Experience level */}
+          {step === 5 && (
             <div>
               <h2 className="mb-1 text-2xl font-bold text-[#E07A2F]">How much experience do you have?</h2>
               <p className="mb-8 text-sm text-[#A0622A]">We&apos;ll calibrate question difficulty to your level.</p>
@@ -188,14 +233,14 @@ export default function OnboardingPage() {
                 ))}
               </div>
               <div className="mt-8 flex gap-3">
-                <Button variant="ghost" onClick={() => setStep(3)}>Back</Button>
-                <Button fullWidth disabled={!experienceLevel} onClick={() => setStep(5)}>Continue</Button>
+                <Button variant="ghost" onClick={() => setStep(4)}>Back</Button>
+                <Button fullWidth disabled={!experienceLevel} onClick={() => setStep(6)}>Continue</Button>
               </div>
             </div>
           )}
 
-          {/* Step 5: Interview type */}
-          {step === 5 && (
+          {/* Step 6: Interview type */}
+          {step === 6 && (
             <div>
               <h2 className="mb-1 text-2xl font-bold text-[#E07A2F]">What type of interviews are you preparing for?</h2>
               <p className="mb-8 text-sm text-[#A0622A]">This shapes which question formats we prioritise.</p>
@@ -207,14 +252,14 @@ export default function OnboardingPage() {
                 ))}
               </div>
               <div className="mt-8 flex gap-3">
-                <Button variant="ghost" onClick={() => setStep(4)}>Back</Button>
-                <Button fullWidth disabled={!interviewType} onClick={() => setStep(6)}>Continue</Button>
+                <Button variant="ghost" onClick={() => setStep(5)}>Back</Button>
+                <Button fullWidth disabled={!interviewType} onClick={() => setStep(7)}>Continue</Button>
               </div>
             </div>
           )}
 
-          {/* Step 6: Practice frequency */}
-          {step === 6 && (
+          {/* Step 7: Practice frequency */}
+          {step === 7 && (
             <div>
               <h2 className="mb-1 text-2xl font-bold text-[#E07A2F]">How often do you plan to practise?</h2>
               <p className="mb-8 text-sm text-[#A0622A]">No pressure — just helps us set expectations.</p>
@@ -225,58 +270,12 @@ export default function OnboardingPage() {
                   </button>
                 ))}
               </div>
-              <div className="mt-8 flex gap-3">
-                <Button variant="ghost" onClick={() => setStep(5)}>Back</Button>
-                <Button fullWidth disabled={!practiceFrequency} onClick={() => setStep(7)}>Continue</Button>
-              </div>
-            </div>
-          )}
-
-          {/* Step 7: Full name + Age */}
-          {step === 7 && (
-            <div>
-              <h2 className="mb-1 text-2xl font-bold text-[#E07A2F]">Almost done — tell us about you</h2>
-              <p className="mb-8 text-sm text-[#A0622A]">Your name and age help personalise your experience.</p>
-
-              <div className="space-y-6">
-                {/* Full name */}
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-[#E07A2F]">Full name</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Priya Sharma"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    className="w-full rounded-xl border-2 border-[#A0622A] bg-white px-4 py-3 text-sm text-[#E07A2F] placeholder-[#A0622A] focus:border-[#E07A2F] focus:outline-none focus:ring-2 focus:ring-[#E07A2F]/10"
-                  />
-                </div>
-
-                {/* Age slider */}
-                <div>
-                  <label className="mb-2 flex items-center justify-between text-sm font-medium text-[#E07A2F]">
-                    <span>Age</span>
-                    <span className="text-2xl font-bold text-[#E07A2F]">{age}</span>
-                  </label>
-                  <input
-                    type="range"
-                    min={16}
-                    max={60}
-                    value={age}
-                    onChange={(e) => setAge(Number(e.target.value))}
-                    className="w-full accent-[#E07A2F]"
-                  />
-                  <div className="mt-1 flex justify-between text-xs text-[#A0622A]">
-                    <span>16</span>
-                    <span>60</span>
-                  </div>
-                </div>
-              </div>
 
               {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
 
               <div className="mt-8 flex gap-3">
                 <Button variant="ghost" onClick={() => setStep(6)}>Back</Button>
-                <Button fullWidth disabled={!fullName.trim() || submitting} onClick={handleSubmit}>
+                <Button fullWidth disabled={!practiceFrequency || submitting} onClick={handleSubmit}>
                   {submitting ? 'Saving…' : 'Go to dashboard'}
                 </Button>
               </div>

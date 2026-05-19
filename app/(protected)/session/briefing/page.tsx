@@ -26,7 +26,25 @@ export default async function BriefingPage({
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
+  // ── Verify the session belongs to this user and is still in progress ────
+  const { data: session } = await supabase
+    .from('sessions')
+    .select('id, status')
+    .eq('id', session_id)
+    .eq('user_id', user.id)
+    .single()
+
+  // Redirect to unauthorized if session doesn't exist or belongs to another user
+  if (!session) redirect('/unauthorized')
+
+  // If session is already complete, send directly to report
+  if (session.status === 'complete') {
+    redirect(`/session/report/${session_id}`)
+  }
+
+  // ── Load the first question for the format briefing ──────────────────────
   const firstQuestionId = parseInt(q.split(',')[0], 10)
+  if (isNaN(firstQuestionId)) redirect('/session/setup')
 
   const { data: question } = await supabase
     .from('questions')
@@ -44,7 +62,7 @@ export default async function BriefingPage({
       <FadeIn delay={0}>
         <div>
           <h1 className="text-2xl font-bold text-white">Get ready for your session</h1>
-          <p className="mt-1 text-sm text-[#1C0A00] font-medium">3 questions · ~5 minutes</p>
+          <p className="mt-1 text-sm text-white/55 font-medium">{q.split(',').length} questions · ~{Math.ceil(q.split(',').length * 1.5)} minutes</p>
         </div>
       </FadeIn>
 

@@ -9,7 +9,7 @@ const GRADE_TEXT: Record<string, string> = {
   A: 'text-green-400',
   B: 'text-[#F9C125]',
   C: 'text-amber-400',
-  D: 'text-orange-400',
+  D: 'text-amber-500',
   F: 'text-red-400',
 }
 
