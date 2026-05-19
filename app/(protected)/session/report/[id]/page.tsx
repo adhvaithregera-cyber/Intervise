@@ -73,6 +73,17 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
     ? Math.round(validWpms.reduce((a, b) => a + b, 0) / validWpms.length)
     : null
   const totalFillers = (answers ?? []).map((a) => a.filler_count ?? 0).reduce((a, b) => a + b, 0)
+  const aggregatedFillers: Record<string, number> = {}
+  for (const answer of answers ?? []) {
+    if (answer.filler_breakdown) {
+      for (const [word, count] of Object.entries(answer.filler_breakdown as Record<string, number>)) {
+        aggregatedFillers[word] = (aggregatedFillers[word] ?? 0) + count
+      }
+    }
+  }
+  const topFillers = Object.entries(aggregatedFillers)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
   const answeredCount = (answers ?? []).filter((a) => !a.transcription_failed).length
   const totalSeconds = (answers ?? []).map((a) => a.duration_seconds ?? 0).reduce((a, b) => a + b, 0)
   const totalTime = totalSeconds >= 60
@@ -135,7 +146,15 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
             <div className="flex flex-col justify-center p-5" style={INNER_CARD}>
               <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-2">Filler words</p>
               <p className="text-3xl font-bold text-white">{totalFillers}</p>
-              <p className="text-[10px] text-white/35 mt-1">Across all answers</p>
+              {topFillers.length > 0 ? (
+                <div className="flex gap-1 flex-wrap mt-2">
+                  {topFillers.map(([word, count]) => (
+                    <Badge key={word} variant="gray">{word} ×{count}</Badge>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-[10px] text-white/35 mt-1">Across all answers</p>
+              )}
             </div>
 
             {/* Time */}
