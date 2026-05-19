@@ -116,7 +116,7 @@ export function SetupClient({ tier }: { tier: string }) {
       {/* Page header */}
       <FadeIn delay={0}>
         <h1 className="mb-2 text-3xl font-bold text-white">Set up your session</h1>
-        <p className="mb-10 text-[#1C0A00] font-medium">
+        <p className="mb-10 text-white/70 font-medium">
           Choose your difficulty and grant the permissions we need to get started.
         </p>
       </FadeIn>
@@ -160,7 +160,7 @@ export function SetupClient({ tier }: { tier: string }) {
             <h2 className="text-lg font-semibold text-white">Microphone</h2>
             <span className="text-xs font-semibold uppercase tracking-wider text-red-400">Required</span>
           </div>
-          <p className="mb-4 text-sm text-[#1C0A00] font-medium">
+          <p className="mb-4 text-sm text-white/70">
             Required to record your answers. Audio is transcribed by AssemblyAI and never stored as a raw file.
           </p>
 
@@ -202,7 +202,7 @@ export function SetupClient({ tier }: { tier: string }) {
               : <Badge variant="gray">Student+ only</Badge>
             }
           </div>
-          <p className="mb-4 text-sm text-[#1C0A00] font-medium">
+          <p className="mb-4 text-sm text-white/70">
             {cameraAllowed
               ? 'Used for real-time eye contact analysis. All facial processing happens in your browser — no video is ever sent to our servers.'
               : 'Eye contact analysis is available on Student and Pro plans.'}

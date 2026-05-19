@@ -1,6 +1,5 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
-import { cn } from '@/lib/utils'
 
 type LivePhase =
   | 'loading'
@@ -23,6 +22,14 @@ type StoredAnswer = {
   duration: number
   questionId: number
   index: number
+}
+
+const glassCard = {
+  backgroundColor: 'rgba(28,10,0,0.70)',
+  backdropFilter: 'blur(20px)',
+  WebkitBackdropFilter: 'blur(20px)',
+  border: '1px solid rgba(249,193,37,0.25)',
+  borderRadius: '1.25rem',
 }
 
 export default function LiveSessionPage() {
@@ -103,7 +110,6 @@ export default function LiveSessionPage() {
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Prep countdown
   useEffect(() => {
     if (phase !== 'prep') return
     setPrepCount(5)
@@ -174,7 +180,7 @@ export default function LiveSessionPage() {
   function stopRecording() {
     if (answerTimerRef.current) clearInterval(answerTimerRef.current)
     if (mediaRecorderRef.current?.state === 'recording') {
-      mediaRecorderRef.current.stop() // triggers onstop → stores blob → setPhase('between')
+      mediaRecorderRef.current.stop()
     }
   }
 
@@ -188,7 +194,6 @@ export default function LiveSessionPage() {
     const params = new URLSearchParams(window.location.search)
     const sessionId = params.get('session_id')!
 
-    // Transcribe all stored answers sequentially
     for (const answer of storedAnswersRef.current) {
       const formData = new FormData()
       formData.append('audio', answer.blob, 'answer.webm')
@@ -199,11 +204,10 @@ export default function LiveSessionPage() {
       try {
         await fetch('/api/session/transcribe', { method: 'POST', body: formData })
       } catch {
-        // continue even if one answer fails — report page handles transcription_failed
+        // continue even if one answer fails
       }
     }
 
-    // Complete session and redirect to report
     try {
       await fetch('/api/session/complete', {
         method: 'POST',
@@ -216,50 +220,27 @@ export default function LiveSessionPage() {
   }
 
   const isLastQuestion = currentIndex === questions.length - 1
-
-  const glassCard = {
-    background: 'rgba(28,10,0,0.45)',
-    backdropFilter: 'blur(16px)',
-    WebkitBackdropFilter: 'blur(16px)',
-    border: '1px solid rgba(249,193,37,0.25)',
-    borderRadius: '1rem',
-  }
+  const q = questions[currentIndex]
+  const timerPct = q ? (answerTimeLeft / q.time_limit_seconds) * 100 : 100
 
   return (
-    <div
-      className="relative min-h-[calc(100vh-4rem)] overflow-hidden"
-      style={{ backgroundColor: '#E07A2F' }}
-    >
-      {/* Radial golden glow */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background: 'radial-gradient(ellipse 75% 60% at 50% 40%, rgba(249,193,37,0.45) 0%, rgba(249,193,37,0.12) 50%, transparent 75%)',
-        }}
-      />
-      {/* Dot grid */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          backgroundImage: 'radial-gradient(rgba(255,255,255,0.08) 1.5px, transparent 1.5px)',
-          backgroundSize: '26px 26px',
-        }}
-      />
-
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] px-4 py-12">
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
+      <div className="w-full max-w-2xl">
 
         {/* Loading */}
         {phase === 'loading' && (
-          <p className="text-white/80 text-lg">Loading your session...</p>
+          <div style={glassCard} className="p-10 text-center">
+            <p className="text-white/70 text-lg">Loading your session...</p>
+          </div>
         )}
 
         {/* Error */}
         {phase === 'error' && (
-          <div className="max-w-md text-center">
-            <p className="text-white mb-6 text-lg">{errorMessage}</p>
+          <div style={glassCard} className="p-10 text-center">
+            <p className="text-white text-lg mb-6">{errorMessage}</p>
             <button
               onClick={() => window.location.href = '/session/setup'}
-              className="rounded-xl bg-[#1C0A00] px-8 py-3 text-sm font-bold text-white hover:bg-black transition-colors"
+              className="rounded-xl bg-[#F9C125] px-8 py-3 text-sm font-bold text-[#1C0A00] hover:brightness-110 transition-all"
             >
               Back to Setup
             </button>
@@ -268,35 +249,63 @@ export default function LiveSessionPage() {
 
         {/* Prep countdown */}
         {phase === 'prep' && (
-          <div className="max-w-2xl w-full text-center">
-            <p className="text-white/70 text-xs uppercase tracking-[0.2em] mb-3">
+          <div style={glassCard} className="p-10 text-center">
+            <p className="text-[#F9C125]/70 text-xs uppercase tracking-[0.2em] mb-2 font-semibold">
               Question {currentIndex + 1} of {questions.length}
             </p>
-            <h2 className="text-2xl font-bold text-white mb-10 leading-snug px-4">
-              {questions[currentIndex]?.question_text}
+            {q && (
+              <p className="text-xs text-white/50 mb-6 font-medium">
+                {q.answer_format.split(' ')[0]} · {q.category_name}
+              </p>
+            )}
+            <h2 className="text-2xl font-bold text-white mb-10 leading-snug">
+              {q?.question_text}
             </h2>
-            <div className="text-8xl font-black text-[#1C0A00] mb-4">{prepCount}</div>
-            <p className="text-white/70 text-sm">Recording starts automatically...</p>
+            <div
+              className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full text-5xl font-black text-[#F9C125]"
+              style={{ border: '3px solid rgba(249,193,37,0.4)', background: 'rgba(249,193,37,0.08)' }}
+            >
+              {prepCount}
+            </div>
+            <p className="text-white/50 text-sm">Recording starts automatically...</p>
           </div>
         )}
 
         {/* Recording */}
         {phase === 'recording' && (
-          <div className="max-w-2xl w-full text-center">
-            <p className="text-white/70 text-xs uppercase tracking-[0.2em] mb-3">
+          <div style={glassCard} className="p-10 text-center">
+            <p className="text-[#F9C125]/70 text-xs uppercase tracking-[0.2em] mb-2 font-semibold">
               Question {currentIndex + 1} of {questions.length}
             </p>
-            <h2 className="text-2xl font-bold text-white mb-10 leading-snug px-4">
-              {questions[currentIndex]?.question_text}
+            {q && (
+              <p className="text-xs text-white/50 mb-6 font-medium">
+                {q.answer_format.split(' ')[0]} · {q.category_name}
+              </p>
+            )}
+            <h2 className="text-2xl font-bold text-white mb-8 leading-snug">
+              {q?.question_text}
             </h2>
-            <div className="flex items-center justify-center gap-3 mb-8">
-              <div className="w-3 h-3 rounded-full bg-red-400 animate-pulse" />
-              <span className="text-white font-semibold">Recording</span>
-              <span className="text-white/60 text-sm ml-2">{answerTimeLeft}s remaining</span>
+
+            {/* Timer bar */}
+            <div className="mb-2 h-1.5 w-full rounded-full bg-white/10">
+              <div
+                className="h-1.5 rounded-full transition-all duration-1000"
+                style={{
+                  width: `${timerPct}%`,
+                  backgroundColor: timerPct > 40 ? '#F9C125' : timerPct > 20 ? '#F97316' : '#EF4444',
+                }}
+              />
             </div>
+            <p className="text-white/50 text-xs mb-8">{answerTimeLeft}s remaining</p>
+
+            <div className="flex items-center justify-center gap-3 mb-8">
+              <div className="w-2.5 h-2.5 rounded-full bg-red-400 animate-pulse" />
+              <span className="text-white/80 font-semibold text-sm">Recording</span>
+            </div>
+
             <button
               onClick={stopRecording}
-              className="rounded-xl border-2 border-white/40 bg-white/10 px-10 py-3 text-base font-semibold text-white backdrop-blur-sm hover:bg-white/20 transition-colors"
+              className="rounded-xl bg-[#F9C125] px-10 py-3 text-base font-bold text-[#1C0A00] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20"
             >
               Done
             </button>
@@ -305,39 +314,34 @@ export default function LiveSessionPage() {
 
         {/* Between questions */}
         {phase === 'between' && (
-          <div className="max-w-md w-full text-center">
-            <div className="p-8 mb-8" style={glassCard}>
-              {/* Checkmark */}
-              <div
-                className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full"
-                style={{ background: 'rgba(249,193,37,0.2)', border: '2px solid rgba(249,193,37,0.5)' }}
-              >
-                <svg className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="#F9C125" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-              </div>
-              <p className="text-white/60 text-xs uppercase tracking-widest mb-1">
-                Answer {currentIndex + 1} of {questions.length}
-              </p>
-              <p className="text-white text-xl font-bold mb-1">Answer recorded</p>
-              <p className="text-white/55 text-sm">
-                {isLastQuestion
-                  ? 'Your results will be ready shortly.'
-                  : 'Get ready for the next question.'}
-              </p>
+          <div style={glassCard} className="p-10 text-center">
+            <div
+              className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full"
+              style={{ background: 'rgba(249,193,37,0.15)', border: '2px solid rgba(249,193,37,0.4)' }}
+            >
+              <svg className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="#F9C125" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
             </div>
+            <p className="text-[#F9C125]/60 text-xs uppercase tracking-widest mb-1 font-semibold">
+              Answer {currentIndex + 1} of {questions.length}
+            </p>
+            <p className="text-white text-xl font-bold mb-2">Answer recorded</p>
+            <p className="text-white/50 text-sm mb-8">
+              {isLastQuestion ? 'Your results will be ready shortly.' : 'Get ready for the next question.'}
+            </p>
 
             {isLastQuestion ? (
               <button
                 onClick={finishAndProcess}
-                className="rounded-xl bg-[#1C0A00] px-10 py-3.5 text-base font-bold text-white hover:bg-black transition-colors shadow-lg"
+                className="rounded-xl bg-[#F9C125] px-10 py-3.5 text-base font-bold text-[#1C0A00] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20"
               >
                 See My Results
               </button>
             ) : (
               <button
                 onClick={goNext}
-                className="rounded-xl bg-[#1C0A00] px-10 py-3.5 text-base font-bold text-white hover:bg-black transition-colors shadow-lg"
+                className="rounded-xl bg-[#F9C125] px-10 py-3.5 text-base font-bold text-[#1C0A00] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20"
               >
                 Next Question
               </button>
@@ -345,9 +349,9 @@ export default function LiveSessionPage() {
           </div>
         )}
 
-        {/* Transcribing all answers */}
+        {/* Transcribing */}
         {phase === 'transcribing' && (
-          <div className="text-center">
+          <div style={glassCard} className="p-10 text-center">
             <div className="generating-loader-wrapper">
               <div className="generating-loader-text">
                 {'Generating transcript'.split('').map((char, i) => (
@@ -358,7 +362,7 @@ export default function LiveSessionPage() {
               </div>
               <div className="generating-loader-bar" />
             </div>
-            <p className="text-white/50 text-xs mt-6">Analysing all your answers...</p>
+            <p className="text-white/40 text-xs mt-6">Analysing all your answers...</p>
           </div>
         )}
       </div>
