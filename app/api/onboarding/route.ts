@@ -37,8 +37,8 @@ export async function POST(request: Request) {
   }
   const { full_name, age, role_type, interview_date, biggest_weakness, experience_level, interview_type, practice_frequency } = parsed.data
 
-  const { error } = await supabase
-    .from('profiles')
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase.from('profiles') as any)
     .update({
       full_name,
       age,

@@ -38,27 +38,11 @@ export const ALLOWED_ROLE_TYPES = [
   'Other',
 ] as const
 
-export const ALLOWED_EXPERIENCE_LEVELS = [
-  'Fresher (0–1 year)',
-  'Early career (1–3 years)',
-  'Mid-level (3–7 years)',
-  'Senior (7+ years)',
-] as const
-
-export const ALLOWED_INTERVIEW_TYPES = [
-  'Behavioural only',
-  'Technical only',
-  'Both behavioural & technical',
-] as const
-
-export const ALLOWED_PRACTICE_FREQUENCIES = [
-  'Every day',
-  'A few times a week',
-  'Once a week',
-  'Just exploring',
-] as const
-
 export type AllowedRoleType = (typeof ALLOWED_ROLE_TYPES)[number]
+
+// Free-form string validator for fields that support "Other" with custom text
+const freeTextField = (label: string) =>
+  z.string().min(1, `${label} is required`).max(200, `${label} must be 200 characters or fewer`).trim()
 
 export const onboardingSchema = z.object({
   full_name: z
@@ -67,20 +51,16 @@ export const onboardingSchema = z.object({
     .max(100, 'Name must be 100 characters or fewer')
     .trim(),
   age: z.number().int().min(16).max(100),
-  role_type: z.enum(ALLOWED_ROLE_TYPES, 'Invalid role type'),
+  role_type: freeTextField('Role type'),
   interview_date: z
     .string()
     .datetime({ offset: true, message: 'interview_date must be a valid ISO 8601 date-time' })
     .nullable()
     .optional(),
-  biggest_weakness: z
-    .string()
-    .min(1, 'Biggest weakness is required')
-    .max(500, 'Biggest weakness must be 500 characters or fewer')
-    .trim(),
-  experience_level: z.enum(ALLOWED_EXPERIENCE_LEVELS, 'Invalid experience level'),
-  interview_type: z.enum(ALLOWED_INTERVIEW_TYPES, 'Invalid interview type'),
-  practice_frequency: z.enum(ALLOWED_PRACTICE_FREQUENCIES, 'Invalid practice frequency'),
+  biggest_weakness: freeTextField('Biggest weakness'),
+  experience_level: freeTextField('Experience level'),
+  interview_type: freeTextField('Interview type'),
+  practice_frequency: freeTextField('Practice frequency'),
 })
 
 // ─── Profile update ──────────────────────────────────────────────────────────
