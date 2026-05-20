@@ -45,15 +45,22 @@ export default async function DashboardPage() {
   }
   const windowCutoff = getWindowCutoff(profile.tier)
 
-  let sessionsQuery = supabase
+  // ── Build both session queries ──────────────────────────────────────────
+  let recentQ = supabase
     .from('sessions').select('*').eq('user_id', user.id).eq('status', 'complete')
     .order('completed_at', { ascending: false })
+  if (windowCutoff) recentQ = recentQ.gte('created_at', windowCutoff)
 
-  if (windowCutoff) {
-    sessionsQuery = sessionsQuery.gte('created_at', windowCutoff)
-  }
+  let chartQ = supabase
+    .from('sessions').select('id, created_at').eq('user_id', user.id).eq('status', 'complete')
+    .order('created_at', { ascending: true })
+  if (windowCutoff) chartQ = chartQ.gte('created_at', windowCutoff)
 
-  const { data: recentSessions } = await sessionsQuery.limit(20)
+  // ── Fetch both in parallel ──────────────────────────────────────────────
+  const [{ data: recentSessions }, chartSessionsResult] = await Promise.all([
+    recentQ.limit(20),
+    isStudent ? chartQ.limit(30) : Promise.resolve({ data: null, error: null }),
+  ])
 
   // ── Chart data (Student+ only) ──────────────────────────────────────────
   type SessionStat = { date: string; fillers: number; wpm: number | null }
@@ -63,16 +70,7 @@ export default async function DashboardPage() {
   let categoryStats: CategoryStat[] = []
 
   if (isStudent) {
-    // Fetch all completed sessions within window for charts (up to 30)
-    let chartSessionsQuery = supabase
-      .from('sessions').select('id, created_at').eq('user_id', user.id).eq('status', 'complete')
-      .order('created_at', { ascending: true })
-
-    if (windowCutoff) {
-      chartSessionsQuery = chartSessionsQuery.gte('created_at', windowCutoff)
-    }
-
-    const { data: chartSessions } = await chartSessionsQuery.limit(30)
+    const chartSessions = chartSessionsResult.data
     const sessionIds = (chartSessions ?? []).map((s) => s.id)
 
     if (sessionIds.length > 0) {

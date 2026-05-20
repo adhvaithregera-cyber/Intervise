@@ -68,10 +68,11 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const [{ data: session }, { data: answers }, { data: profile }] = await Promise.all([
+  const [{ data: session }, { data: answers }, { data: profile }, { data: questions }] = await Promise.all([
     supabase.from('sessions').select('*').eq('id', sessionId).single(),
     supabase.from('answers').select('*').eq('session_id', sessionId).order('answer_index'),
     supabase.from('profiles').select('tier').eq('id', user.id).single(),
+    supabase.from('questions').select('*'),
   ])
 
   if (!session || session.user_id !== user.id) notFound()
@@ -79,9 +80,6 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
   const tier = profile?.tier ?? 'free'
   const isStudent = tier === 'student' || tier === 'pro'
   const isPro = tier === 'pro'
-
-  const questionIds = (answers ?? []).map((a) => a.question_id)
-  const { data: questions } = await supabase.from('questions').select('*').in('id', questionIds)
   const questionMap = Object.fromEntries((questions ?? []).map((q) => [q.id, q]))
 
   const grade = session.overall_grade ?? '—'

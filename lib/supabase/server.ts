@@ -1,8 +1,11 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { cache } from 'react'
 import type { Database } from '@/types/database'
 
-export async function createClient() {
+// cache() deduplicates this call within a single request — if the navbar and
+// the page both call createClient(), only one cookie read + one client is created.
+export const createClient = cache(async function createClient() {
   const cookieStore = await cookies()
 
   return createServerClient<Database>(
@@ -25,4 +28,4 @@ export async function createClient() {
       },
     }
   )
-}
+})
