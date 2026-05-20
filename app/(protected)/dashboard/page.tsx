@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { FadeIn } from '@/components/ui/fade-in'
 import { ProfileEditCard } from './profile-edit-card'
-import { SessionRow } from './session-row'
+import { RecentSessionsList } from './recent-sessions-list'
 import { FillerBarChart, WpmLineChart, CategoryChart } from './progress-charts'
 import { Lock } from 'lucide-react'
 
@@ -53,7 +53,7 @@ export default async function DashboardPage() {
     sessionsQuery = sessionsQuery.gte('created_at', windowCutoff)
   }
 
-  const { data: recentSessions } = await sessionsQuery.limit(10)
+  const { data: recentSessions } = await sessionsQuery.limit(20)
 
   // ── Chart data (Student+ only) ──────────────────────────────────────────
   type SessionStat = { date: string; fillers: number; wpm: number | null }
@@ -199,10 +199,25 @@ export default async function DashboardPage() {
         </div>
       </FadeIn>
 
-      {/* ── Progress Charts (Student+) ────────────────────────────────────── */}
+      {/* Recent sessions */}
       <FadeIn>
         <div>
-          <div className="flex items-center justify-between mb-4">
+          <h2 className="mb-4 text-lg font-semibold text-white">Recent sessions</h2>
+          {recentSessions && recentSessions.length > 0 ? (
+            <RecentSessionsList sessions={recentSessions as import('@/types/database').Session[]} />
+          ) : (
+            <div className="py-12 text-center" style={CARD_STYLE}>
+              <p className="text-[#F9C125]/80 text-sm">No completed sessions yet.</p>
+              <p className="text-white/50 text-xs mt-1">Start a session to see your results here.</p>
+            </div>
+          )}
+        </div>
+      </FadeIn>
+
+      {/* ── Your Progress (Student+) ──────────────────────────────────────── */}
+      <FadeIn>
+        <div className="p-6" style={CARD_STYLE}>
+          <div className="flex items-center justify-between mb-5">
             <h2 className="text-lg font-semibold text-white">Your Progress</h2>
             {!isStudent && (
               <span className="text-xs font-semibold uppercase tracking-wider text-[#F9C125]/60">Student+</span>
@@ -211,7 +226,7 @@ export default async function DashboardPage() {
 
           {!isStudent ? (
             /* Blurred teaser for Free users */
-            <div className="relative rounded-2xl overflow-hidden">
+            <div className="relative rounded-xl overflow-hidden">
               <div style={{ filter: 'blur(5px)', userSelect: 'none', pointerEvents: 'none' }}
                 className="grid grid-cols-2 gap-4">
                 <div className="p-5" style={INNER_CARD}>
@@ -256,25 +271,6 @@ export default async function DashboardPage() {
                 <WpmLineChart data={sessionStats} />
               </div>
               <CategoryChart data={categoryStats} />
-            </div>
-          )}
-        </div>
-      </FadeIn>
-
-      {/* Recent sessions */}
-      <FadeIn>
-        <div>
-          <h2 className="mb-4 text-lg font-semibold text-white">Recent sessions</h2>
-          {recentSessions && recentSessions.length > 0 ? (
-            <div className="space-y-3">
-              {recentSessions.map((session) => (
-                <SessionRow key={session.id} session={session} />
-              ))}
-            </div>
-          ) : (
-            <div className="py-12 text-center" style={CARD_STYLE}>
-              <p className="text-[#F9C125]/80 text-sm">No completed sessions yet.</p>
-              <p className="text-white/50 text-xs mt-1">Start a session to see your results here.</p>
             </div>
           )}
         </div>
