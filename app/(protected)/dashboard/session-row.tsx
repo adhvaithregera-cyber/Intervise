@@ -65,7 +65,7 @@ export function SessionRow({
               onChange={e => setName(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Session name..."
-              className="flex-1 min-w-0 rounded-lg px-3 py-1 text-sm font-semibold text-white outline-none"
+              className="flex-1 min-w-0 rounded-lg px-3 py-1 text-base font-semibold text-white outline-none"
               style={{
                 backgroundColor: 'rgba(249,193,37,0.10)',
                 border: '1px solid rgba(249,193,37,0.4)',
@@ -87,7 +87,7 @@ export function SessionRow({
           </div>
         ) : (
           <div className="flex items-center gap-2 group">
-            <Link href={`/session/report/${session.id}`} className="text-sm font-semibold text-[#F9C125] hover:text-white transition-colors truncate">
+            <Link href={`/session/report/${session.id}`} className="text-base font-semibold text-[#F9C125] hover:text-white transition-colors truncate">
               {displayName}
             </Link>
             <button
@@ -102,7 +102,7 @@ export function SessionRow({
             </button>
           </div>
         )}
-        <p className="text-xs text-white/50 mt-0.5">{session.completed_at ? formatDate(session.completed_at) : '—'}</p>
+        <p className="text-sm text-white/50 mt-0.5">{session.completed_at ? formatDate(session.completed_at) : '—'}</p>
       </div>
       <div className="flex items-center gap-4 ml-4 shrink-0">
         {session.overall_grade ? (
@@ -114,7 +114,7 @@ export function SessionRow({
         )}
         <Link
           href={`/session/report/${session.id}`}
-          className="rounded-lg border border-[#F9C125]/40 px-3 py-1.5 text-xs font-semibold text-[#F9C125] hover:bg-[#F9C125]/10 transition-colors"
+          className="rounded-lg border border-[#F9C125]/40 px-3 py-1.5 text-sm font-semibold text-[#F9C125] hover:bg-[#F9C125]/10 transition-colors"
         >
           View Report
         </Link>

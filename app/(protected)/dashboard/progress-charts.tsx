@@ -33,7 +33,7 @@ const INNER_CARD = {
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-3">
+    <p className="text-xs font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-3">
       {children}
     </p>
   )
@@ -55,12 +55,12 @@ export function FillerBarChart({ data }: { data: SessionStat[] }) {
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
           <XAxis
             dataKey="date"
-            tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 10 }}
+            tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 12 }}
             axisLine={false}
             tickLine={false}
           />
           <YAxis
-            tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 10 }}
+            tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 12 }}
             axisLine={false}
             tickLine={false}
             allowDecimals={false}
@@ -95,12 +95,12 @@ export function WpmLineChart({ data }: { data: SessionStat[] }) {
           {/* Ideal range reference band */}
           <XAxis
             dataKey="date"
-            tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 10 }}
+            tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 12 }}
             axisLine={false}
             tickLine={false}
           />
           <YAxis
-            tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 10 }}
+            tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 12 }}
             axisLine={false}
             tickLine={false}
             domain={['auto', 'auto']}
@@ -119,7 +119,7 @@ export function WpmLineChart({ data }: { data: SessionStat[] }) {
           />
         </LineChart>
       </ResponsiveContainer>
-      <p className="text-[9px] text-white/25 mt-1">Ideal range: 110–160 wpm</p>
+      <p className="text-[11px] text-white/25 mt-1">Ideal range: 110–160 wpm</p>
     </div>
   )
 }
@@ -145,8 +145,8 @@ export function CategoryChart({ data }: { data: CategoryStat[] }) {
           return (
             <div key={cat.category}>
               <div className="flex justify-between mb-1">
-                <span className="text-xs text-white/70 truncate max-w-[70%]">{cat.category}</span>
-                <span className="text-xs font-semibold text-[#F9C125]">
+                <span className="text-sm text-white/70 truncate max-w-[70%]">{cat.category}</span>
+                <span className="text-sm font-semibold text-[#F9C125]">
                   {cat.avgFillers.toFixed(1)} avg · {cat.sessions}s
                 </span>
               </div>

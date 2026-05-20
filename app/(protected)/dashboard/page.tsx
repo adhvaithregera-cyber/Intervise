@@ -148,10 +148,10 @@ export default async function DashboardPage() {
       <FadeIn>
         <div className="grid grid-cols-3 gap-6">
           <div className="col-span-2 p-6" style={CARD_STYLE}>
-            <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-[#F9C125]">Sessions this month</p>
+            <p className="mb-1 text-sm font-semibold uppercase tracking-widest text-[#F9C125]">Sessions this month</p>
             <div className="flex items-end gap-2">
-              <span className="text-4xl font-bold text-white">{profile.sessions_used_this_month}</span>
-              <span className="mb-1 text-lg text-white/60">/ {sessionsLimit}</span>
+              <span className="text-5xl font-bold text-white">{profile.sessions_used_this_month}</span>
+              <span className="mb-1 text-xl text-white/60">/ {sessionsLimit}</span>
             </div>
             <div className="mt-3 h-2 w-full rounded-full" style={{ backgroundColor: 'rgba(249,193,37,0.15)' }}>
               <div
@@ -159,7 +159,7 @@ export default async function DashboardPage() {
                 style={{ width: `${pct}%`, backgroundColor: '#F9C125' }}
               />
             </div>
-            <p className="mt-2 text-xs text-[#F9C125]/70">
+            <p className="mt-2 text-sm text-[#F9C125]/70">
               {exhausted ? 'No sessions left this month.' : `${sessionsLeft} session${sessionsLeft === 1 ? '' : 's'} remaining`}
             </p>
           </div>
@@ -202,13 +202,13 @@ export default async function DashboardPage() {
       {/* Recent sessions */}
       <FadeIn>
         <div>
-          <h2 className="mb-4 text-lg font-semibold text-white">Recent sessions</h2>
+          <h2 className="mb-4 text-xl font-semibold text-white">Recent sessions</h2>
           {recentSessions && recentSessions.length > 0 ? (
             <RecentSessionsList sessions={recentSessions as import('@/types/database').Session[]} />
           ) : (
             <div className="py-12 text-center" style={CARD_STYLE}>
-              <p className="text-[#F9C125]/80 text-sm">No completed sessions yet.</p>
-              <p className="text-white/50 text-xs mt-1">Start a session to see your results here.</p>
+              <p className="text-[#F9C125]/80 text-base">No completed sessions yet.</p>
+              <p className="text-white/50 text-sm mt-1">Start a session to see your results here.</p>
             </div>
           )}
         </div>
@@ -218,9 +218,9 @@ export default async function DashboardPage() {
       <FadeIn>
         <div className="p-6" style={CARD_STYLE}>
           <div className="flex items-center justify-between mb-5">
-            <h2 className="text-lg font-semibold text-white">Your Progress</h2>
+            <h2 className="text-xl font-semibold text-white">Your Progress</h2>
             {!isStudent && (
-              <span className="text-xs font-semibold uppercase tracking-wider text-[#F9C125]/60">Student+</span>
+              <span className="text-sm font-semibold uppercase tracking-wider text-[#F9C125]/60">Student+</span>
             )}
           </div>
 
