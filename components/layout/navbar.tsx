@@ -14,20 +14,34 @@ function getInitials(name?: string | null, email?: string | null): string {
   return '?'
 }
 
-export async function Navbar() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+type NavbarProps = {
+  /** Pass from a parent layout to skip the internal DB fetch */
+  prefetched?: { initials: string; tier: string } | null
+}
 
+export async function Navbar({ prefetched }: NavbarProps = {}) {
   let initials = '?'
   let tier: string | null = null
-  if (user) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('full_name, tier')
-      .eq('id', user.id)
-      .single()
-    initials = getInitials(profile?.full_name, user.email)
-    tier = profile?.tier ?? 'free'
+
+  if (prefetched !== undefined) {
+    // Data already fetched by parent layout — skip the DB call entirely
+    if (prefetched !== null) {
+      initials = prefetched.initials
+      tier = prefetched.tier
+    }
+  } else {
+    // No prefetched data (e.g. landing page) — fetch as before
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name, tier')
+        .eq('id', user.id)
+        .single()
+      initials = getInitials(profile?.full_name, user.email)
+      tier = profile?.tier ?? 'free'
+    }
   }
 
   return (
@@ -51,8 +65,8 @@ export async function Navbar() {
 
         {/* Right: all nav links */}
         <div className="ml-auto flex items-center gap-3 sm:gap-5">
-          {user ? (
-            <NavAuthLinks initials={initials} tier={tier ?? 'free'} />
+          {tier !== null ? (
+            <NavAuthLinks initials={initials} tier={tier} />
           ) : (
             <>
               <Link
