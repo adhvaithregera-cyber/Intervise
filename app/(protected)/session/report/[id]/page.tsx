@@ -116,10 +116,10 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
   return (
     <div className="max-w-6xl mx-auto pb-10">
       <FadeIn delay={0}>
-        <div style={PANEL} className="p-8">
+        <div style={PANEL} className="p-4 sm:p-8">
 
           {/* ── Section 1: Header ──────────────────────────────── */}
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex flex-col gap-4 mb-6 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h1 className="text-2xl font-bold text-white">Session Report</h1>
               <p className="text-sm text-white/40 mt-0.5">
@@ -127,13 +127,13 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
               </p>
             </div>
             <div className="flex gap-3">
-              <Link href="/session/setup">
-                <button className="rounded-xl bg-[#F9C125] px-5 py-2.5 text-sm font-bold text-[#1C0A00] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20">
+              <Link href="/session/setup" className="flex-1 sm:flex-none">
+                <button className="w-full sm:w-auto rounded-xl bg-[#F9C125] px-5 py-2.5 text-sm font-bold text-[#1C0A00] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20">
                   New Session
                 </button>
               </Link>
-              <Link href="/dashboard">
-                <button className="rounded-xl border border-white/20 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white/70 hover:bg-white/10 transition-colors">
+              <Link href="/dashboard" className="flex-1 sm:flex-none">
+                <button className="w-full sm:w-auto rounded-xl border border-white/20 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white/70 hover:bg-white/10 transition-colors">
                   Dashboard
                 </button>
               </Link>
@@ -141,10 +141,10 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
           </div>
 
           {/* ── Section 2: Grade + Stats ───────────────────────── */}
-          <div className="grid grid-cols-5 gap-4 mb-8">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8">
 
             {/* Grade */}
-            <div className="col-span-2 flex items-center gap-5 p-5" style={INNER_CARD}>
+            <div className="col-span-2 sm:col-span-2 flex items-center gap-4 p-4 sm:p-5" style={INNER_CARD}>
               <div
                 className={cn('flex-shrink-0 flex items-center justify-center w-20 h-20 rounded-2xl text-5xl font-black', gradeColor)}
                 style={{ background: 'rgba(249,193,37,0.08)', border: '1.5px solid rgba(249,193,37,0.25)' }}
@@ -159,7 +159,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
             </div>
 
             {/* Avg WPM */}
-            <div className="flex flex-col justify-center p-5" style={INNER_CARD}>
+            <div className="col-span-1 sm:col-span-1 flex flex-col justify-center p-4 sm:p-5" style={INNER_CARD}>
               <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-2">Avg pace</p>
               <p className={cn('text-3xl font-bold', avgWpmColor)}>
                 {avgWpm ?? '—'}<span className="text-sm font-normal text-white/50 ml-1">wpm</span>
@@ -171,7 +171,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
             </div>
 
             {/* Total fillers */}
-            <div className="flex flex-col justify-center p-5" style={INNER_CARD}>
+            <div className="col-span-1 sm:col-span-1 flex flex-col justify-center p-4 sm:p-5" style={INNER_CARD}>
               <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-2">Filler words</p>
               <p className="text-3xl font-bold text-white">{totalFillers}</p>
               {topFillers.length > 0 ? (
@@ -186,7 +186,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
             </div>
 
             {/* Time */}
-            <div className="flex flex-col justify-center p-5" style={INNER_CARD}>
+            <div className="col-span-2 sm:col-span-1 flex flex-col justify-center p-4 sm:p-5" style={INNER_CARD}>
               <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-2">Time spoken</p>
               <p className="text-3xl font-bold text-white">{totalTime}</p>
               <p className="text-[10px] text-white/35 mt-1">Total across session</p>
@@ -203,7 +203,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
             <p className="text-xs text-white/40 mt-0.5">Your recorded responses and performance per question</p>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {(answers ?? []).map((answer) => {
               const question = questionMap[answer.question_id]
               const formatLabel = question?.answer_format?.split(' ')[0] ?? 'N/A'
@@ -214,7 +214,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
                 <div key={answer.id} className="flex flex-col p-5" style={INNER_CARD}>
 
                   {/* Badge row */}
-                  <div className="flex items-center gap-2 mb-3">
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
                     <Badge variant="gray">Q{answer.answer_index}</Badge>
                     <Badge variant="brand">{formatLabel}</Badge>
                     {question?.category_name && (
@@ -285,7 +285,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
           {!isStudent ? (
             <div className="relative rounded-xl overflow-hidden">
               {/* Blurred fake content */}
-              <div className="grid grid-cols-2 gap-4" style={{ filter: 'blur(6px)', userSelect: 'none', pointerEvents: 'none' }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" style={{ filter: 'blur(6px)', userSelect: 'none', pointerEvents: 'none' }}>
                 {[1, 2].map((n) => (
                   <div key={n} className="p-5" style={INNER_CARD}>
                     <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-3">STAR Analysis — Q{n}</p>

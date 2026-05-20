@@ -55,7 +55,7 @@ export default function SignupPage() {
 
   if (confirmed) {
     return (
-      <div className="rounded-2xl border border-[#A0622A] bg-white p-8 shadow-xl text-center">
+      <div className="rounded-2xl border border-[#A0622A] bg-white p-5 sm:p-8 shadow-xl text-center">
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#FEFDF0]">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E07A2F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="2" y="4" width="20" height="16" rx="2" />
@@ -75,7 +75,7 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="rounded-2xl border border-[#A0622A] bg-white p-8 shadow-xl">
+    <div className="rounded-2xl border border-[#A0622A] bg-white p-5 sm:p-8 shadow-xl">
       <div className="mb-8 text-center">
         <Link href="/" className="text-lg font-bold tracking-widest text-[#E07A2F]">INTERVISE</Link>
         <p className="mt-4 text-2xl font-bold text-[#E07A2F]">Create your account</p>

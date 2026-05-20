@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useRef, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { Home, Tag, LayoutDashboard } from 'lucide-react'
 
 const TIER_LABEL: Record<string, string> = {
   free: 'Free',
@@ -46,26 +47,32 @@ export function NavAuthLinks({ initials, tier }: Props) {
   }
 
   return (
-    <div className="flex items-center gap-5">
+    <div className="flex items-center gap-3 sm:gap-5">
       <Link
         href="/"
         className="text-sm font-medium text-white/65 hover:text-white transition-colors"
+        aria-label="Home"
       >
-        Home
+        <Home className="h-5 w-5 sm:hidden" />
+        <span className="hidden sm:inline">Home</span>
       </Link>
       <a
         href="/#pricing"
         className="text-sm font-medium text-white/65 hover:text-white transition-colors"
+        aria-label="Pricing"
       >
-        Pricing
+        <Tag className="h-5 w-5 sm:hidden" />
+        <span className="hidden sm:inline">Pricing</span>
       </a>
 
       {!isOnDashboard && (
         <Link
           href="/dashboard"
-          className="inline-flex items-center rounded-full border border-[#F9C125]/40 bg-[#F9C125]/10 px-3.5 py-1 text-sm font-semibold text-[#F9C125] hover:bg-[#F9C125]/20 hover:border-[#F9C125]/70 transition-colors"
+          className="inline-flex items-center rounded-full border border-[#F9C125]/40 bg-[#F9C125]/10 px-3.5 py-1 text-sm font-semibold text-[#F9C125] hover:bg-[#F9C125]/20 hover:border-[#F9C125]/70 transition-colors sm:px-3.5 sm:py-1"
+          aria-label="Dashboard"
         >
-          Dashboard
+          <LayoutDashboard className="h-5 w-5 sm:hidden" />
+          <span className="hidden sm:inline">Dashboard</span>
         </Link>
       )}
 

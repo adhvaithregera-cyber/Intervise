@@ -146,8 +146,8 @@ export default async function DashboardPage() {
 
       {/* Session quota + info */}
       <FadeIn>
-        <div className="grid grid-cols-3 gap-6">
-          <div className="col-span-2 p-6" style={CARD_STYLE}>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6">
+          <div className="sm:col-span-2 p-6" style={CARD_STYLE}>
             <p className="mb-1 text-sm font-semibold uppercase tracking-widest text-[#F9C125]">Sessions this month</p>
             <div className="flex items-end gap-2">
               <span className="text-5xl font-bold text-white">{profile.sessions_used_this_month}</span>
@@ -228,7 +228,7 @@ export default async function DashboardPage() {
             /* Blurred teaser for Free users */
             <div className="relative rounded-xl overflow-hidden">
               <div style={{ filter: 'blur(5px)', userSelect: 'none', pointerEvents: 'none' }}
-                className="grid grid-cols-2 gap-4">
+                className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="p-5" style={INNER_CARD}>
                   <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-3">Filler words per session</p>
                   <div className="flex items-end gap-2 h-20">
@@ -266,7 +266,7 @@ export default async function DashboardPage() {
           ) : (
             /* Live charts for Student+ */
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FillerBarChart data={sessionStats} />
                 <WpmLineChart data={sessionStats} />
               </div>

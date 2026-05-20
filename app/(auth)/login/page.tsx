@@ -55,7 +55,7 @@ export default function LoginPage() {
   const inputClass = "w-full rounded-xl border border-[#A0622A] bg-[#FEFDF0]/50 px-3 py-2.5 text-sm text-[#E07A2F] placeholder-[#A0622A] focus:border-[#F9C125] focus:outline-none focus:ring-2 focus:ring-[#F9C125]/20"
 
   return (
-    <div className="rounded-2xl border border-[#A0622A] bg-white p-8 shadow-xl">
+    <div className="rounded-2xl border border-[#A0622A] bg-white p-5 sm:p-8 shadow-xl">
       <div className="mb-8 text-center">
         <Link href="/" className="text-lg font-bold tracking-widest text-[#E07A2F]">INTERVISE</Link>
         <p className="mt-4 text-2xl font-bold text-[#E07A2F]">Welcome back</p>

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { NavAuthLinks } from './nav-auth-links'
+import { Home, Tag, LogIn } from 'lucide-react'
 
 function getInitials(name?: string | null, email?: string | null): string {
   if (name) {
@@ -49,40 +50,41 @@ export async function Navbar() {
         </Link>
 
         {/* Right: all nav links */}
-        <div className="ml-auto flex items-center gap-5">
+        <div className="ml-auto flex items-center gap-3 sm:gap-5">
           {user ? (
             <NavAuthLinks initials={initials} tier={tier ?? 'free'} />
           ) : (
             <>
               <Link
-                href="/signup"
-                className="hidden sm:inline-flex items-center rounded-xl border border-[#F9C125]/60 px-4 py-1.5 text-sm font-semibold text-[#F9C125] hover:bg-[#F9C125] hover:text-[#1C0A00] transition-colors"
-              >
-                Try for FREE
-              </Link>
-              <Link
                 href="/"
                 className="text-sm font-medium text-white/65 hover:text-white transition-colors"
+                aria-label="Home"
               >
-                Home
+                <Home className="h-5 w-5 sm:hidden" />
+                <span className="hidden sm:inline">Home</span>
               </Link>
               <a
                 href="/#pricing"
                 className="text-sm font-medium text-white/65 hover:text-white transition-colors"
+                aria-label="Pricing"
               >
-                Pricing
+                <Tag className="h-5 w-5 sm:hidden" />
+                <span className="hidden sm:inline">Pricing</span>
               </a>
               <Link
                 href="/login"
                 className="text-sm font-medium text-white/65 hover:text-white transition-colors"
+                aria-label="Login"
               >
-                Login
+                <LogIn className="h-5 w-5 sm:hidden" />
+                <span className="hidden sm:inline">Login</span>
               </Link>
               <Link
                 href="/signup"
-                className="rounded-xl bg-[#F9C125] px-4 py-1.5 text-sm font-semibold text-[#1C0A00] hover:bg-[#FFD84D] transition-colors shadow-sm shadow-[#F9C125]/20"
+                className="rounded-xl bg-[#F9C125] px-3 py-1.5 text-sm font-semibold text-[#1C0A00] hover:bg-[#FFD84D] transition-colors shadow-sm shadow-[#F9C125]/20 sm:px-4"
               >
-                Sign up
+                <span className="sm:hidden">Join</span>
+                <span className="hidden sm:inline">Sign up</span>
               </Link>
             </>
           )}
