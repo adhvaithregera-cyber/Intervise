@@ -7,12 +7,12 @@ import type { Difficulty } from '@/types/database'
 
 // Questions per session by tier
 const TIER_QUESTION_COUNT: Record<string, number> = {
-  free:    3,
+  free:    5,
   student: 5,
   pro:     5,
 }
 
-const FREE_CATEGORY_IDS = [1]     // Identity & Background only
+const FREE_CATEGORY_IDS = [1, 2]  // Identity & Background + Strengths & Weaknesses
 const HARD_CATEGORY_IDS = [6, 7]  // Situational, Curveball / Pressure
 
 export async function POST(request: Request) {
@@ -91,13 +91,13 @@ export async function POST(request: Request) {
     questionPool = questionPool.filter(q => HARD_CATEGORY_IDS.includes(q.category_id))
   }
 
-  if (questionPool.length < 3) {
+  const questionCount = TIER_QUESTION_COUNT[profile.tier] ?? 5
+
+  if (questionPool.length < questionCount) {
     questionPool = profile.tier === 'free'
       ? allQuestions.filter(q => FREE_CATEGORY_IDS.includes(q.category_id))
       : allQuestions
   }
-
-  const questionCount = TIER_QUESTION_COUNT[profile.tier] ?? 3
   const selectedQuestions = selectAdaptiveQuestions(questionPool, askedIds, questionCount)
 
   // ── Atomic: quota check + session creation in one locked transaction ─────

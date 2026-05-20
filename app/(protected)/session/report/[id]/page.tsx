@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Badge } from '@/components/ui/badge'
 import { FadeIn } from '@/components/ui/fade-in'
 import { cn } from '@/lib/utils'
+import { Lock } from 'lucide-react'
 
 const GRADE_COLOR: Record<string, string> = {
   A: 'text-green-400',
@@ -46,6 +47,20 @@ function Stars({ count }: { count: number }) {
   )
 }
 
+function getWpmLabel(wpm: number | null): string {
+  if (wpm === null) return ''
+  if (wpm < 110) return 'Slow'
+  if (wpm > 160) return 'Fast'
+  return 'Ideal'
+}
+
+function getWpmColor(wpm: number | null): string {
+  if (wpm === null) return 'text-white/40'
+  if (wpm < 110) return 'text-amber-400'
+  if (wpm > 160) return 'text-red-400'
+  return 'text-green-400'
+}
+
 export default async function ReportPage({ params }: { params: Promise<{ id: string }> }) {
   const sessionId = (await params).id
 
@@ -53,12 +68,17 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const [{ data: session }, { data: answers }] = await Promise.all([
+  const [{ data: session }, { data: answers }, { data: profile }] = await Promise.all([
     supabase.from('sessions').select('*').eq('id', sessionId).single(),
     supabase.from('answers').select('*').eq('session_id', sessionId).order('answer_index'),
+    supabase.from('profiles').select('tier').eq('id', user.id).single(),
   ])
 
   if (!session || session.user_id !== user.id) notFound()
+
+  const tier = profile?.tier ?? 'free'
+  const isStudent = tier === 'student' || tier === 'pro'
+  const isPro = tier === 'pro'
 
   const questionIds = (answers ?? []).map((a) => a.question_id)
   const { data: questions } = await supabase.from('questions').select('*').in('id', questionIds)
@@ -89,6 +109,9 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
   const totalTime = totalSeconds >= 60
     ? `${Math.floor(totalSeconds / 60)}m ${totalSeconds % 60}s`
     : `${totalSeconds}s`
+
+  const avgWpmLabel = getWpmLabel(avgWpm)
+  const avgWpmColor = getWpmColor(avgWpm)
 
   return (
     <div className="max-w-6xl mx-auto pb-10">
@@ -138,8 +161,13 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
             {/* Avg WPM */}
             <div className="flex flex-col justify-center p-5" style={INNER_CARD}>
               <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-2">Avg pace</p>
-              <p className="text-3xl font-bold text-white">{avgWpm ?? '—'}<span className="text-sm font-normal text-white/50 ml-1">wpm</span></p>
-              <p className="text-[10px] text-white/35 mt-1">Target: 130–160 wpm</p>
+              <p className={cn('text-3xl font-bold', avgWpmColor)}>
+                {avgWpm ?? '—'}<span className="text-sm font-normal text-white/50 ml-1">wpm</span>
+              </p>
+              {avgWpm !== null && (
+                <p className={cn('text-xs font-semibold mt-1', avgWpmColor)}>{avgWpmLabel}</p>
+              )}
+              <p className="text-[10px] text-white/35 mt-1">Ideal: 110–160 wpm</p>
             </div>
 
             {/* Total fillers */}
@@ -176,11 +204,11 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            {(answers ?? []).map((answer, i) => {
+            {(answers ?? []).map((answer) => {
               const question = questionMap[answer.question_id]
               const formatLabel = question?.answer_format?.split(' ')[0] ?? 'N/A'
-              const wpmOk = answer.wpm !== null && answer.wpm >= 130 && answer.wpm <= 160
-              const wpmColor = answer.wpm === null ? 'text-white/40' : wpmOk ? 'text-green-400' : 'text-amber-400'
+              const label = getWpmLabel(answer.wpm)
+              const color = getWpmColor(answer.wpm)
 
               return (
                 <div key={answer.id} className="flex flex-col p-5" style={INNER_CARD}>
@@ -212,11 +240,12 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
                     <div className="grid grid-cols-3 gap-3">
                       <div>
                         <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-1">Pace</p>
-                        <p className={cn('text-xl font-bold', wpmColor)}>
+                        <p className={cn('text-xl font-bold', color)}>
                           {answer.wpm ?? '—'}<span className="text-xs font-normal ml-0.5">wpm</span>
                         </p>
-                        {answer.filler_breakdown &&
-                          Object.keys(answer.filler_breakdown as Record<string, number>).length > 0 && null}
+                        {label && (
+                          <p className={cn('text-[10px] font-semibold mt-0.5', color)}>{label}</p>
+                        )}
                       </div>
                       <div>
                         <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-1">Fillers</p>
@@ -239,6 +268,125 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
                 </div>
               )
             })}
+          </div>
+
+          {/* ── Divider ────────────────────────────────────────── */}
+          <div className="border-t border-white/8 mt-8 mb-6" />
+
+          {/* ── Section 4: AI Feedback (Student+) ──────────────── */}
+          <div className="mb-5 flex items-center justify-between">
+            <div>
+              <h2 className="text-base font-semibold text-white">AI Feedback</h2>
+              <p className="text-xs text-white/40 mt-0.5">STAR scores, ideal answers, and grammar analysis per question</p>
+            </div>
+            {!isStudent && <Badge variant="brand">Student+</Badge>}
+          </div>
+
+          {!isStudent ? (
+            <div className="relative rounded-xl overflow-hidden">
+              {/* Blurred fake content */}
+              <div className="grid grid-cols-2 gap-4" style={{ filter: 'blur(6px)', userSelect: 'none', pointerEvents: 'none' }}>
+                {[1, 2].map((n) => (
+                  <div key={n} className="p-5" style={INNER_CARD}>
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-3">STAR Analysis — Q{n}</p>
+                    <div className="space-y-2 mb-4">
+                      {[['Situation', '2/3', '66%'], ['Task', '3/3', '100%'], ['Action', '1/3', '33%'], ['Result', '2/3', '66%']].map(([label, score, pct]) => (
+                        <div key={label}>
+                          <div className="flex justify-between mb-1">
+                            <span className="text-xs text-white/70">{label}</span>
+                            <span className="text-xs font-semibold text-[#F9C125]">{score}</span>
+                          </div>
+                          <div className="h-1.5 rounded-full" style={{ background: 'rgba(255,255,255,0.08)' }}>
+                            <div className="h-1.5 rounded-full bg-[#F9C125]" style={{ width: pct }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="border-t border-white/8 pt-3">
+                      <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-2">Ideal Answer</p>
+                      <p className="text-xs text-white/55 leading-relaxed">The situation involved a critical deadline where the team needed to deliver under pressure. I took ownership and coordinated with stakeholders to align on priorities before executing a revised plan that met the deadline...</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {/* Lock overlay */}
+              <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(28,10,0,0.55)' }}>
+                <div className="text-center px-6">
+                  <div className="flex justify-center mb-3">
+                    <div className="rounded-full p-3" style={{ background: 'rgba(249,193,37,0.15)', border: '1px solid rgba(249,193,37,0.35)' }}>
+                      <Lock className="h-6 w-6 text-[#F9C125]" />
+                    </div>
+                  </div>
+                  <p className="font-bold text-white mb-1">Unlock AI Feedback</p>
+                  <p className="text-sm text-white/60 mb-4">STAR scores, ideal answers &amp; grammar analysis</p>
+                  <Link href="/#pricing">
+                    <button className="rounded-xl bg-[#F9C125] px-5 py-2.5 text-sm font-bold text-[#1C0A00] hover:brightness-110 transition-all">
+                      Upgrade to Student →
+                    </button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="p-6 text-center" style={INNER_CARD}>
+              <p className="text-white/60 text-sm">AI analysis will appear here — powered by Claude Sonnet</p>
+              <p className="text-white/35 text-xs mt-1">Full AI feedback pipeline coming soon</p>
+            </div>
+          )}
+
+          {/* ── Section 5: Progress & Trends (Pro only) ────────── */}
+          <div className="mt-8 border-t border-white/8 pt-6">
+            <div className="mb-5 flex items-center justify-between">
+              <div>
+                <h2 className="text-base font-semibold text-white">Progress &amp; Trends</h2>
+                <p className="text-xs text-white/40 mt-0.5">How your performance is trending across sessions</p>
+              </div>
+              {!isPro && <Badge variant="brand">Pro only</Badge>}
+            </div>
+
+            {!isPro ? (
+              <div className="relative rounded-xl overflow-hidden">
+                {/* Blurred fake chart */}
+                <div style={{ filter: 'blur(6px)', userSelect: 'none', pointerEvents: 'none' }}>
+                  <div className="p-5" style={INNER_CARD}>
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-3">WPM Trend · Last 8 sessions</p>
+                    <div className="flex items-end gap-2 h-16">
+                      {[80, 65, 90, 75, 88, 70, 95, 85].map((h, i) => (
+                        <div key={i} className="flex-1 rounded-t" style={{ height: `${h}%`, background: 'rgba(249,193,37,0.4)' }} />
+                      ))}
+                    </div>
+                    <div className="flex justify-between mt-2">
+                      {['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8'].map((l) => (
+                        <span key={l} className="text-[9px] text-white/30">{l}</span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                {/* Lock overlay */}
+                <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(28,10,0,0.55)' }}>
+                  <div className="text-center px-6">
+                    <div className="flex justify-center mb-3">
+                      <div className="rounded-full p-3" style={{ background: 'rgba(249,193,37,0.15)', border: '1px solid rgba(249,193,37,0.35)' }}>
+                        <Lock className="h-6 w-6 text-[#F9C125]" />
+                      </div>
+                    </div>
+                    <p className="font-bold text-white mb-1">Unlock Progress Tracking</p>
+                    <p className="text-sm text-white/60 mb-4">WPM trends, filler patterns &amp; weakness analysis</p>
+                    <Link href="/#pricing">
+                      <button className="rounded-xl bg-[#F9C125] px-5 py-2.5 text-sm font-bold text-[#1C0A00] hover:brightness-110 transition-all">
+                        Upgrade to Pro →
+                      </button>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <Link href="/progress">
+                <div className="p-6 text-center cursor-pointer hover:opacity-80 transition-opacity" style={INNER_CARD}>
+                  <p className="text-white/60 text-sm">View your full progress dashboard →</p>
+                </div>
+              </Link>
+            )}
           </div>
 
         </div>
