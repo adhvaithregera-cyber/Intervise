@@ -57,6 +57,8 @@ export function ProfileForm({
   sessionsLimit,
 }: Props) {
   const [fullNameValue, setFullNameValue] = useState(fullName ?? '')
+  const [fullNameSaved, setFullNameSaved] = useState(fullName !== null)
+  const [savingName, setSavingName] = useState(false)
   const [age, setAge] = useState(initialAge?.toString() ?? '')
   const [roleType, setRoleType] = useState(initialRoleType ?? '')
   const [interviewDate, setInterviewDate] = useState(initialInterviewDate ?? '')
@@ -70,6 +72,18 @@ export function ProfileForm({
   const [passwordMsg, setPasswordMsg] = useState<string | null>(null)
   const [changingPassword, setChangingPassword] = useState(false)
 
+  async function saveFullName() {
+    if (!fullNameValue.trim()) return
+    setSavingName(true)
+    const res = await fetch('/api/profile', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ full_name: fullNameValue.trim() }),
+    })
+    setSavingName(false)
+    if (res.ok) setFullNameSaved(true)
+  }
+
   async function handleSave() {
     setSaving(true)
     setSaveMsg(null)
@@ -77,11 +91,9 @@ export function ProfileForm({
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        age,
         role_type: roleType,
         interview_date: interviewDate,
         biggest_weakness: biggestWeakness,
-        ...(fullName === null && fullNameValue ? { full_name: fullNameValue } : {}),
       }),
     })
     setSaving(false)
@@ -118,26 +130,37 @@ export function ProfileForm({
           </h2>
           <div className="space-y-4">
             <div>
-              {fullName === null ? (
-                <>
-                  <label className={labelClass}>
-                    Full name <span className="rounded bg-[#F9C125]/15 px-1.5 py-0.5 text-[10px] text-[#F9C125]/70 normal-case tracking-normal">set once</span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Your full name"
-                    value={fullNameValue}
-                    onChange={(e) => setFullNameValue(e.target.value)}
-                    className={inputClass}
-                    style={inputStyle}
-                  />
-                </>
-              ) : (
+              {fullNameSaved ? (
                 <>
                   <label className={labelClass}>
                     Full name <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] text-white/40 normal-case tracking-normal">locked</span>
                   </label>
-                  <input readOnly value={fullName} className={inputClass} style={readonlyStyle} />
+                  <input readOnly value={fullNameValue || fullName || ''} className={inputClass} style={readonlyStyle} />
+                </>
+              ) : (
+                <>
+                  <label className={labelClass}>
+                    Full name <span className="rounded bg-[#F9C125]/15 px-1.5 py-0.5 text-[10px] text-[#F9C125]/70 normal-case tracking-normal">set once</span>
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Your full name"
+                      value={fullNameValue}
+                      onChange={(e) => setFullNameValue(e.target.value)}
+                      className={`${inputClass} flex-1`}
+                      style={inputStyle}
+                    />
+                    {fullNameValue.trim() && (
+                      <button
+                        onClick={saveFullName}
+                        disabled={savingName}
+                        className="shrink-0 rounded-lg bg-[#F9C125] px-3 py-2 text-xs font-bold text-[#1C0A00] hover:brightness-110 disabled:opacity-50 transition-all"
+                      >
+                        {savingName ? '…' : 'Save'}
+                      </button>
+                    )}
+                  </div>
                 </>
               )}
             </div>
