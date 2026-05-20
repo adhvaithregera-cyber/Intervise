@@ -80,6 +80,12 @@ export const profileUpdateSchema = z
       .max(500)
       .trim()
       .optional(),
+    full_name: z
+      .string()
+      .min(1)
+      .max(100)
+      .trim()
+      .optional(),
   })
   .strict() // reject unknown keys — prevents mass-assignment of any other profile field
 

@@ -56,6 +56,7 @@ export function ProfileForm({
   sessionsUsed,
   sessionsLimit,
 }: Props) {
+  const [fullNameValue, setFullNameValue] = useState(fullName ?? '')
   const [age, setAge] = useState(initialAge?.toString() ?? '')
   const [roleType, setRoleType] = useState(initialRoleType ?? '')
   const [interviewDate, setInterviewDate] = useState(initialInterviewDate ?? '')
@@ -75,7 +76,13 @@ export function ProfileForm({
     const res = await fetch('/api/profile', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ age, role_type: roleType, interview_date: interviewDate, biggest_weakness: biggestWeakness }),
+      body: JSON.stringify({
+        age,
+        role_type: roleType,
+        interview_date: interviewDate,
+        biggest_weakness: biggestWeakness,
+        ...(fullName === null && fullNameValue ? { full_name: fullNameValue } : {}),
+      }),
     })
     setSaving(false)
     setSaveMsg(res.ok ? 'Saved!' : 'Failed to save. Try again.')
@@ -111,10 +118,28 @@ export function ProfileForm({
           </h2>
           <div className="space-y-4">
             <div>
-              <label className={labelClass}>
-                Full name <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] text-white/40 normal-case tracking-normal">locked</span>
-              </label>
-              <input readOnly value={fullName ?? ''} className={inputClass} style={readonlyStyle} />
+              {fullName === null ? (
+                <>
+                  <label className={labelClass}>
+                    Full name <span className="rounded bg-[#F9C125]/15 px-1.5 py-0.5 text-[10px] text-[#F9C125]/70 normal-case tracking-normal">set once</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Your full name"
+                    value={fullNameValue}
+                    onChange={(e) => setFullNameValue(e.target.value)}
+                    className={inputClass}
+                    style={inputStyle}
+                  />
+                </>
+              ) : (
+                <>
+                  <label className={labelClass}>
+                    Full name <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] text-white/40 normal-case tracking-normal">locked</span>
+                  </label>
+                  <input readOnly value={fullName} className={inputClass} style={readonlyStyle} />
+                </>
+              )}
             </div>
 
             <div>

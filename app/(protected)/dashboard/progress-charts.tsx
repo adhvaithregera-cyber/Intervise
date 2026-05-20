@@ -55,15 +55,17 @@ export function FillerBarChart({ data }: { data: SessionStat[] }) {
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
           <XAxis
             dataKey="date"
-            tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 12 }}
+            tick={{ fill: 'rgba(249,193,37,0.75)', fontSize: 12 }}
             axisLine={false}
             tickLine={false}
           />
           <YAxis
-            tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 12 }}
+            tick={{ fill: 'rgba(249,193,37,0.75)', fontSize: 12 }}
             axisLine={false}
             tickLine={false}
             allowDecimals={false}
+            domain={[0, 'auto']}
+            tickCount={5}
           />
           <Tooltip
             contentStyle={TOOLTIP_STYLE}
@@ -95,15 +97,20 @@ export function WpmLineChart({ data }: { data: SessionStat[] }) {
           {/* Ideal range reference band */}
           <XAxis
             dataKey="date"
-            tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 12 }}
+            tick={{ fill: 'rgba(249,193,37,0.75)', fontSize: 12 }}
             axisLine={false}
             tickLine={false}
           />
           <YAxis
-            tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 12 }}
+            tick={{ fill: 'rgba(249,193,37,0.75)', fontSize: 12 }}
             axisLine={false}
             tickLine={false}
-            domain={['auto', 'auto']}
+            allowDecimals={false}
+            tickCount={5}
+            domain={[
+              (dataMin: number) => Math.floor(dataMin / 10) * 10,
+              (dataMax: number) => Math.ceil(dataMax / 10) * 10 + 10,
+            ]}
           />
           <Tooltip
             contentStyle={TOOLTIP_STYLE}

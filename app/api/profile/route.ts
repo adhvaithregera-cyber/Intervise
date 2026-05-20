@@ -34,10 +34,17 @@ export async function PATCH(request: Request) {
   }
 
   // Build update from validated fields only — .strict() already rejected unknown keys
-  const { role_type, interview_date, biggest_weakness } = parsed.data
+  const { role_type, interview_date, biggest_weakness, full_name } = parsed.data
 
-  if (role_type === undefined && interview_date === undefined && biggest_weakness === undefined) {
+  if (role_type === undefined && interview_date === undefined && biggest_weakness === undefined && full_name === undefined) {
     return NextResponse.json({ ok: true })
+  }
+
+  // full_name is one-time: only apply it if the current value is null
+  let applyFullName = false
+  if (full_name !== undefined) {
+    const { data: current } = await supabase.from('profiles').select('full_name').eq('id', user.id).single()
+    applyFullName = current?.full_name === null || current?.full_name === ''
   }
 
   const { error } = await supabase
@@ -46,6 +53,7 @@ export async function PATCH(request: Request) {
       ...(role_type        !== undefined && { role_type:        role_type        || null }),
       ...(interview_date   !== undefined && { interview_date:   interview_date   || null }),
       ...(biggest_weakness !== undefined && { biggest_weakness: biggest_weakness || null }),
+      ...(applyFullName                  && { full_name }),
     })
     .eq('id', user.id)
 
