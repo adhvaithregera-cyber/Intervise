@@ -10,6 +10,7 @@ const makeQuestions = (count: number, categoryId = 1): Question[] =>
     category_name: 'Test Category',
     question_text: `Question ${i + 1}`,
     frequency: 'High',
+    difficulty: 'medium' as const,
     answer_format: 'Format',
     time_limit_seconds: 60,
     notes: '',

@@ -18,9 +18,9 @@ const ALL_DIFFICULTY_OPTIONS: { value: Difficulty; title: string; desc: string }
 ]
 
 const TIER_ALLOWED_DIFFICULTIES: Record<string, Difficulty[]> = {
-  free: ['easy'],
-  student: ['easy', 'medium', 'mixed'],
-  pro: ['easy', 'medium', 'mixed', 'hard'],
+  free:    ['easy'],
+  student: ['easy', 'medium'],
+  pro:     ['easy', 'medium', 'mixed', 'hard'],
 }
 
 const CARD_STYLE = {
@@ -143,7 +143,7 @@ export function SetupClient({ tier }: { tier: string }) {
                   <p className="text-xs text-white/65">{desc}</p>
                   {locked && (
                     <p className="mt-2 text-[10px] font-semibold text-[#F9C125]/60 uppercase tracking-wider">
-                      {value === 'hard' ? 'Pro only' : 'Upgrade to unlock'}
+                      {value === 'hard' || value === 'mixed' ? 'Pro only' : 'Upgrade to unlock'}
                     </p>
                   )}
                 </div>

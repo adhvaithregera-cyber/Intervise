@@ -25,6 +25,7 @@ export type Question = {
   category_name: string
   question_text: string
   frequency: string
+  difficulty: 'easy' | 'medium' | 'hard'
   answer_format: string
   time_limit_seconds: number
   notes: string

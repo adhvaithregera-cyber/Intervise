@@ -5,18 +5,18 @@ import { createClient } from '@/lib/supabase/server'
 import { selectAdaptiveQuestions } from '@/lib/questions'
 import { checkRateLimit, RATE_LIMITS } from '@/lib/ratelimit'
 import { sessionStartSchema } from '@/lib/validation'
-import type { Difficulty } from '@/types/database'
+import type { Difficulty, Question } from '@/types/database'
 
 // Cache the full questions table for 1 hour — questions change rarely.
 // Uses service role key (server-only) to bypass RLS for a public read.
 const getCachedQuestions = unstable_cache(
-  async () => {
+  async (): Promise<Question[]> => {
     const supabase = createSupabaseClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
     )
     const { data } = await supabase.from('questions').select('*')
-    return data ?? []
+    return (data ?? []) as Question[]
   },
   ['questions-all'],
   { revalidate: 3600 },
@@ -30,7 +30,6 @@ const TIER_QUESTION_COUNT: Record<string, number> = {
 }
 
 const FREE_CATEGORY_IDS = [1, 2]  // Identity & Background + Strengths & Weaknesses
-const HARD_CATEGORY_IDS = [6, 7]  // Situational, Curveball / Pressure
 
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -111,12 +110,13 @@ export async function POST(request: Request) {
     questionPool = questionPool.filter(q => FREE_CATEGORY_IDS.includes(q.category_id))
   }
   if (difficulty === 'easy') {
-    questionPool = questionPool.filter(q => q.frequency === 'Universal')
+    questionPool = questionPool.filter(q => q.difficulty === 'easy')
   } else if (difficulty === 'medium') {
-    questionPool = questionPool.filter(q => q.frequency === 'Universal' || q.frequency === 'Very High')
+    questionPool = questionPool.filter(q => q.difficulty !== 'hard')
   } else if (difficulty === 'hard') {
-    questionPool = questionPool.filter(q => HARD_CATEGORY_IDS.includes(q.category_id))
+    questionPool = questionPool.filter(q => q.difficulty === 'hard')
   }
+  // 'mixed' → no difficulty filter, all questions in tier's category pool
 
   const questionCount = TIER_QUESTION_COUNT[profile.tier] ?? 5
 
