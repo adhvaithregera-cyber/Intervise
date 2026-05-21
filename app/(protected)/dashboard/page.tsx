@@ -88,10 +88,15 @@ export default async function DashboardPage() {
 
     if (sessionIds.length > 0) {
       // Fetch answers + questions for those sessions in parallel
-      const [{ data: answers }, { data: questions }] = await Promise.all([
-        supabase.from('answers').select('session_id, filler_count, wpm, question_id')
-          .in('session_id', sessionIds).eq('transcription_failed', false),
-        supabase.from('questions').select('id, category_name'),
+      const { data: answers } = await supabase
+        .from('answers').select('session_id, filler_count, wpm, question_id')
+        .in('session_id', sessionIds).eq('transcription_failed', false)
+
+      const questionIds = [...new Set((answers ?? []).map((a) => a.question_id))]
+      const [{ data: questions }] = await Promise.all([
+        questionIds.length > 0
+          ? supabase.from('questions').select('id, category_name').in('id', questionIds)
+          : Promise.resolve({ data: [] }),
       ])
 
       const questionMap = Object.fromEntries((questions ?? []).map((q) => [q.id, q.category_name]))

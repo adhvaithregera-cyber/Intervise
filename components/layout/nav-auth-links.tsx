@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useState, useRef, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Home, Tag } from 'lucide-react'
@@ -25,6 +25,7 @@ type Props = {
 
 export function NavAuthLinks({ initials, tier }: Props) {
   const pathname = usePathname()
+  const router = useRouter()
   const isOnDashboard = pathname === '/dashboard'
 
   const [open, setOpen] = useState(false)
@@ -43,7 +44,8 @@ export function NavAuthLinks({ initials, tier }: Props) {
   async function handleSignOut() {
     const supabase = createClient()
     await supabase.auth.signOut()
-    window.location.href = '/'
+    router.push('/')
+    router.refresh()
   }
 
   return (

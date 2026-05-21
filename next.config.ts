@@ -69,7 +69,7 @@ const nextConfig: NextConfig = {
 
   // Tree-shake large icon/animation packages so only imported symbols are bundled
   experimental: {
-    optimizePackageImports: ['lucide-react', 'framer-motion'],
+    optimizePackageImports: ['lucide-react', 'framer-motion', 'recharts'],
   },
 
   headers: async () => [

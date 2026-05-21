@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 
 type LivePhase =
   | 'loading'
@@ -33,6 +34,7 @@ const glassCard = {
 }
 
 export default function LiveSessionPage() {
+  const router = useRouter()
   const [phase, setPhase] = useState<LivePhase>('loading')
   const [questions, setQuestions] = useState<Question[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -215,7 +217,7 @@ export default function LiveSessionPage() {
         body: JSON.stringify({ session_id: sessionId }),
       })
     } finally {
-      window.location.href = '/session/report/' + sessionId
+      router.push('/session/report/' + sessionId)
     }
   }
 
@@ -239,7 +241,7 @@ export default function LiveSessionPage() {
           <div style={glassCard} className="p-10 text-center">
             <p className="text-white text-lg mb-6">{errorMessage}</p>
             <button
-              onClick={() => window.location.href = '/session/setup'}
+              onClick={() => router.push('/session/setup')}
               className="rounded-xl bg-[#F9C125] px-8 py-3 text-sm font-bold text-[#1C0A00] hover:brightness-110 transition-all"
             >
               Back to Setup
