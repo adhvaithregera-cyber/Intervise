@@ -49,9 +49,9 @@ export const ImageComparison = ({
         className="absolute top-0 left-0 h-full w-full overflow-hidden"
         style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
       >
-        <img src={afterImage} alt={altAfter} className="h-full w-full object-cover object-left" draggable={false} />
+        <img src={afterImage} alt={altAfter} className="h-full w-full object-cover object-left" draggable={false} loading="lazy" />
       </div>
-      <img src={beforeImage} alt={altBefore} className="block h-full w-full object-cover object-left" draggable={false} />
+      <img src={beforeImage} alt={altBefore} className="block h-full w-full object-cover object-left" draggable={false} loading="lazy" />
       <div
         className="absolute top-0 bottom-0 w-1.5 bg-white/80 cursor-ew-resize flex items-center justify-center"
         style={{ left: `calc(${sliderPosition}% - 0.375rem)` }}

@@ -68,14 +68,18 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const [{ data: session }, { data: answers }, { data: profile }, { data: questions }] = await Promise.all([
+  const [{ data: session }, { data: answers }, { data: profile }] = await Promise.all([
     supabase.from('sessions').select('*').eq('id', sessionId).single(),
     supabase.from('answers').select('*').eq('session_id', sessionId).order('answer_index'),
     supabase.from('profiles').select('tier').eq('id', user.id).single(),
-    supabase.from('questions').select('*'),
   ])
 
   if (!session || session.user_id !== user.id) notFound()
+
+  const questionIds = [...new Set((answers ?? []).map((a) => a.question_id))]
+  const { data: questions } = questionIds.length > 0
+    ? await supabase.from('questions').select('id, question_text, answer_format, category_name').in('id', questionIds)
+    : { data: [] }
 
   const tier = profile?.tier ?? 'free'
   const isStudent = tier === 'student' || tier === 'pro'

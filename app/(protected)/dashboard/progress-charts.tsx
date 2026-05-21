@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import {
   BarChart, Bar, LineChart, Line,
   XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
@@ -39,7 +40,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   )
 }
 
-export function FillerBarChart({ data }: { data: SessionStat[] }) {
+export const FillerBarChart = React.memo(function FillerBarChart({ data }: { data: SessionStat[] }) {
   if (data.length === 0) {
     return (
       <div className="flex items-center justify-center h-32 text-white/30 text-xs">
@@ -77,9 +78,9 @@ export function FillerBarChart({ data }: { data: SessionStat[] }) {
       </ResponsiveContainer>
     </div>
   )
-}
+})
 
-export function WpmLineChart({ data }: { data: SessionStat[] }) {
+export const WpmLineChart = React.memo(function WpmLineChart({ data }: { data: SessionStat[] }) {
   const filtered = data.filter((d) => d.wpm !== null)
   if (filtered.length === 0) {
     return (
@@ -129,9 +130,9 @@ export function WpmLineChart({ data }: { data: SessionStat[] }) {
       <p className="text-[11px] text-white/25 mt-1">Ideal range: 110–160 wpm</p>
     </div>
   )
-}
+})
 
-export function CategoryChart({ data }: { data: CategoryStat[] }) {
+export const CategoryChart = React.memo(function CategoryChart({ data }: { data: CategoryStat[] }) {
   if (data.length === 0) {
     return (
       <div className="flex items-center justify-center h-24 text-white/30 text-xs">
@@ -169,4 +170,4 @@ export function CategoryChart({ data }: { data: CategoryStat[] }) {
       </div>
     </div>
   )
-}
+})

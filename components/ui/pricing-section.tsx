@@ -2,8 +2,10 @@
 
 import { useRef, useState } from 'react'
 import Link from 'next/link'
-import NumberFlow from '@number-flow/react'
+import dynamic from 'next/dynamic'
 import { motion, useInView } from 'framer-motion'
+
+const NumberFlow = dynamic(() => import('@number-flow/react'), { ssr: false })
 import { Mic2, BarChart2, CalendarDays, CheckCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
 

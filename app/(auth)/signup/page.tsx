@@ -2,9 +2,13 @@
 
 import Link from 'next/link'
 import { useRef, useState } from 'react'
-import HCaptcha from '@hcaptcha/react-hcaptcha'
+import type HCaptchaType from '@hcaptcha/react-hcaptcha'
+import dynamic from 'next/dynamic'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const HCaptcha = dynamic(() => import('@hcaptcha/react-hcaptcha'), { ssr: false }) as any
 
 export default function SignupPage() {
   const [email, setEmail] = useState('')
@@ -13,7 +17,7 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false)
   const [confirmed, setConfirmed] = useState(false)
   const [captchaToken, setCaptchaToken] = useState<string | null>(null)
-  const captchaRef = useRef<HCaptcha>(null)
+  const captchaRef = useRef<HCaptchaType>(null)
 
   async function handleGoogleSignIn() {
     const supabase = createClient()
@@ -118,7 +122,7 @@ export default function SignupPage() {
           <HCaptcha
             ref={captchaRef}
             sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY!}
-            onVerify={(token) => setCaptchaToken(token)}
+            onVerify={(token: string) => setCaptchaToken(token)}
             onExpire={() => setCaptchaToken(null)}
           />
         </div>

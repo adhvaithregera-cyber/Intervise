@@ -4,7 +4,20 @@ import { createClient } from '@/lib/supabase/server'
 import { FadeIn } from '@/components/ui/fade-in'
 import { ProfileEditCard } from './profile-edit-card'
 import { RecentSessionsList } from './recent-sessions-list'
-import { FillerBarChart, WpmLineChart, CategoryChart } from './progress-charts'
+import dynamic from 'next/dynamic'
+
+const FillerBarChart = dynamic(
+  () => import('./progress-charts').then((m) => ({ default: m.FillerBarChart })),
+  { ssr: false }
+)
+const WpmLineChart = dynamic(
+  () => import('./progress-charts').then((m) => ({ default: m.WpmLineChart })),
+  { ssr: false }
+)
+const CategoryChart = dynamic(
+  () => import('./progress-charts').then((m) => ({ default: m.CategoryChart })),
+  { ssr: false }
+)
 import { Lock } from 'lucide-react'
 
 const TIER_LABELS: Record<string, string> = { free: 'Free', student: 'Student', pro: 'Pro' }
