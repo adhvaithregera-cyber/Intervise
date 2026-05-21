@@ -1,9 +1,26 @@
 import { NextResponse } from 'next/server'
+import { unstable_cache } from 'next/cache'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
 import { selectAdaptiveQuestions } from '@/lib/questions'
 import { checkRateLimit, RATE_LIMITS } from '@/lib/ratelimit'
 import { sessionStartSchema } from '@/lib/validation'
 import type { Difficulty } from '@/types/database'
+
+// Cache the full questions table for 1 hour — questions change rarely.
+// Uses service role key (server-only) to bypass RLS for a public read.
+const getCachedQuestions = unstable_cache(
+  async () => {
+    const supabase = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    )
+    const { data } = await supabase.from('questions').select('*')
+    return data ?? []
+  },
+  ['questions-all'],
+  { revalidate: 3600 },
+)
 
 // Questions per session by tier
 const TIER_QUESTION_COUNT: Record<string, number> = {
@@ -62,14 +79,24 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Profile not found' }, { status: 500 })
   }
 
-  // ── Fetch questions & history ────────────────────────────────────────────
-  const [{ data: allQuestions, error: questionsError }, { data: history, error: historyError }] =
-    await Promise.all([
-      supabase.from('questions').select('*'),
+  // ── Fetch questions (cached) + history (user-specific) in parallel ────────
+  let allQuestions: Awaited<ReturnType<typeof getCachedQuestions>>
+  let history: { question_id: number }[] | null
+  let historyError: { message: string } | null
+
+  try {
+    const [cachedQs, historyResult] = await Promise.all([
+      getCachedQuestions(),
       supabase.from('question_history').select('question_id').eq('user_id', user.id),
     ])
+    allQuestions = cachedQs
+    history = historyResult.data
+    historyError = historyResult.error
+  } catch {
+    return NextResponse.json({ error: 'Failed to load questions' }, { status: 500 })
+  }
 
-  if (questionsError || !allQuestions) {
+  if (!allQuestions.length) {
     return NextResponse.json({ error: 'Failed to load questions' }, { status: 500 })
   }
   if (historyError) {

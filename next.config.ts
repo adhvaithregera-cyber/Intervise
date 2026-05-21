@@ -67,6 +67,11 @@ const nextConfig: NextConfig = {
   // exposure to anyone who opens DevTools on the deployed site
   productionBrowserSourceMaps: false,
 
+  // Tree-shake large icon/animation packages so only imported symbols are bundled
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'framer-motion'],
+  },
+
   headers: async () => [
     {
       source: '/(.*)',
