@@ -87,6 +87,15 @@ export function SetupClient({ tier }: { tier: string }) {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-12">
+      <div
+        className="rounded-2xl p-8"
+        style={{
+          backgroundColor: 'rgba(28,10,0,0.75)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(249,193,37,0.18)',
+        }}
+      >
       {/* Page header */}
       <FadeIn delay={0}>
         <h1 className="mb-2 text-3xl font-bold text-white">Set up your session</h1>
@@ -168,7 +177,7 @@ export function SetupClient({ tier }: { tier: string }) {
 
       {/* Section 3: Camera — Student+ only */}
       <FadeIn delay={0.24}>
-        <section className="mb-10">
+        <section className="mb-6">
           <div className="mb-1 flex items-center gap-2">
             <h2 className="text-lg font-semibold text-white">Camera</h2>
             {cameraAllowed
@@ -224,6 +233,7 @@ export function SetupClient({ tier }: { tier: string }) {
           Start Session
         </button>
       </FadeIn>
+      </div>
     </div>
   )
 }
