@@ -133,3 +133,19 @@ export const transcribeFormSchema = z.object({
     .nullable()
     .optional(),
 })
+
+// ─── Text transcription (Free tier — Web Speech API path) ───────────────────
+
+/**
+ * JSON body schema for the free-tier transcription path.
+ * Accepts the transcript text produced by the browser's SpeechRecognition API
+ * instead of an audio file. Fields are numbers (not strings) since this comes
+ * as JSON, not multipart form data.
+ */
+export const transcribeTextSchema = z.object({
+  session_id: z.string().uuid('session_id must be a valid UUID'),
+  question_id: z.number().int().positive('question_id must be a positive integer'),
+  answer_index: z.number().int().positive('answer_index must be a positive integer'),
+  duration_seconds: z.number().int().positive('duration_seconds must be a positive integer greater than 0'),
+  transcript: z.string().min(1, 'transcript must not be empty').max(10000),
+})
