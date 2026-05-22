@@ -119,7 +119,7 @@ export function SetupClient({ tier }: { tier: string }) {
                     <p className="font-semibold text-[#F9C125]">{title}</p>
                     {locked && <Lock className="h-3.5 w-3.5 text-white/40 shrink-0" />}
                   </div>
-                  <p className="text-xs text-white/65">{desc}</p>
+                  <p className="text-xs text-white/65 break-words">{desc}</p>
                   {locked && (
                     <p className="mt-2 text-[10px] font-semibold text-[#F9C125]/60 uppercase tracking-wider">
                       {value === 'hard' || value === 'mixed' ? 'Pro only' : 'Upgrade to unlock'}
