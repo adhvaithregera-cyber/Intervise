@@ -28,7 +28,7 @@ const TIER_QUESTION_COUNT: Record<string, number> = {
 const FREE_CATEGORY_IDS = [1, 2]
 
 export type CreateSessionResult =
-  | { sessionId: string; questions: Question[] }
+  | { sessionId: string; questions: Question[]; tier: string }
   | { error: 'quota_exceeded' | 'difficulty_not_allowed' | 'profile_not_found' | 'questions_failed' | 'session_failed' }
 
 export async function createSession(
@@ -107,5 +107,5 @@ export async function createSession(
     .from('question_history')
     .insert(selectedQuestions.map(q => ({ user_id: userId, question_id: q.id })))
 
-  return { sessionId, questions: selectedQuestions }
+  return { sessionId, questions: selectedQuestions, tier: profile.tier }
 }
