@@ -8,7 +8,6 @@ import { FadeIn } from '@/components/ui/fade-in'
 import type { Difficulty } from '@/types/database'
 
 type PermState = 'idle' | 'granted' | 'denied' | 'requesting'
-type Question = { id: number }
 
 const ALL_DIFFICULTY_OPTIONS: { value: Difficulty; title: string; desc: string }[] = [
   { value: 'easy',   title: 'Easy',   desc: 'Common openers and strength/weakness questions' },
@@ -56,8 +55,6 @@ export function SetupClient({ tier }: { tier: string }) {
   const [difficulty, setDifficulty] = useState<Difficulty | null>(null)
   const [micPerm, setMicPerm] = useState<PermState>('idle')
   const [cameraPerm, setCameraPerm] = useState<PermState>('idle')
-  const [starting, setStarting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
   async function requestMic() {
     setMicPerm('requesting')
@@ -81,35 +78,12 @@ export function SetupClient({ tier }: { tier: string }) {
     }
   }
 
-  async function handleStart() {
+  function handleStart() {
     if (!difficulty || micPerm !== 'granted') return
-    setStarting(true)
-    setError(null)
-    try {
-      const res = await fetch('/api/session/start', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ difficulty }),
-      })
-      const data = await res.json()
-      if (!res.ok) {
-        if (data.error === 'quota_exceeded') {
-          setError("You've used all your sessions this month. Upgrade your plan to continue.")
-        } else {
-          setError('Something went wrong. Please try again.')
-        }
-        return
-      }
-      const questionIds = (data.questions as Question[]).map((q) => q.id).join(',')
-      router.push(`/session/briefing?session_id=${data.sessionId}&q=${questionIds}`)
-    } catch {
-      setError('Something went wrong. Please try again.')
-    } finally {
-      setStarting(false)
-    }
+    router.push(`/session/briefing?difficulty=${difficulty}`)
   }
 
-  const canStart = difficulty !== null && micPerm === 'granted' && !starting
+  const canStart = difficulty !== null && micPerm === 'granted'
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-12">
@@ -247,12 +221,8 @@ export function SetupClient({ tier }: { tier: string }) {
           onClick={handleStart}
           className="w-full rounded-xl bg-[#F9C125] py-3.5 text-base font-bold text-[#1C0A00] shadow-lg shadow-[#F9C125]/25 transition-all hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
         >
-          {starting ? 'Starting…' : 'Start Session'}
+          Start Session
         </button>
-
-        {error && (
-          <p className="mt-3 text-center text-sm text-red-300">{error}</p>
-        )}
       </FadeIn>
     </div>
   )
