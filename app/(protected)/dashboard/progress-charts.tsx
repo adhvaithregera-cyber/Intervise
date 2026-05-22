@@ -39,7 +39,7 @@ const TOOLTIP_STYLE = {
 
 const INNER_CARD = {
   backgroundColor: 'rgba(255,255,255,0.04)',
-  border: '1px solid rgba(249,193,37,0.12)',
+  border: '1.5px solid rgba(249,193,37,0.28)',
   borderRadius: '0.75rem',
 }
 
