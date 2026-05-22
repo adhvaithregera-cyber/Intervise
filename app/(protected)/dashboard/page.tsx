@@ -4,20 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { FadeIn } from '@/components/ui/fade-in'
 import { ProfileEditCard } from './profile-edit-card'
 import { RecentSessionsList } from './recent-sessions-list'
-import dynamic from 'next/dynamic'
-
-const FillerBarChart = dynamic(
-  () => import('./progress-charts').then((m) => ({ default: m.FillerBarChart })),
-  { ssr: false }
-)
-const WpmLineChart = dynamic(
-  () => import('./progress-charts').then((m) => ({ default: m.WpmLineChart })),
-  { ssr: false }
-)
-const CategoryChart = dynamic(
-  () => import('./progress-charts').then((m) => ({ default: m.CategoryChart })),
-  { ssr: false }
-)
+import { ChartsClient } from './charts-client'
 import { Lock } from 'lucide-react'
 
 const TIER_LABELS: Record<string, string> = { free: 'Free', student: 'Student', pro: 'Pro' }
@@ -293,13 +280,7 @@ export default async function DashboardPage({
             </div>
           ) : (
             /* Live charts for Student+ */
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <FillerBarChart data={sessionStats} />
-                <WpmLineChart data={sessionStats} />
-              </div>
-              <CategoryChart data={categoryStats} />
-            </div>
+            <ChartsClient sessionStats={sessionStats} categoryStats={categoryStats} />
           )}
         </div>
       </FadeIn>
