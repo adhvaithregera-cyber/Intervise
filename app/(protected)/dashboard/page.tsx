@@ -38,7 +38,12 @@ const INNER_CARD = {
   borderRadius: '0.75rem',
 }
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>
+}) {
+  const { error: pageError } = await searchParams
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
@@ -189,7 +194,13 @@ export default async function DashboardPage() {
 
       {/* Primary CTA */}
       <FadeIn>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col gap-3">
+          {pageError === 'quota_exceeded' && (
+            <div className="rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-300">
+              You&apos;ve used all your sessions this month. Upgrade your plan to continue.
+            </div>
+          )}
+          <div className="flex items-center gap-4">
           {exhausted ? (
             <>
               <button
@@ -212,6 +223,7 @@ export default async function DashboardPage() {
               Start practice session
             </Link>
           )}
+          </div>
         </div>
       </FadeIn>
 
