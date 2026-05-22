@@ -8,7 +8,7 @@ Desktop-first AI interview coaching web app. Users learn 8 structured answer for
 - Supabase SSR auth + Postgres (`@supabase/ssr`)
 - AssemblyAI — post-answer audio transcription
 - Anthropic Claude API (`claude-haiku-4-5-20251001`) — AI feedback + question generation
-- MediaPipe FaceMesh — in-browser eye contact (Student+ only, future)
+- MediaPipe FaceMesh — in-browser body language + expression analysis (Coming Soon, all tiers)
 - Razorpay — payments (scaffolded, inactive)
 - Resend — transactional email sequences
 - Vercel — hosting (`intervise-ashen.vercel.app`)
@@ -106,7 +106,7 @@ See `docs/DATABASE.md` for the full matrix. Key rules:
 - AI feedback always runs; Free users see STAR scores / ideal answer with CSS blur overlay
 - WPM gauge: Slow (<110) / Ideal (110–160) / Fast (>160) — all tiers
 - Eye contact % and head stability: Student+ (future, MediaPipe)
-- Progress trend charts (WPM, fillers, format compliance): Pro only → `/progress`
+- Progress trend charts (WPM, fillers, format compliance): Student+ (dashboard)
 - Weakness pattern summary + weekly AI plan: Pro only, shown as dashboard cards
 - Shareable PNG scorecard: Student+
 - Resume-based question gen (JD+CV): Pro only
