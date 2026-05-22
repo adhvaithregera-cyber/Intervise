@@ -152,34 +152,7 @@ export default async function DashboardPage({
         </div>
       </FadeIn>
 
-      {/* Session quota + info */}
-      <FadeIn>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6">
-          <div className="sm:col-span-2 p-6" style={CARD_STYLE}>
-            <p className="mb-1 text-sm font-semibold uppercase tracking-widest text-[#F9C125]">Sessions this month</p>
-            <div className="flex items-end gap-2">
-              <span className="text-5xl font-bold text-white">{profile.sessions_used_this_month}</span>
-              <span className="mb-1 text-xl text-white/60">/ {sessionsLimit}</span>
-            </div>
-            <div className="mt-3 h-2 w-full rounded-full" style={{ backgroundColor: 'rgba(249,193,37,0.15)' }}>
-              <div
-                className="h-2 rounded-full transition-all"
-                style={{ width: `${pct}%`, backgroundColor: '#F9C125' }}
-              />
-            </div>
-            <p className="mt-2 text-sm text-[#F9C125]/70">
-              {exhausted ? 'No sessions left this month.' : `${sessionsLeft} session${sessionsLeft === 1 ? '' : 's'} remaining`}
-            </p>
-          </div>
-
-          <ProfileEditCard
-            initialRoleType={profile.role_type}
-            initialInterviewDate={profile.interview_date}
-          />
-        </div>
-      </FadeIn>
-
-      {/* Primary CTA */}
+      {/* Primary CTA — centrepiece */}
       <FadeIn>
         <div className="flex flex-col gap-3">
           {pageError === 'quota_exceeded' && (
@@ -187,30 +160,58 @@ export default async function DashboardPage({
               You&apos;ve used all your sessions this month. Upgrade your plan to continue.
             </div>
           )}
-          <div className="flex items-center gap-4">
           {exhausted ? (
-            <>
-              <button
-                disabled
-                className="rounded-xl px-6 py-3 text-base font-semibold cursor-not-allowed"
-                style={{ backgroundColor: 'rgba(28,10,0,0.4)', border: '1px solid rgba(249,193,37,0.15)', color: 'rgba(255,255,255,0.35)' }}
-              >
-                Start practice session
-              </button>
-              <p className="text-sm font-medium" style={{ color: 'rgba(28,10,0,0.75)' }}>
+            <div
+              className="w-full flex flex-col items-center justify-center rounded-2xl gap-1"
+              style={{ height: '80px', backgroundColor: 'rgba(28,10,0,0.4)', border: '1px solid rgba(249,193,37,0.15)' }}
+            >
+              <span className="text-lg font-semibold" style={{ color: 'rgba(255,255,255,0.3)' }}>Start Practice Session</span>
+              <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.25)' }}>
                 All sessions used this month.{' '}
-                <Link href="/#pricing" className="font-bold underline hover:opacity-70 transition-opacity" style={{ color: '#1C0A00' }}>Upgrade →</Link>
+                <Link href="/#pricing" className="font-bold underline hover:opacity-50 transition-opacity" style={{ color: 'rgba(249,193,37,0.5)' }}>Upgrade →</Link>
               </p>
-            </>
+            </div>
           ) : (
             <Link
               href="/session/setup"
-              className="inline-flex items-center rounded-xl bg-[#F9C125] px-6 py-3 text-base font-bold text-[#1C0A00] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/25"
+              className="w-full flex items-center justify-center rounded-2xl bg-[#F9C125] text-xl font-bold text-[#1C0A00] hover:brightness-110 transition-all"
+              style={{
+                height: '80px',
+                boxShadow: '0 0 40px rgba(249,193,37,0.35), 0 8px 32px rgba(249,193,37,0.25)',
+              }}
             >
-              Start practice session
+              Start Practice Session →
             </Link>
           )}
+        </div>
+      </FadeIn>
+
+      {/* Compact info row: sessions + your info */}
+      <FadeIn>
+        <div className="grid grid-cols-2 gap-4">
+          {/* Sessions this month */}
+          <div className="p-4" style={CARD_STYLE}>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-2">Sessions this month</p>
+            <div className="flex items-baseline gap-1.5 mb-2">
+              <span className="text-3xl font-bold text-white">{profile.sessions_used_this_month}</span>
+              <span className="text-sm text-white/50">/ {sessionsLimit} used</span>
+            </div>
+            <div className="h-1.5 w-full rounded-full mb-1.5" style={{ backgroundColor: 'rgba(249,193,37,0.15)' }}>
+              <div
+                className="h-1.5 rounded-full transition-all"
+                style={{ width: `${pct}%`, backgroundColor: '#F9C125' }}
+              />
+            </div>
+            <p className="text-xs text-[#F9C125]/60">
+              {exhausted ? 'No sessions left' : `${sessionsLeft} remaining`}
+            </p>
           </div>
+
+          {/* Your info */}
+          <ProfileEditCard
+            initialRoleType={profile.role_type}
+            initialInterviewDate={profile.interview_date}
+          />
         </div>
       </FadeIn>
 

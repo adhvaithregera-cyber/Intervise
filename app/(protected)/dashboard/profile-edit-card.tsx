@@ -52,9 +52,9 @@ export function ProfileEditCard({
   }
 
   return (
-    <div className="p-6" style={CARD_STYLE}>
-      <div className="flex items-start justify-between mb-3">
-        <p className="text-xs font-semibold text-[#F9C125] uppercase tracking-widest">Your info</p>
+    <div className="p-4" style={CARD_STYLE}>
+      <div className="flex items-start justify-between mb-2">
+        <p className="text-[10px] font-semibold text-[#F9C125]/60 uppercase tracking-widest">Your info</p>
         {!editing ? (
           <button onClick={() => setEditing(true)} className="text-xs text-white/50 hover:text-[#F9C125] transition-colors">
             Edit
@@ -88,9 +88,9 @@ export function ProfileEditCard({
         </div>
       ) : (
         <>
-          <p className="text-xs text-white/50 mb-0.5">Role</p>
-          <p className="text-base font-semibold text-[#F9C125] mb-3">{roleType || '—'}</p>
-          <p className="text-xs text-white/50 mb-0.5">Interview date</p>
+          <p className="text-[10px] text-white/40 mb-0.5">Role</p>
+          <p className="text-sm font-semibold text-[#F9C125] mb-2 truncate">{roleType || '—'}</p>
+          <p className="text-[10px] text-white/40 mb-0.5">Interview date</p>
           <p className="text-sm font-semibold text-[#F9C125]">{formatDate(interviewDate)}</p>
         </>
       )}
