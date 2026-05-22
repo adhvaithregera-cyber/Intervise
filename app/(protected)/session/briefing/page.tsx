@@ -40,7 +40,7 @@ export default async function BriefingPage({
     redirect('/dashboard?error=session_failed')
   }
 
-  const { sessionId, questions } = result
+  const { sessionId, questions, tier } = result
   const firstQuestion = questions[0]
   if (!firstQuestion) redirect('/session/setup')
 
@@ -114,7 +114,7 @@ export default async function BriefingPage({
       {/* Start Interview CTA */}
       <FadeIn delay={0.24}>
         <div>
-          <Link href={`/session/live?session_id=${sessionId}&q=${questionIds}`} className="block w-full sm:w-auto sm:inline-block">
+          <Link href={`/session/live?session_id=${sessionId}&q=${questionIds}&tier=${tier}`} className="block w-full sm:w-auto sm:inline-block">
             <button className="w-full sm:w-auto bg-[#F9C125] text-[#1C0A00] font-bold rounded-xl px-8 py-3.5 text-base shadow-lg shadow-[#F9C125]/25 hover:brightness-110 transition-all">
               Start Interview
             </button>
