@@ -10,11 +10,9 @@ import type { Difficulty } from '@/types/database'
 const VALID_DIFFICULTIES: Difficulty[] = ['easy', 'medium', 'mixed', 'hard']
 
 const CARD_STYLE = {
-  backgroundColor: 'rgba(28,10,0,0.75)',
-  backdropFilter: 'blur(16px)',
-  WebkitBackdropFilter: 'blur(16px)',
-  border: '1px solid rgba(249,193,37,0.20)',
-  borderRadius: '1rem',
+  backgroundColor: 'rgba(255,255,255,0.04)',
+  border: '1px solid rgba(249,193,37,0.12)',
+  borderRadius: '0.75rem',
 }
 
 export default async function BriefingPage({
@@ -50,7 +48,16 @@ export default async function BriefingPage({
   const formatLabel = firstQuestion.answer_format.split(' ')[0]
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8">
+    <div className="max-w-2xl mx-auto">
+      <div
+        className="rounded-2xl p-8 space-y-8"
+        style={{
+          backgroundColor: 'rgba(28,10,0,0.75)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(249,193,37,0.18)',
+        }}
+      >
       {/* Page header */}
       <FadeIn delay={0}>
         <div>
@@ -114,6 +121,7 @@ export default async function BriefingPage({
           </Link>
         </div>
       </FadeIn>
+      </div>
     </div>
   )
 }
