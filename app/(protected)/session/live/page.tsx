@@ -53,6 +53,7 @@ export default function LiveSessionPage() {
   const answerStartTimeRef = useRef<number>(0)
   const storedAnswersRef = useRef<StoredAnswer[]>([])
   const mimeTypeRef = useRef<string | undefined>(undefined)
+  const endingSessionRef = useRef(false)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -157,7 +158,11 @@ export default function LiveSessionPage() {
         questionId: questions[currentIndex].id,
         index: currentIndex + 1,
       })
-      setPhase('between')
+      if (endingSessionRef.current) {
+        finishAndProcess()
+      } else {
+        setPhase('between')
+      }
     }
     recorder.start()
     mediaRecorderRef.current = recorder
@@ -189,6 +194,21 @@ export default function LiveSessionPage() {
   function goNext() {
     setCurrentIndex(i => i + 1)
     setPhase('prep')
+  }
+
+  function skipPrep() {
+    if (prepTimerRef.current) clearInterval(prepTimerRef.current)
+    startRecording()
+  }
+
+  function endSession() {
+    endingSessionRef.current = true
+    if (prepTimerRef.current) clearInterval(prepTimerRef.current)
+    if (mediaRecorderRef.current?.state === 'recording') {
+      stopRecording() // onstop will call finishAndProcess via endingSessionRef
+    } else {
+      finishAndProcess()
+    }
   }
 
   async function finishAndProcess() {
@@ -269,7 +289,21 @@ export default function LiveSessionPage() {
             >
               {prepCount}
             </div>
-            <p className="text-white/50 text-sm">Recording starts automatically...</p>
+            <p className="text-white/50 text-sm mb-6">Recording starts automatically...</p>
+            <div className="flex items-center justify-center gap-3">
+              <button
+                onClick={skipPrep}
+                className="rounded-xl bg-[#F9C125] px-8 py-3 text-sm font-bold text-[#1C0A00] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20"
+              >
+                Start Now
+              </button>
+              <button
+                onClick={endSession}
+                className="rounded-xl border border-white/20 px-6 py-3 text-sm font-semibold text-white/60 hover:bg-white/5 hover:text-white/80 transition-all"
+              >
+                End Session
+              </button>
+            </div>
           </div>
         )}
 
@@ -305,12 +339,20 @@ export default function LiveSessionPage() {
               <span className="text-white/80 font-semibold text-sm">Recording</span>
             </div>
 
-            <button
-              onClick={stopRecording}
-              className="rounded-xl bg-[#F9C125] px-10 py-3 text-base font-bold text-[#1C0A00] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20"
-            >
-              Done
-            </button>
+            <div className="flex items-center justify-center gap-3">
+              <button
+                onClick={stopRecording}
+                className="rounded-xl bg-[#F9C125] px-10 py-3 text-base font-bold text-[#1C0A00] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20"
+              >
+                Done
+              </button>
+              <button
+                onClick={endSession}
+                className="rounded-xl border border-white/20 px-6 py-3 text-sm font-semibold text-white/60 hover:bg-white/5 hover:text-white/80 transition-all"
+              >
+                End Session
+              </button>
+            </div>
           </div>
         )}
 
@@ -333,21 +375,31 @@ export default function LiveSessionPage() {
               {isLastQuestion ? 'Your results will be ready shortly.' : 'Get ready for the next question.'}
             </p>
 
-            {isLastQuestion ? (
-              <button
-                onClick={finishAndProcess}
-                className="rounded-xl bg-[#F9C125] px-10 py-3.5 text-base font-bold text-[#1C0A00] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20"
-              >
-                See My Results
-              </button>
-            ) : (
-              <button
-                onClick={goNext}
-                className="rounded-xl bg-[#F9C125] px-10 py-3.5 text-base font-bold text-[#1C0A00] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20"
-              >
-                Next Question
-              </button>
-            )}
+            <div className="flex items-center justify-center gap-3">
+              {isLastQuestion ? (
+                <button
+                  onClick={finishAndProcess}
+                  className="rounded-xl bg-[#F9C125] px-10 py-3.5 text-base font-bold text-[#1C0A00] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20"
+                >
+                  See My Results
+                </button>
+              ) : (
+                <>
+                  <button
+                    onClick={goNext}
+                    className="rounded-xl bg-[#F9C125] px-10 py-3.5 text-base font-bold text-[#1C0A00] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20"
+                  >
+                    Next Question
+                  </button>
+                  <button
+                    onClick={endSession}
+                    className="rounded-xl border border-white/20 px-6 py-3.5 text-sm font-semibold text-white/60 hover:bg-white/5 hover:text-white/80 transition-all"
+                  >
+                    End Session
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         )}
 
