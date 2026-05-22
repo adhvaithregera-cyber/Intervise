@@ -424,7 +424,7 @@ export default function LiveSessionPage() {
       {/* Camera corner */}
       {cameraStream && (
         <div
-          className="fixed bottom-6 right-6 rounded-2xl overflow-hidden shadow-xl w-40 h-28 z-50"
+          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 rounded-2xl overflow-hidden shadow-xl w-28 h-20 sm:w-40 sm:h-28 z-50"
           style={{ border: '2px solid rgba(249,193,37,0.4)' }}
         >
           <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover" />

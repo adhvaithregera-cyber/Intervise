@@ -207,11 +207,11 @@ export default async function DashboardPage({
           )}
           {exhausted ? (
             <div
-              className="w-full flex flex-col items-center justify-center rounded-2xl gap-1"
-              style={{ height: '80px', backgroundColor: 'rgba(28,10,0,0.4)', border: '1px solid rgba(249,193,37,0.15)' }}
+              className="w-full flex flex-col items-center justify-center rounded-2xl gap-1 py-5 sm:py-0 min-h-[64px] sm:min-h-[80px]"
+              style={{ backgroundColor: 'rgba(28,10,0,0.4)', border: '1px solid rgba(249,193,37,0.15)' }}
             >
-              <span className="text-lg font-semibold" style={{ color: 'rgba(255,255,255,0.3)' }}>Start Practice Session</span>
-              <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.25)' }}>
+              <span className="text-base sm:text-lg font-semibold text-center px-4" style={{ color: 'rgba(255,255,255,0.3)' }}>Start Practice Session</span>
+              <p className="text-sm font-medium text-center px-4" style={{ color: 'rgba(255,255,255,0.25)' }}>
                 All sessions used this month.{' '}
                 <Link href="/#pricing" className="font-bold underline hover:opacity-50 transition-opacity" style={{ color: 'rgba(249,193,37,0.5)' }}>Upgrade →</Link>
               </p>
@@ -219,9 +219,8 @@ export default async function DashboardPage({
           ) : (
             <Link
               href="/session/setup"
-              className="w-full flex items-center justify-center rounded-2xl bg-[#F9C125] text-xl font-bold text-[#1C0A00] hover:brightness-110 transition-all"
+              className="w-full flex items-center justify-center rounded-2xl bg-[#F9C125] text-lg sm:text-xl font-bold text-[#1C0A00] hover:brightness-110 transition-all py-5 sm:py-0 min-h-[64px] sm:min-h-[80px]"
               style={{
-                height: '80px',
                 boxShadow: '0 0 40px rgba(249,193,37,0.35), 0 8px 32px rgba(249,193,37,0.25)',
               }}
             >
@@ -233,7 +232,7 @@ export default async function DashboardPage({
 
       {/* Compact info row: sessions + your info */}
       <FadeIn>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Sessions this month */}
           <div className="p-4" style={CARD_STYLE}>
             <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-2">Sessions this month</p>

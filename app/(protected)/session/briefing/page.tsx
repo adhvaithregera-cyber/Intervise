@@ -48,9 +48,9 @@ export default async function BriefingPage({
   const formatLabel = firstQuestion.answer_format.split(' ')[0]
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto px-4 sm:px-0">
       <div
-        className="rounded-2xl p-8 space-y-8"
+        className="rounded-2xl p-6 sm:p-8 space-y-8"
         style={{
           backgroundColor: 'rgba(28,10,0,0.75)',
           backdropFilter: 'blur(20px)',
@@ -114,8 +114,8 @@ export default async function BriefingPage({
       {/* Start Interview CTA */}
       <FadeIn delay={0.24}>
         <div>
-          <Link href={`/session/live?session_id=${sessionId}&q=${questionIds}`}>
-            <button className="bg-[#F9C125] text-[#1C0A00] font-bold rounded-xl px-8 py-3.5 text-base shadow-lg shadow-[#F9C125]/25 hover:brightness-110 transition-all">
+          <Link href={`/session/live?session_id=${sessionId}&q=${questionIds}`} className="block w-full sm:w-auto sm:inline-block">
+            <button className="w-full sm:w-auto bg-[#F9C125] text-[#1C0A00] font-bold rounded-xl px-8 py-3.5 text-base shadow-lg shadow-[#F9C125]/25 hover:brightness-110 transition-all">
               Start Interview
             </button>
           </Link>

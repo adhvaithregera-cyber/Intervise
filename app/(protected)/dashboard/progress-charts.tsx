@@ -60,7 +60,7 @@ export const StatPills = React.memo(function StatPills({ summary }: { summary: P
   const { avgFillers, fillerTrend, avgWpm, wpmTrend, bestGrade } = summary
 
   return (
-    <div className="grid grid-cols-3 gap-3 mb-5">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
       {/* Avg fillers */}
       <div className="rounded-xl px-4 py-3" style={INNER_CARD}>
         <p className="text-[10px] font-semibold uppercase tracking-widest text-white/35 mb-1">Avg Fillers</p>

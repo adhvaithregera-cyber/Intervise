@@ -46,7 +46,7 @@ export default async function LandingPage() {
             AI-powered interview coaching
           </span>
 
-          <h1 className="mb-5 max-w-3xl text-5xl font-extrabold leading-tight tracking-tight text-white sm:text-6xl lg:text-7xl">
+          <h1 className="mb-5 max-w-3xl text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl lg:text-7xl">
             Your next interview<br />
             <span className="text-[#1C0A00]">is won before it starts.</span>
           </h1>

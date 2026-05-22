@@ -55,7 +55,7 @@ export function SessionRow({
   }
 
   return (
-    <div className="flex items-center justify-between p-5" style={CARD_STYLE}>
+    <div className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between" style={CARD_STYLE}>
       <div className="flex-1 min-w-0">
         {editing ? (
           <div className="flex items-center gap-2">
@@ -104,7 +104,7 @@ export function SessionRow({
         )}
         <p className="text-sm text-white/50 mt-0.5">{session.completed_at ? formatDate(session.completed_at) : '—'}</p>
       </div>
-      <div className="flex items-center gap-4 ml-4 shrink-0">
+      <div className="flex items-center gap-4 sm:ml-4 shrink-0">
         {session.overall_grade ? (
           <div className="text-right">
             <p className="text-[10px] font-semibold uppercase tracking-widest text-white/35 mb-0.5">STAR Rating</p>

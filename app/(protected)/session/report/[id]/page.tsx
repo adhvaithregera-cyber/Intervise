@@ -239,7 +239,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
                       <span className="text-xs text-white/40">Feedback unavailable</span>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                       <div>
                         <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-1">Pace</p>
                         <p className={cn('text-xl font-bold', color)}>

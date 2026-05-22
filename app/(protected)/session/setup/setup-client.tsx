@@ -99,9 +99,9 @@ export function SetupClient({ tier }: { tier: string }) {
   const canStart = difficulty !== null && micPerm === 'granted'
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-12">
+    <div className="mx-auto max-w-2xl px-4 py-8 sm:py-12">
       <div
-        className="rounded-2xl p-8"
+        className="rounded-2xl p-6 sm:p-8"
         style={{
           backgroundColor: 'rgba(28,10,0,0.75)',
           backdropFilter: 'blur(20px)',
@@ -121,7 +121,7 @@ export function SetupClient({ tier }: { tier: string }) {
       <FadeIn delay={0.08}>
         <section className="mb-10">
           <h2 className="mb-4 text-lg font-semibold text-white">Difficulty</h2>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
             {ALL_DIFFICULTY_OPTIONS.map(({ value, title, desc }) => {
               const locked = !allowedDifficulties.includes(value)
               const selected = difficulty === value
