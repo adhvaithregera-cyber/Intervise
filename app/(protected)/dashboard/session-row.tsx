@@ -106,9 +106,12 @@ export function SessionRow({
       </div>
       <div className="flex items-center gap-4 ml-4 shrink-0">
         {session.overall_grade ? (
-          <span className={`text-2xl font-bold ${GRADE_COLORS[session.overall_grade] ?? 'text-white/60'}`}>
-            {session.overall_grade}
-          </span>
+          <div className="text-right">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/35 mb-0.5">STAR Rating</p>
+            <span className={`text-2xl font-bold ${GRADE_COLORS[session.overall_grade] ?? 'text-white/60'}`}>
+              {session.overall_grade}
+            </span>
+          </div>
         ) : (
           <Badge variant="gray">No grade</Badge>
         )}
