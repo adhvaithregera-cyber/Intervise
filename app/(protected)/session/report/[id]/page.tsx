@@ -330,9 +330,58 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
               </div>
             </div>
           ) : (
-            <div className="p-6 text-center" style={INNER_CARD}>
-              <p className="text-white/60 text-sm">AI analysis will appear here — powered by Claude Sonnet</p>
-              <p className="text-white/35 text-xs mt-1">Full AI feedback pipeline coming soon</p>
+            <div className="space-y-6">
+              {(answers ?? []).filter(a => !a.transcription_failed).map((answer) => {
+                const q = questionMap[answer.question_id]
+                const fb = answer.ai_feedback
+                return (
+                  <div key={answer.id}>
+                    <p className="text-xs font-semibold text-[#F9C125]/60 uppercase tracking-widest mb-3">
+                      Q{answer.answer_index} — {q?.question_text ?? 'Question'}
+                    </p>
+                    {fb ? (
+                      <div className="space-y-3">
+                        {/* STAR scores */}
+                        <div className="grid grid-cols-2 gap-3">
+                          {(['situation', 'task', 'action', 'result'] as const).map((key) => {
+                            const item = fb.star[key]
+                            const pct = Math.round((item.score / item.max) * 100)
+                            return (
+                              <div key={key} className="p-4" style={INNER_CARD}>
+                                <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-1">{key}</p>
+                                <p className="text-lg font-bold text-white mb-1">{item.score}/{item.max}</p>
+                                <div className="h-1.5 w-full rounded-full bg-white/10 mb-2">
+                                  <div className="h-1.5 rounded-full bg-[#F9C125]" style={{ width: `${pct}%` }} />
+                                </div>
+                                <p className="text-xs text-white/55">{item.comment}</p>
+                              </div>
+                            )
+                          })}
+                        </div>
+                        {/* Ideal answer + overall comment */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div className="p-4" style={INNER_CARD}>
+                            <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-2">Ideal Answer</p>
+                            <p className="text-xs text-white/75 leading-relaxed">{fb.ideal_answer}</p>
+                          </div>
+                          <div className="p-4" style={INNER_CARD}>
+                            <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-2">Coaching Tip</p>
+                            <p className="text-xs text-white/75 leading-relaxed">{fb.overall_comment}</p>
+                            <div className="mt-3 flex items-center gap-2">
+                              <span className="text-[10px] font-semibold uppercase tracking-widest text-white/35">Grammar</span>
+                              <span className="text-sm font-bold text-white">{fb.grammar_score}/100</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="p-4 text-center" style={INNER_CARD}>
+                        <p className="text-white/40 text-xs">No AI feedback available for this answer.</p>
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
             </div>
           )}
 

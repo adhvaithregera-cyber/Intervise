@@ -5,6 +5,7 @@ export const maxDuration = 60
 import { createClient } from '@/lib/supabase/server'
 import { transcribeAudio, isTranscriptionError } from '@/lib/assemblyai'
 import { analyzeAnswer } from '@/lib/analysis'
+import { generateAnswerFeedback } from '@/lib/aifeedback'
 import { checkRateLimit, RATE_LIMITS } from '@/lib/ratelimit'
 import {
   transcribeFormSchema,
@@ -105,8 +106,18 @@ async function handleTextPath(
     return NextResponse.json({ error: 'Answer already submitted for this slot' }, { status: 409 })
   }
 
-  // ── Analyse locally — no AssemblyAI, no Claude ───────────────────────────
+  // ── Analyse locally + AI feedback ────────────────────────────────────────
   const analysis = analyzeAnswer({ transcript, durationSeconds: duration_seconds })
+
+  const { data: question } = await supabase
+    .from('questions')
+    .select('question_text, answer_format')
+    .eq('id', question_id)
+    .single()
+
+  const aiFeedback = question
+    ? await generateAnswerFeedback(question.question_text, question.answer_format, transcript)
+    : null
 
   const { error: insertError } = await supabase.from('answers').insert({
     session_id,
@@ -119,6 +130,7 @@ async function handleTextPath(
     wpm:                  analysis.wpm,
     eye_contact_pct:      null,
     duration_seconds,
+    ai_feedback:          aiFeedback,
   })
 
   if (insertError) {
@@ -236,6 +248,16 @@ async function handleAudioPath(
 
   const analysis = analyzeAnswer({ transcript: result.text, durationSeconds: duration_seconds })
 
+  const { data: question } = await supabase
+    .from('questions')
+    .select('question_text, answer_format')
+    .eq('id', question_id)
+    .single()
+
+  const aiFeedback = question
+    ? await generateAnswerFeedback(question.question_text, question.answer_format, result.text)
+    : null
+
   const { error: insertError } = await supabase.from('answers').insert({
     session_id,
     question_id,
@@ -247,6 +269,7 @@ async function handleAudioPath(
     wpm:                  analysis.wpm,
     eye_contact_pct:      eye_contact_pct ?? null,
     duration_seconds,
+    ai_feedback:          aiFeedback,
   })
 
   if (insertError) {

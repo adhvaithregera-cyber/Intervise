@@ -43,6 +43,20 @@ export type Session = {
   completed_at: string | null
 }
 
+export type AiFeedbackItem = { score: number; max: number; comment: string }
+
+export type AiFeedback = {
+  star: {
+    situation: AiFeedbackItem
+    task:      AiFeedbackItem
+    action:    AiFeedbackItem
+    result:    AiFeedbackItem
+  }
+  grammar_score: number
+  ideal_answer: string
+  overall_comment: string
+}
+
 export type Answer = {
   id: string
   session_id: string
@@ -55,6 +69,7 @@ export type Answer = {
   wpm: number | null
   eye_contact_pct: number | null
   duration_seconds: number
+  ai_feedback: AiFeedback | null
   created_at: string
 }
 
