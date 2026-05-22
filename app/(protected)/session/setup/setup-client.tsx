@@ -50,11 +50,10 @@ const CARD_LOCKED_STYLE = {
 export function SetupClient({ tier }: { tier: string }) {
   const router = useRouter()
   const allowedDifficulties = TIER_ALLOWED_DIFFICULTIES[tier] ?? TIER_ALLOWED_DIFFICULTIES.free
-  const cameraAllowed = tier === 'student' || tier === 'pro'
+  const cameraAllowed = false // Coming soon — not yet available on any tier
 
   const [difficulty, setDifficulty] = useState<Difficulty | null>(null)
   const [micPerm, setMicPerm] = useState<PermState>('idle')
-  const [cameraPerm, setCameraPerm] = useState<PermState>('idle')
 
   // Auto-detect previously granted permissions on mount
   useEffect(() => {
@@ -62,12 +61,7 @@ export function SetupClient({ tier }: { tier: string }) {
     navigator.permissions.query({ name: 'microphone' as PermissionName }).then(r => {
       if (r.state === 'granted') setMicPerm('granted')
     }).catch(() => {})
-    if (cameraAllowed) {
-      navigator.permissions.query({ name: 'camera' as PermissionName }).then(r => {
-        if (r.state === 'granted') setCameraPerm('granted')
-      }).catch(() => {})
-    }
-  }, [cameraAllowed])
+  }, [])
 
   async function requestMic() {
     setMicPerm('requesting')
@@ -77,17 +71,6 @@ export function SetupClient({ tier }: { tier: string }) {
       setMicPerm('granted')
     } catch {
       setMicPerm('denied')
-    }
-  }
-
-  async function requestCamera() {
-    setCameraPerm('requesting')
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true })
-      stream.getTracks().forEach((t) => t.stop())
-      setCameraPerm('granted')
-    } catch {
-      setCameraPerm('denied')
     }
   }
 
@@ -193,46 +176,15 @@ export function SetupClient({ tier }: { tier: string }) {
         <section className="mb-6">
           <div className="mb-1 flex items-center gap-2">
             <h2 className="text-lg font-semibold text-white">Camera</h2>
-            {cameraAllowed
-              ? <Badge variant="brand">Student+ feature</Badge>
-              : <Badge variant="gray">Student+ only</Badge>
-            }
+            <Badge variant="amber">Coming Soon</Badge>
           </div>
           <p className="mb-4 text-sm text-white/70">
-            {cameraAllowed
-              ? 'Used for real-time eye contact analysis. All facial processing happens in your browser — no video is ever sent to our servers.'
-              : 'Eye contact analysis is available on Student and Pro plans.'}
+            Real-time body language and expression analysis is coming soon. All facial processing will happen in your browser — no video will ever be sent to our servers.
           </p>
-
-          {!cameraAllowed ? (
-            <div className="flex items-center gap-2">
-              <Lock className="h-4 w-4 text-white/40" />
-              <span className="text-sm text-white/40">Upgrade to Student to unlock camera analysis</span>
-            </div>
-          ) : cameraPerm === 'granted' ? (
-            <div className="flex items-center gap-2 text-green-300">
-              <CheckCircle2 className="h-5 w-5 shrink-0" />
-              <span className="text-sm font-medium">Camera access granted</span>
-            </div>
-          ) : cameraPerm === 'requesting' ? (
-            <button disabled className="border border-white/20 rounded-xl px-4 py-2 text-sm text-white/40 cursor-not-allowed">
-              Requesting...
-            </button>
-          ) : (
-            <>
-              <button
-                onClick={requestCamera}
-                className="border border-white/40 rounded-xl px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors"
-              >
-                Grant Camera Access
-              </button>
-              {cameraPerm === 'denied' && (
-                <p className="mt-3 text-sm text-white/55">
-                  That&apos;s okay — eye contact tracking will be skipped.
-                </p>
-              )}
-            </>
-          )}
+          <div className="flex items-center gap-2">
+            <Lock className="h-4 w-4 text-white/40" />
+            <span className="text-sm text-white/40">Not yet available — stay tuned</span>
+          </div>
         </section>
       </FadeIn>
 
