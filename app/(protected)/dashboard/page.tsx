@@ -5,6 +5,7 @@ import { FadeIn } from '@/components/ui/fade-in'
 import { ProfileEditCard } from './profile-edit-card'
 import { RecentSessionsList } from './recent-sessions-list'
 import { ChartsClient } from './charts-client'
+import type { SessionStat, ProgressSummary } from './charts-client'
 import { Lock } from 'lucide-react'
 
 const TIER_LABELS: Record<string, string> = { free: 'Free', student: 'Student', pro: 'Pro' }
@@ -57,7 +58,7 @@ export default async function DashboardPage({
   if (windowCutoff) recentQ = recentQ.gte('created_at', windowCutoff)
 
   let chartQ = supabase
-    .from('sessions').select('id, created_at').eq('user_id', user.id).eq('status', 'complete')
+    .from('sessions').select('id, created_at, difficulty, overall_grade').eq('user_id', user.id).eq('status', 'complete')
     .order('created_at', { ascending: true })
   if (windowCutoff) chartQ = chartQ.gte('created_at', windowCutoff)
 
@@ -68,7 +69,6 @@ export default async function DashboardPage({
   ])
 
   // ── Chart data (Student+ only) ──────────────────────────────────────────
-  type SessionStat = { date: string; fillers: number; wpm: number | null }
   type CategoryStat = { category: string; avgFillers: number; sessions: number }
 
   let sessionStats: SessionStat[] = []
@@ -109,12 +109,21 @@ export default async function DashboardPage({
         if (a.wpm !== null) statsBySession[a.session_id].wpms.push(a.wpm)
       }
 
+      // Count occurrences of each date to detect duplicates
+      const dateCount: Record<string, number> = {}
+      for (const s of chartSessions ?? []) {
+        const d = new Date(s.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+        dateCount[d] = (dateCount[d] ?? 0) + 1
+      }
+
       sessionStats = (chartSessions ?? []).map((s) => {
         const st = statsBySession[s.id]
         const avgWpm = st.wpms.length > 0
           ? Math.round(st.wpms.reduce((a, b) => a + b, 0) / st.wpms.length)
           : null
-        return { date: st.date, fillers: st.fillers, wpm: avgWpm }
+        const diff = s.difficulty.charAt(0).toUpperCase() + s.difficulty.slice(1)
+        const label = (dateCount[st.date] ?? 1) > 1 ? `${diff} · ${st.date}` : st.date
+        return { label, date: st.date, fillers: st.fillers, wpm: avgWpm, grade: s.overall_grade ?? null }
       })
 
       // Per-category stats
@@ -130,6 +139,42 @@ export default async function DashboardPage({
         avgFillers: count > 0 ? total / count : 0,
         sessions: count,
       }))
+    }
+  }
+
+  // ── Progress summary stats ──────────────────────────────────────────────
+  const progressSummary: ProgressSummary = {
+    avgFillers: null, fillerTrend: 'flat',
+    avgWpm: null, wpmTrend: 'flat',
+    bestGrade: null,
+  }
+  if (sessionStats.length > 0) {
+    const allFillers = sessionStats.map(s => s.fillers)
+    progressSummary.avgFillers = Math.round(allFillers.reduce((a, b) => a + b, 0) / allFillers.length)
+    if (sessionStats.length >= 2) {
+      const half = Math.ceil(sessionStats.length / 2)
+      const firstAvg = sessionStats.slice(0, half).reduce((a, s) => a + s.fillers, 0) / half
+      const lastAvg = sessionStats.slice(-half).reduce((a, s) => a + s.fillers, 0) / half
+      if (lastAvg < firstAvg - 0.5) progressSummary.fillerTrend = 'down'
+      else if (lastAvg > firstAvg + 0.5) progressSummary.fillerTrend = 'up'
+    }
+    const wpmData = sessionStats.filter(s => s.wpm !== null)
+    if (wpmData.length > 0) {
+      progressSummary.avgWpm = Math.round(wpmData.reduce((a, s) => a + (s.wpm ?? 0), 0) / wpmData.length)
+      if (wpmData.length >= 2) {
+        const half = Math.ceil(wpmData.length / 2)
+        const firstAvg = wpmData.slice(0, half).reduce((a, s) => a + (s.wpm ?? 0), 0) / half
+        const lastAvg = wpmData.slice(-half).reduce((a, s) => a + (s.wpm ?? 0), 0) / half
+        if (lastAvg > firstAvg + 3) progressSummary.wpmTrend = 'up'
+        else if (lastAvg < firstAvg - 3) progressSummary.wpmTrend = 'down'
+      }
+    }
+    const GRADE_ORDER = ['A', 'B', 'C', 'D', 'F']
+    const grades = sessionStats.map(s => s.grade).filter(Boolean) as string[]
+    if (grades.length > 0) {
+      progressSummary.bestGrade = grades.reduce((best, g) =>
+        GRADE_ORDER.indexOf(g) < GRADE_ORDER.indexOf(best) ? g : best
+      )
     }
   }
 
@@ -281,7 +326,7 @@ export default async function DashboardPage({
             </div>
           ) : (
             /* Live charts for Student+ */
-            <ChartsClient sessionStats={sessionStats} categoryStats={categoryStats} />
+            <ChartsClient sessionStats={sessionStats} categoryStats={categoryStats} summary={progressSummary} />
           )}
         </div>
       </FadeIn>
