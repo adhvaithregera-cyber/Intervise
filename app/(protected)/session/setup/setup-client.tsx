@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { CheckCircle2, XCircle, Lock } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
@@ -55,6 +55,19 @@ export function SetupClient({ tier }: { tier: string }) {
   const [difficulty, setDifficulty] = useState<Difficulty | null>(null)
   const [micPerm, setMicPerm] = useState<PermState>('idle')
   const [cameraPerm, setCameraPerm] = useState<PermState>('idle')
+
+  // Auto-detect previously granted permissions on mount
+  useEffect(() => {
+    if (typeof navigator === 'undefined' || !navigator.permissions) return
+    navigator.permissions.query({ name: 'microphone' as PermissionName }).then(r => {
+      if (r.state === 'granted') setMicPerm('granted')
+    }).catch(() => {})
+    if (cameraAllowed) {
+      navigator.permissions.query({ name: 'camera' as PermissionName }).then(r => {
+        if (r.state === 'granted') setCameraPerm('granted')
+      }).catch(() => {})
+    }
+  }, [cameraAllowed])
 
   async function requestMic() {
     setMicPerm('requesting')
