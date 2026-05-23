@@ -92,7 +92,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
             color: style.color,
             fontSize: 22,
             fontWeight: 700,
-            letterSpacing: 8,
+            letterSpacing: 3,
             opacity: 0.8,
             display: 'flex',
           }}

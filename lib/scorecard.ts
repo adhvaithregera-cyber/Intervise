@@ -10,7 +10,7 @@ export type GradeStyle = {
 }
 
 export const GRADE_STYLE: Record<Grade, GradeStyle> = {
-  A: { color: '#4ade80', bg: '#0d1f0d', glowColor: 'rgba(74,222,128,0.15)',  label: 'Exceptional' },
+  A: { color: '#4ade80', bg: '#0d1f0d', glowColor: 'rgba(74,222,128,0.12)',  label: 'Exceptional' },
   B: { color: '#F9C125', bg: '#1C0A00', glowColor: 'rgba(249,193,37,0.12)',  label: 'Good'        },
   C: { color: '#fb923c', bg: '#1a1000', glowColor: 'rgba(251,146,60,0.12)',  label: 'Average'     },
   D: { color: '#f97316', bg: '#140800', glowColor: 'rgba(249,115,22,0.12)',  label: 'Poor'        },
