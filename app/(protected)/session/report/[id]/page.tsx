@@ -281,7 +281,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
               <h2 className="text-base font-semibold text-white">AI Feedback</h2>
               <p className="text-xs text-white/40 mt-0.5">STAR scores, ideal answers, and grammar analysis per question</p>
             </div>
-            {!isStudent && <Badge variant="brand">Student+</Badge>}
+            {!isStudent && <Badge variant="brand">Student</Badge>}
           </div>
 
           {!isStudent ? (
