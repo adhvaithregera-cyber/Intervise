@@ -24,17 +24,34 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
   )
 
-  const [{ data: session }, { data: answers }, fonts] = await Promise.all([
+  const [sessionResult, { data: answers }] = await Promise.all([
     supabase.from('sessions').select('overall_grade, difficulty, created_at').eq('id', id).single(),
     supabase.from('answers').select('wpm, filler_count, ai_feedback').eq('session_id', id),
-    loadFonts(),
   ])
+  const { data: session, error: sessionError } = sessionResult
 
+  if (sessionError) {
+    if (sessionError.code === 'PGRST116') {
+      return new Response('Not found', { status: 404 })
+    }
+    return new Response(null, { status: 500 })
+  }
   if (!session) {
     return new Response('Not found', { status: 404 })
   }
 
-  const grade = (session.overall_grade ?? 'C') as Grade
+  if (!session.overall_grade) {
+    return new Response('Not found', { status: 404 })
+  }
+
+  let fonts: { bold: ArrayBuffer; black: ArrayBuffer }
+  try {
+    fonts = await loadFonts()
+  } catch {
+    return new Response(null, { status: 503 })
+  }
+
+  const grade = session.overall_grade as Grade
   const style = GRADE_STYLE[grade] ?? GRADE_STYLE['C']
   const stats = computeScorecardStats(session.difficulty as Difficulty, answers ?? [])
 
@@ -74,7 +91,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
             left: 64,
             color: style.color,
             fontSize: 22,
-            fontWeight: 800,
+            fontWeight: 700,
             letterSpacing: 8,
             opacity: 0.8,
             display: 'flex',
@@ -153,13 +170,13 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
 
           {/* Stats row */}
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <StatItem label="WPM"        value={stats.avgWpm !== null ? String(stats.avgWpm) : '—'} color={style.color} />
+            <StatItem label="WPM"        value={stats.avgWpm !== null ? String(stats.avgWpm) : '—'} />
             <Pipe />
-            <StatItem label="FILLERS"    value={String(stats.totalFillers)} color={style.color} />
+            <StatItem label="FILLERS"    value={String(stats.totalFillers)} />
             <Pipe />
-            <StatItem label="QUESTIONS"  value={String(stats.questionCount)} color={style.color} />
+            <StatItem label="QUESTIONS"  value={String(stats.questionCount)} />
             <Pipe />
-            <StatItem label="DIFFICULTY" value={stats.difficulty.toUpperCase()} color={style.color} />
+            <StatItem label="DIFFICULTY" value={stats.difficulty.toUpperCase()} />
           </div>
         </div>
 
@@ -187,11 +204,14 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
         { name: 'Inter', data: fonts.bold,  weight: 700, style: 'normal' },
         { name: 'Inter', data: fonts.black, weight: 900, style: 'normal' },
       ],
+      headers: {
+        'Cache-Control': 'public, max-age=86400, immutable',
+      },
     },
   )
 }
 
-function StatItem({ label, value, color }: { label: string; value: string; color: string }) {
+function StatItem({ label, value }: { label: string; value: string }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 200 }}>
       <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: 38, fontWeight: 700, display: 'flex' }}>
