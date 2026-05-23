@@ -357,6 +357,8 @@ export default function LiveSessionPage() {
           formData.append('duration_seconds', String(answer.duration))
           await fetch('/api/session/transcribe', { method: 'POST', body: formData })
         } else {
+          const transcript = answer.transcript || 'No response recorded.'
+          const duration = Math.max(1, answer.duration)
           await fetch('/api/session/transcribe', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -364,8 +366,8 @@ export default function LiveSessionPage() {
               session_id: sessionId,
               question_id: answer.questionId,
               answer_index: answer.index,
-              duration_seconds: answer.duration,
-              transcript: answer.transcript,
+              duration_seconds: duration,
+              transcript,
             }),
           })
         }
