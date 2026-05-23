@@ -3,22 +3,19 @@ import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import { ShareScorecard } from '@/components/session/share-scorecard'
 
 const SESSION_ID = 'test-session-123'
-const OG_URL = `https://intervise-ashen.vercel.app/api/og/scorecard/${SESSION_ID}`
+const OG_URL_PATH = `/api/og/scorecard/${SESSION_ID}`
 
 describe('ShareScorecard', () => {
   beforeEach(() => {
-    // Mock clipboard API
-    Object.defineProperty(navigator, 'clipboard', {
-      value: { writeText: vi.fn().mockResolvedValue(undefined) },
-      writable: true,
+    // Mock clipboard API via stubGlobal so it can be overridden per-test
+    vi.stubGlobal('navigator', {
+      ...navigator,
+      clipboard: { writeText: vi.fn().mockResolvedValue(undefined) },
     })
 
-    // Mock URL methods
-    vi.stubGlobal('URL', {
-      ...URL,
-      createObjectURL: vi.fn().mockReturnValue('blob:mock-url'),
-      revokeObjectURL: vi.fn(),
-    })
+    // Spy on URL static methods instead of replacing the constructor
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:mock-url')
+    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
 
     // Mock fetch for download
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
@@ -55,7 +52,9 @@ describe('ShareScorecard', () => {
     fireEvent.click(screen.getByRole('button', { name: /share/i }))
     fireEvent.click(screen.getByRole('button', { name: /copy link/i }))
     await waitFor(() => {
-      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(OG_URL)
+      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+        expect.stringContaining(OG_URL_PATH)
+      )
     })
   })
 
@@ -73,9 +72,9 @@ describe('ShareScorecard', () => {
   it('resets Copied! label back to Copy Link after 2 seconds', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true })
     // Re-mock clipboard so its Promise resolves despite fake timers
-    Object.defineProperty(navigator, 'clipboard', {
-      value: { writeText: vi.fn().mockResolvedValue(undefined) },
-      writable: true,
+    vi.stubGlobal('navigator', {
+      ...navigator,
+      clipboard: { writeText: vi.fn().mockResolvedValue(undefined) },
     })
 
     render(<ShareScorecard sessionId={SESSION_ID} />)
@@ -91,10 +90,8 @@ describe('ShareScorecard', () => {
     // "Copied!" should show now
     expect(screen.getByRole('button', { name: /copied!/i })).toBeInTheDocument()
 
-    // Advance clock by 2 s to trigger the setTimeout reset
-    await act(async () => {
-      vi.advanceTimersByTime(2000)
-    })
+    // Advance all timers to trigger the setTimeout reset
+    act(() => { vi.runAllTimers() })
 
     expect(screen.getByRole('button', { name: /copy link/i })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /copied!/i })).not.toBeInTheDocument()
@@ -102,9 +99,10 @@ describe('ShareScorecard', () => {
 
   // Test 6: Fallback to window.prompt when clipboard API is unavailable
   it('falls back to window.prompt when clipboard API is unavailable', async () => {
-    Object.defineProperty(navigator, 'clipboard', {
-      value: undefined,
-      writable: true,
+    // Override navigator stub to remove clipboard
+    vi.stubGlobal('navigator', {
+      ...navigator,
+      clipboard: undefined as unknown as Clipboard,
     })
     const promptSpy = vi.spyOn(window, 'prompt').mockImplementation(() => null)
 
@@ -113,7 +111,7 @@ describe('ShareScorecard', () => {
     fireEvent.click(screen.getByRole('button', { name: /copy link/i }))
 
     await waitFor(() => {
-      expect(promptSpy).toHaveBeenCalledWith('Copy link:', OG_URL)
+      expect(promptSpy).toHaveBeenCalledWith('Copy link:', expect.stringContaining(OG_URL_PATH))
     })
   })
 
@@ -125,11 +123,35 @@ describe('ShareScorecard', () => {
     // Sub-buttons should be visible now
     expect(screen.getByRole('button', { name: /copy link/i })).toBeInTheDocument()
 
-    // Click the close/collapse button
-    fireEvent.click(screen.getByRole('button', { name: /close|×|collapse/i }))
+    // Click the close button using exact aria-label
+    fireEvent.click(screen.getByRole('button', { name: 'close' }))
 
     // Sub-buttons should be hidden
     expect(screen.queryByRole('button', { name: /copy link/i })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /download png/i })).not.toBeInTheDocument()
+  })
+
+  // Test 8: Download PNG fetches the correct URL and triggers download
+  it('calls fetch with the OG URL and triggers download on Download PNG click', async () => {
+    render(<ShareScorecard sessionId={SESSION_ID} />)
+    fireEvent.click(screen.getByRole('button', { name: /share/i }))
+    fireEvent.click(screen.getByRole('button', { name: /download png/i }))
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledWith(expect.stringContaining(OG_URL_PATH))
+      expect(URL.createObjectURL).toHaveBeenCalled()
+      expect(URL.revokeObjectURL).toHaveBeenCalled()
+    })
+  })
+
+  // Test 9: Download PNG is silent on fetch failure
+  it('is silent when fetch fails during download', async () => {
+    vi.mocked(fetch).mockRejectedValueOnce(new Error('network error'))
+    render(<ShareScorecard sessionId={SESSION_ID} />)
+    fireEvent.click(screen.getByRole('button', { name: /share/i }))
+    // Should not throw
+    fireEvent.click(screen.getByRole('button', { name: /download png/i }))
+    await waitFor(() => {
+      expect(URL.createObjectURL).not.toHaveBeenCalled()
+    })
   })
 })

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 
 interface ShareScorecardProps {
@@ -10,8 +10,15 @@ interface ShareScorecardProps {
 export function ShareScorecard({ sessionId }: ShareScorecardProps) {
   const [open, setOpen] = useState(false)
   const [copied, setCopied] = useState(false)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const url = `https://intervise-ashen.vercel.app/api/og/scorecard/${sessionId}`
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current)
+    }
+  }, [])
+
+  const url = `${window.location.origin}/api/og/scorecard/${sessionId}`
 
   function handleOpen() {
     setOpen(true)
@@ -24,17 +31,23 @@ export function ShareScorecard({ sessionId }: ShareScorecardProps) {
 
   async function handleCopyLink() {
     if (navigator.clipboard) {
-      await navigator.clipboard.writeText(url)
+      try {
+        await navigator.clipboard.writeText(url)
+        if (timerRef.current) clearTimeout(timerRef.current)
+        timerRef.current = setTimeout(() => setCopied(false), 2000)
+        setCopied(true)
+      } catch {
+        window.prompt('Copy link:', url)
+      }
     } else {
       window.prompt('Copy link:', url)
     }
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
   }
 
   async function handleDownload() {
     try {
       const response = await fetch(url)
+      if (!response.ok) throw new Error('fetch failed')
       const blob = await response.blob()
       const href = URL.createObjectURL(blob)
       const a = document.createElement('a')
