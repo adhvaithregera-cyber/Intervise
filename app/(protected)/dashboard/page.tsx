@@ -287,8 +287,8 @@ export default async function DashboardPage({
           {!isStudent ? (
             /* Blurred teaser for Free users */
             <div className="relative rounded-xl overflow-hidden" style={{ transform: 'translateZ(0)' }}>
-              <div style={{ filter: 'blur(5px)', userSelect: 'none', pointerEvents: 'none' }}
-                className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div style={{ filter: 'blur(5px)', userSelect: 'none', pointerEvents: 'none', overflow: 'hidden' }}
+                className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-1">
                 <div className="p-5" style={INNER_CARD}>
                   <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-3">Filler words per session</p>
                   <div className="flex items-end gap-2 h-20">
