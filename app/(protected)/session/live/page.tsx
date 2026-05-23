@@ -60,6 +60,7 @@ export default function LiveSessionPage() {
   const recognitionRef = useRef<SpeechRecognition | null>(null)
   const recognitionManualStopRef = useRef(false)
   const finalTranscriptRef = useRef('')
+  const interimTranscriptRef = useRef('')
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -182,22 +183,27 @@ export default function LiveSessionPage() {
     recognition.lang = 'en-US'
 
     finalTranscriptRef.current = ''
+    interimTranscriptRef.current = ''
     recognitionManualStopRef.current = false
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
+      let interim = ''
       for (let i = event.resultIndex; i < event.results.length; i++) {
         if (event.results[i].isFinal) {
           finalTranscriptRef.current += event.results[i][0].transcript + ' '
+        } else {
+          interim += event.results[i][0].transcript
         }
       }
+      interimTranscriptRef.current = interim
     }
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-      if (event.error === 'not-allowed') {
+      if (event.error === 'not-allowed' || event.error === 'audio-capture') {
         setPhase('error')
-        setErrorMessage('Microphone access denied. Please allow microphone access in your browser settings.')
+        setErrorMessage('Microphone access is required. Please allow microphone access in your browser settings.')
       }
-      // other errors (network, aborted) are non-fatal — recognition will fire onend and we handle it
+      // network/aborted errors are non-fatal — onend will fire and restart
     }
 
     recognition.onend = () => {
@@ -206,8 +212,8 @@ export default function LiveSessionPage() {
         try { recognition.start() } catch { /* already stopped manually */ }
         return
       }
-      // Manual stop — store answer and advance
-      const transcript = finalTranscriptRef.current.trim()
+      // Manual stop — combine final + any remaining interim as fallback
+      const transcript = (finalTranscriptRef.current + interimTranscriptRef.current).trim()
       const elapsed = Math.round((Date.now() - answerStartTimeRef.current) / 1000)
       storedAnswersRef.current.push({
         type: 'text',
