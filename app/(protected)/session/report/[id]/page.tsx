@@ -49,16 +49,28 @@ function Stars({ count }: { count: number }) {
 
 function getWpmLabel(wpm: number | null): string {
   if (wpm === null) return ''
-  if (wpm < 110) return 'Slow'
-  if (wpm > 160) return 'Fast'
-  return 'Ideal'
+  if (wpm >= 120 && wpm <= 160) return 'Ideal'
+  if ((wpm >= 110 && wpm < 120) || (wpm > 160 && wpm <= 175)) return 'Slightly off'
+  if ((wpm >= 95 && wpm < 110) || (wpm > 175 && wpm <= 195)) return 'Too slow/fast'
+  return 'Significantly off'
 }
 
 function getWpmColor(wpm: number | null): string {
   if (wpm === null) return 'text-white/40'
-  if (wpm < 110) return 'text-amber-400'
-  if (wpm > 160) return 'text-red-400'
-  return 'text-green-400'
+  if (wpm >= 120 && wpm <= 160) return 'text-green-400'
+  if ((wpm >= 110 && wpm < 120) || (wpm > 160 && wpm <= 175)) return 'text-amber-400'
+  return 'text-red-400'
+}
+
+const COMPONENT_LABELS: Record<string, string> = {
+  present: 'Present', past: 'Past', future: 'Future',
+  situation: 'Situation', task: 'Task', action: 'Action', result: 'Result',
+  name_it: 'Name It', prove_it: 'Prove It', connect_it: 'Connect It',
+  show_awareness: 'Show Awareness', show_action: 'Show Action', show_progress: 'Show Progress',
+  them: 'Them', you: 'You', together: 'Together',
+  near_term: 'Near-term', long_term: 'Long-term', bridge: 'Bridge',
+  prioritise: 'Prioritise', act: 'Act', communicate: 'Communicate', evaluate: 'Evaluate',
+  pause: 'Pause', reframe: 'Reframe', redirect: 'Redirect',
 }
 
 export default async function ReportPage({ params }: { params: Promise<{ id: string }> }) {
@@ -169,7 +181,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
               {avgWpm !== null && (
                 <p className={cn('text-xs font-semibold mt-1', avgWpmColor)}>{avgWpmLabel}</p>
               )}
-              <p className="text-[10px] text-white/35 mt-1">Ideal: 110–160 wpm</p>
+              <p className="text-[10px] text-white/35 mt-1">Ideal: 120–160 wpm</p>
             </div>
 
             {/* Total fillers */}
@@ -333,44 +345,73 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
             <div className="space-y-6">
               {(answers ?? []).filter(a => !a.transcription_failed).map((answer) => {
                 const q = questionMap[answer.question_id]
-                const fb = answer.ai_feedback
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const fb = answer.ai_feedback as any
                 return (
                   <div key={answer.id}>
-                    <p className="text-xs font-semibold text-[#F9C125]/60 uppercase tracking-widest mb-3">
-                      Q{answer.answer_index} — {q?.question_text ?? 'Question'}
-                    </p>
+                    {/* Answer header */}
+                    <div className="flex items-center gap-3 mb-3">
+                      <p className="text-xs font-semibold text-[#F9C125]/60 uppercase tracking-widest">
+                        Q{answer.answer_index} — {q?.question_text ?? 'Question'}
+                      </p>
+                      {fb && (
+                        <div className="flex items-center gap-2 ml-auto">
+                          <span className={cn(
+                            'text-lg font-black',
+                            fb.grade === 'A' ? 'text-green-400' :
+                            fb.grade === 'B' ? 'text-[#F9C125]' :
+                            fb.grade === 'C' ? 'text-amber-400' :
+                            fb.grade === 'D' ? 'text-amber-500' : 'text-red-400'
+                          )}>{fb.grade}</span>
+                          <span className="text-xs text-white/40">{fb.score}/100</span>
+                        </div>
+                      )}
+                    </div>
+
                     {fb ? (
                       <div className="space-y-3">
-                        {/* STAR scores */}
+                        {/* Automatic caps warning */}
+                        {fb.automatic_caps_applied?.length > 0 && (
+                          <div className="p-3 rounded-xl border border-red-500/30 bg-red-500/10">
+                            <p className="text-[10px] font-semibold uppercase tracking-widest text-red-400 mb-1">Grade cap applied</p>
+                            {fb.automatic_caps_applied.map((cap: string, i: number) => (
+                              <p key={i} className="text-xs text-red-300/80">{cap}</p>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Component scores */}
                         <div className="grid grid-cols-2 gap-3">
-                          {(['situation', 'task', 'action', 'result'] as const).map((key) => {
-                            const item = fb.star[key]
-                            const pct = Math.round((item.score / item.max) * 100)
+                          {Object.entries(fb.component_scores as Record<string, { score: number; max: number; feedback: string }>).map(([key, item]) => {
+                            const pct = item.max > 0 ? Math.round((item.score / item.max) * 100) : 0
+                            const label = COMPONENT_LABELS[key] ?? key
                             return (
                               <div key={key} className="p-4" style={INNER_CARD}>
-                                <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-1">{key}</p>
+                                <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-1">{label}</p>
                                 <p className="text-lg font-bold text-white mb-1">{item.score}/{item.max}</p>
                                 <div className="h-1.5 w-full rounded-full bg-white/10 mb-2">
                                   <div className="h-1.5 rounded-full bg-[#F9C125]" style={{ width: `${pct}%` }} />
                                 </div>
-                                <p className="text-xs text-white/55">{item.comment}</p>
+                                <p className="text-xs text-white/55">{item.feedback}</p>
                               </div>
                             )
                           })}
                         </div>
-                        {/* Ideal answer + overall comment */}
+
+                        {/* Biggest gap + ideal answer + coaching tip */}
+                        <div className="p-4 rounded-xl border border-amber-500/25 bg-amber-500/8">
+                          <p className="text-[10px] font-semibold uppercase tracking-widest text-amber-400/70 mb-1">Biggest gap</p>
+                          <p className="text-xs text-amber-200/80 leading-relaxed">{fb.biggest_gap}</p>
+                        </div>
+
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div className="p-4" style={INNER_CARD}>
-                            <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-2">Ideal Answer</p>
-                            <p className="text-xs text-white/75 leading-relaxed">{fb.ideal_answer}</p>
+                            <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-2">Ideal Answer Opening</p>
+                            <p className="text-xs text-white/75 leading-relaxed italic">&ldquo;{fb.ideal_answer_opening}&rdquo;</p>
                           </div>
                           <div className="p-4" style={INNER_CARD}>
                             <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-2">Coaching Tip</p>
-                            <p className="text-xs text-white/75 leading-relaxed">{fb.overall_comment}</p>
-                            <div className="mt-3 flex items-center gap-2">
-                              <span className="text-[10px] font-semibold uppercase tracking-widest text-white/35">Grammar</span>
-                              <span className="text-sm font-bold text-white">{fb.grammar_score}/100</span>
-                            </div>
+                            <p className="text-xs text-white/75 leading-relaxed">{fb.coaching_tip}</p>
                           </div>
                         </div>
                       </div>

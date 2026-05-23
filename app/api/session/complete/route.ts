@@ -2,9 +2,24 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkRateLimit, RATE_LIMITS } from '@/lib/ratelimit'
 import { sessionCompleteSchema } from '@/lib/validation'
-import type { Answer } from '@/types/database'
+import type { Answer, AiFeedback } from '@/types/database'
 
-function calculateGrade(answers: Pick<Answer, 'wpm' | 'filler_count'>[]): string {
+function calculateGrade(answers: Pick<Answer, 'wpm' | 'filler_count' | 'ai_feedback'>[]): string {
+  // Prefer AI scores when the majority of answers have them
+  const aiScores = answers
+    .map(a => (a.ai_feedback as AiFeedback | null)?.score)
+    .filter((v): v is number => typeof v === 'number')
+
+  if (aiScores.length > 0 && aiScores.length >= Math.ceil(answers.length / 2)) {
+    const avg = aiScores.reduce((a, b) => a + b, 0) / aiScores.length
+    if (avg >= 90) return 'A'
+    if (avg >= 75) return 'B'
+    if (avg >= 55) return 'C'
+    if (avg >= 35) return 'D'
+    return 'F'
+  }
+
+  // Fallback: WPM + filler heuristic
   const wpmValues    = answers.map(a => a.wpm).filter((v): v is number => v !== null)
   const fillerValues = answers.map(a => a.filler_count).filter((v): v is number => v !== null)
 
@@ -87,7 +102,7 @@ export async function POST(request: Request) {
   // ── Grade and mark complete ──────────────────────────────────────────────
   const { data: answers } = await supabase
     .from('answers')
-    .select('wpm, filler_count')
+    .select('wpm, filler_count, ai_feedback')
     .eq('session_id', session_id)
 
   const grade = calculateGrade(answers ?? [])

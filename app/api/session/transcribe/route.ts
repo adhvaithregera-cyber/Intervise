@@ -111,12 +111,21 @@ async function handleTextPath(
 
   const { data: question } = await supabase
     .from('questions')
-    .select('question_text, answer_format')
+    .select('question_text, answer_format, category_id, category_name')
     .eq('id', question_id)
     .single()
 
   const aiFeedback = question
-    ? await generateAnswerFeedback(question.question_text, question.answer_format, transcript)
+    ? await generateAnswerFeedback({
+        questionText:    question.question_text,
+        categoryId:      question.category_id,
+        categoryName:    question.category_name,
+        answerFormat:    question.answer_format,
+        transcript,
+        fillerCount:     analysis.fillerCount,
+        wpm:             analysis.wpm,
+        durationSeconds: duration_seconds,
+      })
     : null
 
   const { error: insertError } = await supabase.from('answers').insert({
@@ -250,12 +259,21 @@ async function handleAudioPath(
 
   const { data: question } = await supabase
     .from('questions')
-    .select('question_text, answer_format')
+    .select('question_text, answer_format, category_id, category_name')
     .eq('id', question_id)
     .single()
 
   const aiFeedback = question
-    ? await generateAnswerFeedback(question.question_text, question.answer_format, result.text)
+    ? await generateAnswerFeedback({
+        questionText:    question.question_text,
+        categoryId:      question.category_id,
+        categoryName:    question.category_name,
+        answerFormat:    question.answer_format,
+        transcript:      result.text,
+        fillerCount:     analysis.fillerCount,
+        wpm:             analysis.wpm,
+        durationSeconds: duration_seconds,
+      })
     : null
 
   const { error: insertError } = await supabase.from('answers').insert({

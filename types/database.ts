@@ -43,18 +43,25 @@ export type Session = {
   completed_at: string | null
 }
 
-export type AiFeedbackItem = { score: number; max: number; comment: string }
+export type AiFeedbackComponentScore = {
+  score: number
+  max: number
+  feedback: string
+}
 
 export type AiFeedback = {
-  star: {
-    situation: AiFeedbackItem
-    task:      AiFeedbackItem
-    action:    AiFeedbackItem
-    result:    AiFeedbackItem
+  grade: 'A' | 'B' | 'C' | 'D' | 'F'
+  score: number
+  component_scores: Record<string, AiFeedbackComponentScore>
+  delivery_scores: {
+    filler_words: { score: number; max: number; count: number }
+    wpm: { score: number; max: number; wpm: number; label: string }
+    duration: { score: number; max: number; seconds: number; label: string }
   }
-  grammar_score: number
-  ideal_answer: string
-  overall_comment: string
+  automatic_caps_applied: string[]
+  biggest_gap: string
+  ideal_answer_opening: string
+  coaching_tip: string
 }
 
 export type Answer = {
