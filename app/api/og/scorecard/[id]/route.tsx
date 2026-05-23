@@ -9,8 +9,8 @@ export const runtime = 'edge'
 // Load Inter at 700 and 900 weight from jsDelivr (stable CDN, no auth required)
 async function loadFonts(): Promise<{ bold: ArrayBuffer; black: ArrayBuffer }> {
   const [bold, black] = await Promise.all([
-    fetch('https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.0/files/inter-latin-700-normal.woff').then(r => r.arrayBuffer()),
-    fetch('https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.0/files/inter-latin-900-normal.woff').then(r => r.arrayBuffer()),
+    fetch('https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.0/files/inter-latin-700-normal.woff', { cache: 'force-cache' as RequestCache }).then(r => r.arrayBuffer()),
+    fetch('https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.0/files/inter-latin-900-normal.woff', { cache: 'force-cache' as RequestCache }).then(r => r.arrayBuffer()),
   ])
   return { bold, black }
 }
@@ -24,7 +24,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
   )
 
-  const [sessionResult, { data: answers }] = await Promise.all([
+  const [sessionResult, answersResult] = await Promise.all([
     supabase.from('sessions').select('overall_grade, difficulty, created_at').eq('id', id).single(),
     supabase.from('answers').select('wpm, filler_count, ai_feedback').eq('session_id', id),
   ])
@@ -40,20 +40,29 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     return new Response('Not found', { status: 404 })
   }
 
+  if (answersResult.error) {
+    return new Response(null, { status: 500 })
+  }
+  const answers = answersResult.data
+
   if (!session.overall_grade) {
     return new Response('Not found', { status: 404 })
   }
 
-  let fonts: { bold: ArrayBuffer; black: ArrayBuffer }
-  try {
-    fonts = await loadFonts()
-  } catch {
-    return new Response(null, { status: 503 })
-  }
+  const fonts = await loadFonts().catch(() => null)
+  if (!fonts) return new Response(null, { status: 503 })
 
-  const grade = session.overall_grade as Grade
-  const style = GRADE_STYLE[grade] ?? GRADE_STYLE['C']
-  const stats = computeScorecardStats(session.difficulty as Difficulty, answers ?? [])
+  const VALID_GRADES = new Set(['A', 'B', 'C', 'D', 'F'])
+  const grade = VALID_GRADES.has(session.overall_grade)
+    ? (session.overall_grade as Grade)
+    : ('C' as Grade)
+  const style = GRADE_STYLE[grade]
+
+  const VALID_DIFFICULTIES = new Set(['easy', 'medium', 'hard', 'mixed'])
+  const difficulty = VALID_DIFFICULTIES.has(String(session.difficulty).toLowerCase())
+    ? (session.difficulty as Difficulty)
+    : ('medium' as Difficulty)
+  const stats = computeScorecardStats(difficulty, answers ?? [])
 
   return new ImageResponse(
     (
