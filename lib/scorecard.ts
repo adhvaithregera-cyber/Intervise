@@ -1,3 +1,5 @@
+import type { Answer, Difficulty } from '@/types/database'
+
 export type Grade = 'A' | 'B' | 'C' | 'D' | 'F'
 
 export type GradeStyle = {
@@ -24,8 +26,8 @@ export type ScorecardStats = {
 }
 
 export function computeScorecardStats(
-  difficulty: string,
-  answers: { wpm: number | null; filler_count: number | null; ai_feedback: unknown }[],
+  difficulty: Difficulty,
+  answers: Pick<Answer, 'wpm' | 'filler_count' | 'ai_feedback'>[],
 ): ScorecardStats {
   const wpms = answers.map(a => a.wpm).filter((v): v is number => v !== null)
   const avgWpm = wpms.length > 0
@@ -35,7 +37,7 @@ export function computeScorecardStats(
   const totalFillers = answers.reduce((sum, a) => sum + (a.filler_count ?? 0), 0)
 
   const aiScores = answers
-    .map(a => (a.ai_feedback as { score?: number } | null)?.score)
+    .map(a => a.ai_feedback?.score)
     .filter((v): v is number => typeof v === 'number')
   const avgScore = aiScores.length > 0
     ? Math.round(aiScores.reduce((a, b) => a + b, 0) / aiScores.length)

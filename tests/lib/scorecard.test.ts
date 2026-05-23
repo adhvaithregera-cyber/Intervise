@@ -55,8 +55,8 @@ describe('computeScorecardStats', () => {
 
   it('returns averaged ai score when feedback present', () => {
     const answers = [
-      { wpm: 120, filler_count: 2, ai_feedback: { score: 80 } },
-      { wpm: 140, filler_count: 3, ai_feedback: { score: 60 } },
+      { wpm: 120, filler_count: 2, ai_feedback: { score: 80 } as any },
+      { wpm: 140, filler_count: 3, ai_feedback: { score: 60 } as any },
     ]
     const stats = computeScorecardStats('medium', answers)
     expect(stats.avgScore).toBe(70)
@@ -77,5 +77,13 @@ describe('computeScorecardStats', () => {
     ]
     const stats = computeScorecardStats('easy', answers)
     expect(stats.avgWpm).toBeNull()
+  })
+
+  it('handles empty answers array', () => {
+    const stats = computeScorecardStats('easy', [])
+    expect(stats.avgWpm).toBeNull()
+    expect(stats.totalFillers).toBe(0)
+    expect(stats.questionCount).toBe(0)
+    expect(stats.avgScore).toBeNull()
   })
 })
