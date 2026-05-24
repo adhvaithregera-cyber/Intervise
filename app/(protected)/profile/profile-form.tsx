@@ -43,6 +43,9 @@ type Props = {
   tier: string
   sessionsUsed: number
   sessionsLimit: number
+  subscriptionStatus: string | null
+  tierExpiresAt: string | null
+  hasActiveSubscription: boolean
 }
 
 export function ProfileForm({
@@ -55,6 +58,9 @@ export function ProfileForm({
   tier,
   sessionsUsed,
   sessionsLimit,
+  subscriptionStatus,
+  tierExpiresAt,
+  hasActiveSubscription,
 }: Props) {
   const [fullNameValue, setFullNameValue] = useState(fullName ?? '')
   const [fullNameSaved, setFullNameSaved] = useState(fullName !== null)
@@ -65,6 +71,9 @@ export function ProfileForm({
   const [biggestWeakness, setBiggestWeakness] = useState(initialBiggestWeakness ?? '')
   const [saving, setSaving] = useState(false)
   const [saveMsg, setSaveMsg] = useState<string | null>(null)
+  const [cancelling, setCancelling] = useState(false)
+  const [cancelMsg, setCancelMsg] = useState<string | null>(null)
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false)
 
   const [showPasswordForm, setShowPasswordForm] = useState(false)
   const [newPassword, setNewPassword] = useState('')
@@ -118,6 +127,24 @@ export function ProfileForm({
       setConfirmPassword('')
       setShowPasswordForm(false)
       setTimeout(() => setPasswordMsg(null), 3000)
+    }
+  }
+
+  async function handleCancel() {
+    setCancelling(true)
+    setCancelMsg(null)
+    const res = await fetch('/api/payments/cancel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ immediately: false }),
+    })
+    setCancelling(false)
+    setShowCancelConfirm(false)
+    if (res.ok) {
+      setCancelMsg('Subscription cancelled. Your plan remains active until the billing period ends.')
+    } else {
+      const data = await res.json().catch(() => ({}))
+      setCancelMsg((data as { error?: string }).error ?? 'Failed to cancel. Please try again.')
     }
   }
 
@@ -311,12 +338,31 @@ export function ProfileForm({
           <h2 className="mb-4 text-xs font-semibold uppercase tracking-widest text-[#F9C125]">
             Subscription
           </h2>
-          <div className="flex items-center justify-between">
+          <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-base font-bold text-white">{TIER_LABEL[tier] ?? tier} Plan</p>
               <p className="mt-1 text-sm text-[#F9C125]/70">{TIER_SESSIONS[tier]}</p>
+              {subscriptionStatus === 'cancelled' && tierExpiresAt && (
+                <p className="mt-2 text-xs text-amber-400">
+                  Cancelled — access continues until{' '}
+                  {new Date(tierExpiresAt).toLocaleDateString('en-IN', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                  })}
+                </p>
+              )}
+              {subscriptionStatus === 'halted' && (
+                <p className="mt-2 text-xs text-red-400">
+                  Payment failed — subscription halted. Please renew via the{' '}
+                  <a href="/upgrade" className="underline underline-offset-2 hover:text-red-300">
+                    upgrade page
+                  </a>
+                  .
+                </p>
+              )}
             </div>
-            <div className="text-right">
+            <div className="shrink-0 text-right">
               <p className="text-xs font-semibold uppercase tracking-wide text-[#F9C125]/70">Used this month</p>
               <p className="text-2xl font-bold text-white">
                 {sessionsUsed}{' '}
@@ -324,6 +370,68 @@ export function ProfileForm({
               </p>
             </div>
           </div>
+
+          {/* Upgrade link for free users */}
+          {tier === 'free' && (
+            <div className="mt-4">
+              <a
+                href="/upgrade"
+                className="inline-block rounded-lg bg-[#F9C125] px-4 py-2 text-xs font-bold text-[#080d1a] hover:brightness-110 transition-all"
+              >
+                Upgrade plan
+              </a>
+            </div>
+          )}
+
+          {/* Cancel button for active subscribers */}
+          {hasActiveSubscription && !showCancelConfirm && (
+            <div className="mt-4">
+              <button
+                onClick={() => setShowCancelConfirm(true)}
+                className="text-xs font-semibold text-white/40 hover:text-red-400 transition-colors"
+              >
+                Cancel subscription
+              </button>
+            </div>
+          )}
+
+          {/* Confirmation dialog */}
+          {showCancelConfirm && (
+            <div
+              className="mt-4 rounded-xl p-4 space-y-3"
+              style={{
+                backgroundColor: 'rgba(239,68,68,0.06)',
+                border: '1px solid rgba(239,68,68,0.25)',
+              }}
+            >
+              <p className="text-sm text-white/80">
+                Are you sure? Your plan will stay active until the end of the current billing period.
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleCancel}
+                  disabled={cancelling}
+                  className="rounded-lg bg-red-500/80 px-3 py-1.5 text-xs font-bold text-white hover:bg-red-500 disabled:opacity-50 transition-all"
+                >
+                  {cancelling ? 'Cancelling…' : 'Yes, cancel'}
+                </button>
+                <button
+                  onClick={() => setShowCancelConfirm(false)}
+                  className="rounded-lg px-3 py-1.5 text-xs font-semibold text-white/50 hover:text-white transition-colors"
+                >
+                  Keep subscription
+                </button>
+              </div>
+            </div>
+          )}
+
+          {cancelMsg && (
+            <p
+              className={`mt-3 text-xs ${cancelMsg.startsWith('Subscription cancelled') ? 'text-green-400' : 'text-red-400'}`}
+            >
+              {cancelMsg}
+            </p>
+          )}
         </div>
       </div>
     </div>
