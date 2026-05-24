@@ -4,24 +4,37 @@ import { checkRateLimit, RATE_LIMITS } from '@/lib/ratelimit'
 import { sessionCompleteSchema } from '@/lib/validation'
 import type { Answer, AiFeedback } from '@/types/database'
 
-function calculateGrade(answers: Pick<Answer, 'wpm' | 'filler_count' | 'ai_feedback'>[]): string {
-  // Prefer AI scores when the majority of answers have them
-  const aiScores = answers
+const UNANSWERED_PENALTY = 6 // points deducted per unanswered/failed question
+
+function scoreToGrade(score: number): string {
+  if (score >= 90) return 'A'
+  if (score >= 75) return 'B'
+  if (score >= 55) return 'C'
+  if (score >= 35) return 'D'
+  return 'F'
+}
+
+function calculateGrade(
+  answers: Pick<Answer, 'wpm' | 'filler_count' | 'ai_feedback' | 'transcription_failed'>[],
+  totalExpected: number,
+): string {
+  const answered = answers.filter(a => !a.transcription_failed)
+  const unanswered = Math.max(0, totalExpected - answered.length)
+
+  // Prefer AI scores when the majority of answered questions have them
+  const aiScores = answered
     .map(a => (a.ai_feedback as AiFeedback | null)?.score)
     .filter((v): v is number => typeof v === 'number')
 
-  if (aiScores.length > 0 && aiScores.length >= Math.ceil(answers.length / 2)) {
+  if (aiScores.length > 0 && aiScores.length >= Math.ceil(answered.length / 2)) {
     const avg = aiScores.reduce((a, b) => a + b, 0) / aiScores.length
-    if (avg >= 90) return 'A'
-    if (avg >= 75) return 'B'
-    if (avg >= 55) return 'C'
-    if (avg >= 35) return 'D'
-    return 'F'
+    const penalised = Math.max(0, avg - unanswered * UNANSWERED_PENALTY)
+    return scoreToGrade(penalised)
   }
 
-  // Fallback: WPM + filler heuristic
-  const wpmValues    = answers.map(a => a.wpm).filter((v): v is number => v !== null)
-  const fillerValues = answers.map(a => a.filler_count).filter((v): v is number => v !== null)
+  // Fallback: WPM + filler heuristic → convert to 0–100 scale then penalise
+  const wpmValues    = answered.map(a => a.wpm).filter((v): v is number => v !== null)
+  const fillerValues = answered.map(a => a.filler_count).filter((v): v is number => v !== null)
 
   const avgWpm    = wpmValues.length    > 0 ? wpmValues.reduce((a, b) => a + b, 0)    / wpmValues.length    : null
   const avgFiller = fillerValues.length > 0 ? fillerValues.reduce((a, b) => a + b, 0) / fillerValues.length : null
@@ -42,12 +55,11 @@ function calculateGrade(answers: Pick<Answer, 'wpm' | 'filler_count' | 'ai_feedb
     else                      fillerScore = 1
   }
 
+  // Map combined (1–4) to 0–100, then apply unanswered penalty
   const combined = (wpmScore + fillerScore) / 2
-  if (combined >= 3.5)  return 'A'
-  if (combined >= 2.75) return 'B'
-  if (combined >= 2.0)  return 'C'
-  if (combined >= 1.5)  return 'D'
-  return 'F'
+  const heuristicScore = ((combined - 1) / 3) * 100
+  const penalised = Math.max(0, heuristicScore - unanswered * UNANSWERED_PENALTY)
+  return scoreToGrade(penalised)
 }
 
 export async function POST(request: Request) {
@@ -102,10 +114,10 @@ export async function POST(request: Request) {
   // ── Grade and mark complete ──────────────────────────────────────────────
   const { data: answers } = await supabase
     .from('answers')
-    .select('wpm, filler_count, ai_feedback')
+    .select('wpm, filler_count, ai_feedback, transcription_failed')
     .eq('session_id', session_id)
 
-  const grade = calculateGrade(answers ?? [])
+  const grade = calculateGrade(answers ?? [], 5)
 
   const { error: updateError } = await supabase
     .from('sessions')
