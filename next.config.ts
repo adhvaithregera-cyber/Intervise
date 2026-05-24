@@ -42,16 +42,16 @@ const securityHeaders = [
       "default-src 'self'",
       // unsafe-eval only in dev (Next.js HMR needs it); never in production
       isDev
-        ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://hcaptcha.com https://*.hcaptcha.com"
-        : "script-src 'self' 'unsafe-inline' https://hcaptcha.com https://*.hcaptcha.com",
+        ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://hcaptcha.com https://*.hcaptcha.com https://*.razorpay.com https://cdn.razorpay.com"
+        : "script-src 'self' 'unsafe-inline' https://hcaptcha.com https://*.hcaptcha.com https://*.razorpay.com https://cdn.razorpay.com",
       "style-src 'self' 'unsafe-inline' https://hcaptcha.com https://*.hcaptcha.com",
       "img-src 'self' data: blob:",
       "font-src 'self'",
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.assemblyai.com https://hcaptcha.com https://*.hcaptcha.com",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.assemblyai.com https://hcaptcha.com https://*.hcaptcha.com https://api.razorpay.com https://*.razorpay.com",
       "media-src 'self' blob:",
       "worker-src 'self' blob:",
       "object-src 'none'",
-      "frame-src https://hcaptcha.com https://*.hcaptcha.com",
+      "frame-src https://hcaptcha.com https://*.hcaptcha.com https://*.razorpay.com",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
