@@ -73,7 +73,7 @@ export function BeamsBackground({
 
       const totalBeams = MINIMUM_BEAMS * 1.5;
       beamsRef.current = Array.from({ length: totalBeams }, () =>
-        createBeam(canvas.width, canvas.height)
+        createBeam(window.innerWidth, window.innerHeight)
       );
     };
 
@@ -159,7 +159,6 @@ export function BeamsBackground({
       <canvas
         ref={canvasRef}
         className="absolute inset-0 pointer-events-none"
-        style={{ filter: "blur(15px)" }}
       />
 
       {/* Subtle breathing gold tint — no backdrop-filter to avoid box artifact */}
