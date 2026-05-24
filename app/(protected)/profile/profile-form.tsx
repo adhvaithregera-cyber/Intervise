@@ -94,6 +94,7 @@ export function ProfileForm({
         role_type: roleType,
         interview_date: interviewDate,
         biggest_weakness: biggestWeakness,
+        ...(age !== '' && !isNaN(Number(age)) && { age: Number(age) }),
       }),
     })
     setSaving(false)

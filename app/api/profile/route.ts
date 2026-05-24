@@ -34,9 +34,9 @@ export async function PATCH(request: Request) {
   }
 
   // Build update from validated fields only — .strict() already rejected unknown keys
-  const { role_type, interview_date, biggest_weakness, full_name } = parsed.data
+  const { role_type, interview_date, biggest_weakness, full_name, age } = parsed.data
 
-  if (role_type === undefined && interview_date === undefined && biggest_weakness === undefined && full_name === undefined) {
+  if (role_type === undefined && interview_date === undefined && biggest_weakness === undefined && full_name === undefined && age === undefined) {
     return NextResponse.json({ ok: true })
   }
 
@@ -54,6 +54,7 @@ export async function PATCH(request: Request) {
       ...(interview_date   !== undefined && { interview_date:   interview_date   || null }),
       ...(biggest_weakness !== undefined && { biggest_weakness: biggest_weakness || null }),
       ...(applyFullName                  && { full_name }),
+      ...(age              !== undefined && { age }),
     })
     .eq('id', user.id)
 

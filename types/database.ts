@@ -12,6 +12,7 @@ export type Profile = {
   sessions_limit: number
   sessions_used_this_month: number
   onboarding_complete: boolean
+  age: number | null
   role_type: string | null
   interview_date: string | null
   biggest_weakness: string | null

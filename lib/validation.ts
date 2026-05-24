@@ -86,6 +86,7 @@ export const profileUpdateSchema = z
       .max(100)
       .trim()
       .optional(),
+    age: z.number().int().min(16).max(100).optional(),
   })
   .strict() // reject unknown keys — prevents mass-assignment of any other profile field
 
