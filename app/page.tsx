@@ -6,6 +6,7 @@ import { CategoryStrip } from '@/components/ui/category-strip'
 import { HowItWorks } from '@/components/ui/how-it-works'
 import { ComparisonSection } from '@/components/ui/comparison-section'
 import { FinalCta } from '@/components/ui/final-cta'
+import { BeamsBackground } from '@/components/ui/beams-background'
 import { createClient } from '@/lib/supabase/server'
 
 export default async function LandingPage() {
@@ -26,30 +27,22 @@ export default async function LandingPage() {
     <div className="min-h-screen text-white">
       <Navbar />
 
-      {/* ── HERO — deep navy + radial gold glow centred on headline ── */}
-      <section
-        className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center overflow-hidden px-4 pb-32 sm:px-6"
-        style={{ backgroundColor: '#080d1a' }}
+      {/* ── HERO — animated gold beams background ── */}
+      <BeamsBackground
+        intensity="strong"
+        className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4 pb-32 sm:px-6"
       >
-        {/* Dot grid */}
+        {/* Radial golden glow centred on the text — layered on top of beams */}
         <div
-          className="pointer-events-none absolute inset-0"
+          className="pointer-events-none absolute inset-0 z-[1]"
           style={{
-            backgroundImage: 'radial-gradient(rgba(255,255,255,0.04) 1.5px, transparent 1.5px)',
-            backgroundSize: '26px 26px',
-          }}
-        />
-        {/* Radial golden glow centred on the text */}
-        <div
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background: 'radial-gradient(ellipse 75% 60% at 50% 44%, rgba(249,193,37,0.40) 0%, rgba(249,193,37,0.10) 50%, transparent 72%)',
+            background: 'radial-gradient(ellipse 75% 55% at 50% 44%, rgba(249,193,37,0.22) 0%, rgba(249,193,37,0.06) 55%, transparent 75%)',
           }}
         />
 
         <div className="relative z-10 flex flex-col items-center text-center pt-24 sm:pt-32">
           {/* Badge */}
-          <span className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/15 px-4 py-1.5 text-xs font-semibold text-white/90 backdrop-blur-sm">
+          <span className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/10 border border-[#F9C125]/30 px-4 py-1.5 text-xs font-semibold text-white/90 backdrop-blur-sm">
             <span className="h-1.5 w-1.5 rounded-full bg-[#F9C125]" />
             AI-powered interview coaching
           </span>
@@ -59,7 +52,7 @@ export default async function LandingPage() {
             <span className="text-white">is won before it starts.</span>
           </h1>
 
-          <p className="mb-8 max-w-[520px] text-base leading-relaxed text-white/80 sm:text-lg">
+          <p className="mb-8 max-w-[520px] text-base leading-relaxed text-white/75 sm:text-lg">
             You practised for weeks. You knew your answers cold. Then the interviewer asked one question — and your mind went blank.
           </p>
 
@@ -72,10 +65,10 @@ export default async function LandingPage() {
             ].map((s) => (
               <div
                 key={s.label}
-                className="flex flex-col items-center rounded-2xl bg-white/8 border border-white/12 px-7 py-3.5 backdrop-blur-sm"
+                className="flex flex-col items-center rounded-2xl bg-[#F9C125]/8 border border-[#F9C125]/20 px-7 py-3.5 backdrop-blur-sm"
               >
                 <span className="text-xl font-black text-white">{s.value}</span>
-                <span className="text-[11px] text-white/75">{s.label}</span>
+                <span className="text-[11px] text-white/65">{s.label}</span>
               </div>
             ))}
           </div>
@@ -84,13 +77,13 @@ export default async function LandingPage() {
           <div className="flex flex-col items-center gap-3 sm:flex-row">
             <Link
               href="#how-it-works"
-              className="inline-flex w-full items-center justify-center rounded-xl bg-[#F9C125] px-8 py-3.5 text-base font-bold text-[#080d1a] shadow-lg shadow-black/25 hover:bg-[#F9C125]/90 transition-colors sm:w-auto"
+              className="inline-flex w-full items-center justify-center rounded-xl bg-[#F9C125] px-8 py-3.5 text-base font-bold text-[#080d1a] shadow-lg shadow-[#F9C125]/20 hover:bg-[#F9C125]/90 transition-colors sm:w-auto"
             >
               See how it works
             </Link>
             <Link
               href={user ? '/session/setup' : '/signup'}
-              className="inline-flex w-full items-center justify-center rounded-xl border-2 border-white/40 bg-white/10 px-8 py-3.5 text-base font-semibold text-white backdrop-blur-sm hover:bg-white/20 transition-colors sm:w-auto"
+              className="inline-flex w-full items-center justify-center rounded-xl border border-white/20 bg-white/8 px-8 py-3.5 text-base font-semibold text-white backdrop-blur-sm hover:bg-white/15 transition-colors sm:w-auto"
             >
               Start Session
             </Link>
@@ -101,7 +94,7 @@ export default async function LandingPage() {
             {['No card needed', '2 free sessions', 'Cancel anytime'].map((t) => (
               <span
                 key={t}
-                className="rounded-full bg-white/20 px-4 py-1.5 text-xs font-medium text-white/90 backdrop-blur-sm"
+                className="rounded-full bg-white/8 border border-white/10 px-4 py-1.5 text-xs font-medium text-white/70"
               >
                 {t}
               </span>
@@ -109,12 +102,12 @@ export default async function LandingPage() {
           </div>
         </div>
 
-        {/* Short downward fade into dark category strip — no upward gradient */}
+        {/* Downward fade into dark category strip */}
         <div
-          className="absolute bottom-0 left-0 right-0 h-20"
+          className="absolute bottom-0 left-0 right-0 h-24 z-20"
           style={{ background: 'linear-gradient(to bottom, transparent, #080d1a)' }}
         />
-      </section>
+      </BeamsBackground>
 
       {/* Category strip — dark band */}
       <CategoryStrip />
