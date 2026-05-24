@@ -47,12 +47,15 @@ export default async function LandingPage() {
             AI-powered interview coaching
           </span>
 
-          <h1 className="mb-5 max-w-3xl text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl lg:text-7xl">
+          <h1
+            className="mb-5 max-w-3xl text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl lg:text-7xl"
+            style={{ textShadow: '0 2px 32px rgba(0,0,0,0.9), 0 0 80px rgba(0,0,0,0.6)' }}
+          >
             Your next interview<br />
             <span className="text-white">is won before it starts.</span>
           </h1>
 
-          <p className="mb-8 max-w-[520px] text-base leading-relaxed text-white/75 sm:text-lg">
+          <p className="mb-8 max-w-[520px] text-base leading-relaxed text-white/75 sm:text-lg" style={{ textShadow: '0 1px 16px rgba(0,0,0,0.8)' }}>
             You practised for weeks. You knew your answers cold. Then the interviewer asked one question — and your mind went blank.
           </p>
 
@@ -65,7 +68,8 @@ export default async function LandingPage() {
             ].map((s) => (
               <div
                 key={s.label}
-                className="flex flex-col items-center rounded-2xl bg-[#F9C125]/8 border border-[#F9C125]/20 px-7 py-3.5 backdrop-blur-sm"
+                className="flex flex-col items-center rounded-2xl px-7 py-3.5"
+                style={{ background: 'rgba(8,13,26,0.55)', boxShadow: '0 0 0 1px rgba(249,193,37,0.15), 0 4px 24px rgba(0,0,0,0.5)' }}
               >
                 <span className="text-xl font-black text-white">{s.value}</span>
                 <span className="text-[11px] text-white/65">{s.label}</span>

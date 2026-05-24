@@ -162,19 +162,16 @@ export function BeamsBackground({
         style={{ filter: "blur(15px)" }}
       />
 
-      {/* Subtle breathing overlay */}
+      {/* Subtle breathing gold tint — no backdrop-filter to avoid box artifact */}
       <motion.div
         className="absolute inset-0 pointer-events-none"
-        animate={{ opacity: [0.03, 0.10, 0.03] }}
+        animate={{ opacity: [0.02, 0.07, 0.02] }}
         transition={{
           duration: 10,
           ease: "easeInOut",
           repeat: Number.POSITIVE_INFINITY,
         }}
-        style={{
-          backgroundColor: "#F9C125",
-          backdropFilter: "blur(50px)",
-        }}
+        style={{ backgroundColor: "#F9C125" }}
       />
 
       <div className="relative z-10">{children}</div>
