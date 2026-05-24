@@ -6,8 +6,12 @@ export interface AnalysisInput {
 export interface AnalysisResult {
   fillerCount: number
   fillerBreakdown: Record<string, number>
-  wpm: number
+  wpm: number | null
 }
+
+// Minimum words needed before WPM is a meaningful measurement.
+// Fewer words = single ambient noise hit can produce wildly wrong values.
+const MIN_WORDS_FOR_WPM = 5
 
 // Order matters: multi-word phrases must be listed before their component words
 // so that "you know" is matched as a phrase before individual word patterns.
@@ -27,12 +31,12 @@ const FILLER_PATTERNS: Array<{ key: string; regex: RegExp }> = [
 export function analyzeAnswer(input: AnalysisInput): AnalysisResult {
   const { transcript, durationSeconds } = input
 
-  // WPM
+  // WPM — null when there aren't enough words for a meaningful reading
   const words = transcript.trim().split(/\s+/).filter(Boolean)
   const wordCount = words.length
-  const wpm =
-    durationSeconds === 0 || wordCount === 0
-      ? 0
+  const wpm: number | null =
+    durationSeconds === 0 || wordCount < MIN_WORDS_FOR_WPM
+      ? null
       : Math.round(wordCount / (durationSeconds / 60))
 
   // Filler detection — sparse: only include keys with at least one match

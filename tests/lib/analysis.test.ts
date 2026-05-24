@@ -4,11 +4,11 @@ import type { AnalysisInput, AnalysisResult } from '@/lib/analysis'
 
 describe('analyzeAnswer', () => {
   // --- Empty transcript ---
-  it('returns zeros for empty transcript', () => {
+  it('returns null wpm and zero fillers for empty transcript', () => {
     const result = analyzeAnswer({ transcript: '', durationSeconds: 60 })
     expect(result.fillerCount).toBe(0)
     expect(result.fillerBreakdown).toEqual({})
-    expect(result.wpm).toBe(0)
+    expect(result.wpm).toBeNull()
   })
 
   // --- WPM math ---
@@ -18,15 +18,22 @@ describe('analyzeAnswer', () => {
     expect(result.wpm).toBe(130)
   })
 
-  it('returns wpm 0 when durationSeconds is 0 (no divide-by-zero)', () => {
+  it('returns null wpm when durationSeconds is 0 (no divide-by-zero)', () => {
     const result = analyzeAnswer({ transcript: 'hello world', durationSeconds: 0 })
-    expect(result.wpm).toBe(0)
+    expect(result.wpm).toBeNull()
   })
 
-  it('wpm result is always an integer', () => {
+  it('returns null wpm when word count is below minimum threshold', () => {
+    // 4 words < MIN_WORDS_FOR_WPM (5) — not a meaningful reading
+    const result = analyzeAnswer({ transcript: 'one two three four', durationSeconds: 10 })
+    expect(result.wpm).toBeNull()
+  })
+
+  it('wpm result is always an integer when computed', () => {
     // 10 words over 7 seconds → Math.round(10 / (7/60)) = Math.round(85.71) = 86
     const words = Array(10).fill('hello').join(' ')
     const result = analyzeAnswer({ transcript: words, durationSeconds: 7 })
+    expect(result.wpm).not.toBeNull()
     expect(Number.isInteger(result.wpm)).toBe(true)
   })
 
