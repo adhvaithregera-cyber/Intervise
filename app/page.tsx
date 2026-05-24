@@ -40,7 +40,7 @@ export default async function LandingPage() {
       <ComparisonSection />
 
       {/* ── PRICING — dark section ── */}
-      <PricingSection />
+      <PricingSection userTier={tier} />
 
       {/* ── FINAL CTA ── */}
       <FinalCta showSignup={showTryFree} />

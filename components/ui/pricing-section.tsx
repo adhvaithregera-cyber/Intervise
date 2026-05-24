@@ -8,6 +8,7 @@ import { motion, useInView } from 'framer-motion'
 const NumberFlow = dynamic(() => import('@number-flow/react'), { ssr: false })
 import { Mic2, BarChart2, CalendarDays, CheckCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useRazorpayCheckout } from '@/hooks/use-razorpay-checkout'
 
 const plans = [
   {
@@ -139,9 +140,20 @@ function FadeUp({ children, delay = 0, className }: { children: React.ReactNode;
   )
 }
 
-export default function PricingSection() {
+export default function PricingSection({ userTier }: { userTier?: string | null } = {}) {
   const [isYearly, setIsYearly] = useState(false)
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null)
+  const [checkoutError, setCheckoutError] = useState<string | null>(null)
+  const { startCheckout } = useRazorpayCheckout({ onError: setCheckoutError })
+
   function togglePeriod(value: string) { setIsYearly(Number(value) === 1) }
+
+  async function handleCheckout(plan: 'student' | 'pro') {
+    setCheckoutError(null)
+    setCheckoutLoading(plan)
+    await startCheckout(plan)
+    setCheckoutLoading(null)
+  }
 
   return (
     <section
@@ -166,6 +178,17 @@ export default function PricingSection() {
       />
 
       <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6">
+        {checkoutError && (
+          <div
+            className="mb-6 rounded-xl px-4 py-3 text-center text-sm text-red-400"
+            style={{
+              backgroundColor: 'rgba(239,68,68,0.08)',
+              border: '1px solid rgba(239,68,68,0.25)',
+            }}
+          >
+            {checkoutError}
+          </div>
+        )}
         {/* Heading */}
         <div className="mb-10 text-center">
           <FadeUp delay={0}>
@@ -240,22 +263,60 @@ export default function PricingSection() {
                 </div>
 
                 {/* CTA */}
-                <Link
-                  href="/signup"
-                  className={cn(
-                    'mb-7 block w-full rounded-xl py-3 text-center text-sm font-bold transition-all',
-                    plan.popular
-                      ? 'bg-[#F9C125] text-[#080d1a] hover:bg-[#F9C125]/85'
-                      : 'text-white hover:bg-white/8'
-                  )}
-                  style={
-                    plan.popular
-                      ? {}
-                      : { border: '1px solid rgba(255,255,255,0.15)' }
-                  }
-                >
-                  {plan.buttonText}
-                </Link>
+                {plan.price === 0 ? (
+                  // Free plan — always link to signup
+                  <Link
+                    href="/signup"
+                    className={cn(
+                      'mb-7 block w-full rounded-xl py-3 text-center text-sm font-bold transition-all',
+                      'text-white hover:bg-white/8'
+                    )}
+                    style={{ border: '1px solid rgba(255,255,255,0.15)' }}
+                  >
+                    {plan.buttonText}
+                  </Link>
+                ) : userTier === plan.name.toLowerCase() ? (
+                  // Logged in + this IS their current plan
+                  <button
+                    disabled
+                    className="mb-7 w-full cursor-not-allowed rounded-xl py-3 text-sm font-bold text-white/35"
+                    style={{
+                      backgroundColor: 'rgba(255,255,255,0.04)',
+                      border: '1px solid rgba(255,255,255,0.10)',
+                    }}
+                  >
+                    Current plan
+                  </button>
+                ) : userTier != null ? (
+                  // Logged in + this is an available plan — open checkout
+                  <button
+                    onClick={() => handleCheckout(plan.name.toLowerCase() as 'student' | 'pro')}
+                    disabled={checkoutLoading !== null}
+                    className={cn(
+                      'mb-7 w-full rounded-xl py-3 text-sm font-bold transition-all disabled:opacity-50',
+                      plan.popular
+                        ? 'bg-[#F9C125] text-[#080d1a] hover:bg-[#F9C125]/85'
+                        : 'text-white hover:bg-white/8'
+                    )}
+                    style={plan.popular ? {} : { border: '1px solid rgba(255,255,255,0.15)' }}
+                  >
+                    {checkoutLoading === plan.name.toLowerCase() ? 'Loading…' : plan.buttonText}
+                  </button>
+                ) : (
+                  // Logged out — redirect to signup with plan pre-selected
+                  <Link
+                    href={`/signup?plan=${plan.name.toLowerCase()}`}
+                    className={cn(
+                      'mb-7 block w-full rounded-xl py-3 text-center text-sm font-bold transition-all',
+                      plan.popular
+                        ? 'bg-[#F9C125] text-[#080d1a] hover:bg-[#F9C125]/85'
+                        : 'text-white hover:bg-white/8'
+                    )}
+                    style={plan.popular ? {} : { border: '1px solid rgba(255,255,255,0.15)' }}
+                  >
+                    {plan.buttonText}
+                  </Link>
+                )}
 
                 {/* Features */}
                 <ul className="mb-6 space-y-3">
