@@ -5,5 +5,5 @@
 -- NULLs are permitted while duplicate non-NULL IDs are rejected.
 
 alter table public.profiles
-  add constraint if not exists profiles_razorpay_subscription_id_unique
+  add constraint profiles_razorpay_subscription_id_unique
   unique (razorpay_subscription_id);
