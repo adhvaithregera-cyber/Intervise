@@ -53,7 +53,10 @@ export function ShareScorecard({ sessionId }: ShareScorecardProps) {
       const a = document.createElement('a')
       a.href = href
       a.download = 'intervise-scorecard.png'
+      a.style.display = 'none'
+      document.body.appendChild(a)
       a.click()
+      document.body.removeChild(a)
       URL.revokeObjectURL(href)
     } catch {
       // Silent on failure

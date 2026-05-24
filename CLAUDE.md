@@ -68,16 +68,21 @@ lib/questions.ts                           selectAdaptiveQuestions() — TDD'd
 lib/analysis.ts                            filler detection + WPM calculation — TDD'd
 lib/assemblyai.ts                          AssemblyAI transcription client
 lib/utils.ts                               cn() helper
+lib/aifeedback.ts                          generateAnswerFeedback() — Claude Haiku, 8-category rubric
+lib/scorecard.ts                           GRADE_STYLE colours + computeScorecardStats()
 lib/ratelimit.ts                           In-memory rate limiter
 lib/validation.ts                          Zod schemas for all API inputs
-types/database.ts                          Profile, Question, Session, Answer types
+types/database.ts                          Profile, Question, Session, Answer, AiFeedback types
 components/ui/button.tsx                   Button (primary/outline/ghost, sm/md/lg)
 components/ui/card.tsx                     Card (optional tinted prop)
 components/ui/badge.tsx                    Badge (brand/gray/green/red/amber)
 components/ui/fade-in.tsx                  FadeIn animation wrapper
 components/layout/navbar.tsx               Async server component navbar
+components/session/share-scorecard.tsx     Share button — copy link + download PNG (all tiers)
+app/api/og/scorecard/[id]/route.tsx        Public OG image endpoint — 1200×630 PNG scorecard
 supabase/migrations/                       All schema migrations (001–008)
 supabase/seed.sql                          75 questions seeded across 8 categories
+docs/GRADING.md                            Full grading rubric, AI feedback schema, tier behaviour
 ```
 
 ## DB tables
@@ -108,9 +113,8 @@ See `docs/DATABASE.md` for the full matrix. Key rules:
 - Eye contact % and head stability: Student+ (future, MediaPipe)
 - Progress trend charts (WPM, fillers, format compliance): Student+ (dashboard)
 - Weakness pattern summary + weekly AI plan: Pro only, shown as dashboard cards
-- Shareable PNG scorecard: Student+
+- Shareable PNG scorecard: all tiers (no token cost, server-side generated)
 - Resume-based question gen (JD+CV): Pro only
-- Email sequences (D0, D2, D5, D14): all tiers via Resend
 
 ## Conventions
 - One task at a time, user confirms before each milestone
@@ -125,12 +129,12 @@ See `docs/DATABASE.md` for the full matrix. Key rules:
 
 ## Upcoming milestones (in order)
 1. ~~M1: CLAUDE.md + DATABASE.md docs~~ ✅
-2. M2: Structural tier fixes (question counts, category pools, difficulty gating)
-3. M3: WPM gauge label (Slow/Ideal/Fast) on report
-4. M4: AI feedback pipeline (Claude API, per-answer + session summary)
-5. M5: AI question personalisation (Student: 2 AI Qs, Pro: 3 AI Qs + tokens)
+2. ~~M2: Structural tier fixes (question counts, category pools, difficulty gating)~~ ✅
+3. ~~M3: WPM gauge label (Slow/Ideal/Fast) on report~~ ✅
+4. ~~M4: AI feedback pipeline (Claude API, per-answer + session summary)~~ ✅
+5. ~~M5: AI question personalisation (Student: 2 AI Qs, Pro: 3 AI Qs + tokens)~~ ✅
 6. M6: Progress charts page (Pro, Recharts)
 7. M7: Pro dashboard cards (weakness summary + weekly AI plan)
-8. M8: Shareable score card PNG (@vercel/og)
+8. ~~M8: Shareable scorecard PNG (next/og, all tiers)~~ ✅
 9. M9: Resume-based question gen (JD+CV, Pro)
-10. M10: Email sequences (Resend, D0/D2/D5/D14)
+10. ~~M10: Email sequences~~ — scrapped
