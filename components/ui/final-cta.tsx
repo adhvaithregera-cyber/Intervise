@@ -11,7 +11,7 @@ export function FinalCta({ showSignup }: { showSignup: boolean }) {
   return (
     <section
       className="relative overflow-hidden px-4 py-20 text-center sm:px-6 sm:py-28"
-      style={{ backgroundColor: '#BF601A' }}
+      style={{ backgroundColor: '#080d1a' }}
     >
       {/* Dot grid only — no vignette to avoid gradient banding */}
       <div

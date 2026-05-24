@@ -68,7 +68,7 @@ export const Highlight = ({
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'left bottom',
         display: 'inline',
-        backgroundImage: 'linear-gradient(90deg, #F9C125, #E07A2F)',
+        backgroundImage: 'linear-gradient(90deg, #F9C125, #FFD97A)',
       }}
       className={cn('relative inline-block text-[#F9C125]', className)}
     >

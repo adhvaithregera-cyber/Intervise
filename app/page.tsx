@@ -26,22 +26,30 @@ export default async function LandingPage() {
     <div className="min-h-screen text-white">
       <Navbar />
 
-      {/* ── HERO — solid orange + radial glow centred on headline ── */}
+      {/* ── HERO — deep navy + radial gold glow centred on headline ── */}
       <section
         className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center overflow-hidden px-4 pb-32 sm:px-6"
-        style={{ backgroundColor: '#E07A2F' }}
+        style={{ backgroundColor: '#080d1a' }}
       >
+        {/* Dot grid */}
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            backgroundImage: 'radial-gradient(rgba(255,255,255,0.04) 1.5px, transparent 1.5px)',
+            backgroundSize: '26px 26px',
+          }}
+        />
         {/* Radial golden glow centred on the text */}
         <div
           className="pointer-events-none absolute inset-0"
           style={{
-            background: 'radial-gradient(ellipse 75% 60% at 50% 44%, rgba(249,193,37,0.50) 0%, rgba(249,193,37,0.15) 45%, transparent 70%)',
+            background: 'radial-gradient(ellipse 75% 60% at 50% 44%, rgba(249,193,37,0.40) 0%, rgba(249,193,37,0.10) 50%, transparent 72%)',
           }}
         />
 
         <div className="relative z-10 flex flex-col items-center text-center pt-24 sm:pt-32">
           {/* Badge */}
-          <span className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/25 px-4 py-1.5 text-xs font-semibold text-white backdrop-blur-sm">
+          <span className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/15 px-4 py-1.5 text-xs font-semibold text-white/90 backdrop-blur-sm">
             <span className="h-1.5 w-1.5 rounded-full bg-[#F9C125]" />
             AI-powered interview coaching
           </span>
@@ -64,7 +72,7 @@ export default async function LandingPage() {
             ].map((s) => (
               <div
                 key={s.label}
-                className="flex flex-col items-center rounded-2xl bg-white/25 px-7 py-3.5 backdrop-blur-sm"
+                className="flex flex-col items-center rounded-2xl bg-white/8 border border-white/12 px-7 py-3.5 backdrop-blur-sm"
               >
                 <span className="text-xl font-black text-white">{s.value}</span>
                 <span className="text-[11px] text-white/75">{s.label}</span>

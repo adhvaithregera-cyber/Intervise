@@ -157,11 +157,11 @@ export default function PricingSection() {
           backgroundSize: '26px 26px',
         }}
       />
-      {/* Subtle orange radial glow centred — contained, doesn't reach edges */}
+      {/* Subtle gold radial glow centred */}
       <div
         className="pointer-events-none absolute inset-0 z-0"
         style={{
-          background: 'radial-gradient(ellipse 55% 45% at 50% 50%, rgba(224,122,47,0.12) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse 55% 45% at 50% 50%, rgba(249,193,37,0.08) 0%, transparent 70%)',
         }}
       />
 
@@ -197,9 +197,9 @@ export default function PricingSection() {
                 style={
                   plan.popular
                     ? {
-                        backgroundColor: '#E07A2F',
-                        border: '1px solid rgba(249,193,37,0.5)',
-                        boxShadow: '0 0 60px 8px rgba(224,122,47,0.25)',
+                        backgroundColor: 'rgba(249,193,37,0.08)',
+                        border: '1px solid rgba(249,193,37,0.45)',
+                        boxShadow: '0 0 60px 8px rgba(249,193,37,0.18)',
                       }
                     : {
                         backgroundColor: 'rgba(255,255,255,0.04)',
@@ -245,7 +245,7 @@ export default function PricingSection() {
                   className={cn(
                     'mb-7 block w-full rounded-xl py-3 text-center text-sm font-bold transition-all',
                     plan.popular
-                      ? 'bg-[#080d1a] text-[#F9C125] hover:bg-black/80'
+                      ? 'bg-[#F9C125] text-[#080d1a] hover:bg-[#F9C125]/85'
                       : 'text-white hover:bg-white/8'
                   )}
                   style={
@@ -305,10 +305,10 @@ export default function PricingSection() {
         </div>
       </div>
 
-      {/* Downward fade into CTA section (orange) */}
+      {/* Downward fade into CTA section */}
       <div
         className="absolute bottom-0 left-0 right-0 h-20 pointer-events-none"
-        style={{ background: 'linear-gradient(to bottom, transparent, #BF601A)' }}
+        style={{ background: 'linear-gradient(to bottom, transparent, #080d1a)' }}
       />
     </section>
   )

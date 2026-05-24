@@ -15,7 +15,7 @@ const TIER_LABEL: Record<string, string> = {
 const TIER_COLOR: Record<string, string> = {
   free: 'bg-white/10 text-white/60',
   student: 'bg-[#F9C125]/20 text-[#F9C125]',
-  pro: 'bg-[#E07A2F]/20 text-[#E07A2F]',
+  pro: 'bg-[#F9C125]/20 text-[#F9C125]',
 }
 
 type Props = {
@@ -83,7 +83,7 @@ export function NavAuthLinks({ initials, tier }: Props) {
           className="flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-[#F9C125]/50 rounded-full"
           aria-label="Open profile menu"
         >
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E07A2F] text-xs font-bold text-white select-none hover:bg-[#C96A1A] transition-colors">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F9C125] text-xs font-bold text-[#080d1a] select-none hover:bg-[#F9C125]/85 transition-colors">
             {initials}
           </div>
           <span className={`hidden sm:inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${TIER_COLOR[tier] ?? TIER_COLOR.free}`}>
@@ -95,7 +95,7 @@ export function NavAuthLinks({ initials, tier }: Props) {
           <div
             className="absolute right-0 top-10 z-50 w-52 overflow-hidden rounded-xl shadow-xl"
             style={{
-              backgroundColor: '#2A1200',
+              backgroundColor: '#080d1a',
               border: '1px solid rgba(249,193,37,0.18)',
               boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
             }}

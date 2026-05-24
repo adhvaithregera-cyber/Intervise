@@ -11,7 +11,7 @@ export function ComparisonSection() {
   return (
     <section
       className="relative overflow-hidden py-20 sm:py-24"
-      style={{ backgroundColor: '#D97228' }}
+      style={{ backgroundColor: '#080d1a' }}
     >
       {/* Dot grid only — no vignette overlay to avoid gradient banding at section edges */}
       <div
