@@ -58,9 +58,9 @@ function StepCard({ step, index }: { step: (typeof steps)[number]; index: number
           initial={{ scale: 0.6, opacity: 0 }}
           animate={inView ? { scale: 1, opacity: 1 } : {}}
           transition={{ duration: 0.4, delay: index * 0.18, ease: 'backOut' }}
-          className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-base font-black text-[#E07A2F] sm:h-14 sm:w-14 sm:text-lg"
+          className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-base font-black text-[#F9C125] sm:h-14 sm:w-14 sm:text-lg"
           style={{
-            backgroundColor: '#FEFDF0',
+            backgroundColor: 'rgba(8,13,26,0.8)',
             boxShadow: '0 0 0 0px rgba(249,193,37,0.6)',
           }}
         >
@@ -164,7 +164,7 @@ export function HowItWorks() {
     <section
       id="how-it-works"
       className="relative py-20 sm:py-24 overflow-hidden"
-      style={{ backgroundColor: '#1C0A00' }}
+      style={{ backgroundColor: '#080d1a' }}
     >
       {/* Dot grid only — no vignette overlay */}
       <div
@@ -213,7 +213,7 @@ export function HowItWorks() {
       {/* Fade downward into comparison (orange) */}
       <div
         className="absolute bottom-0 left-0 right-0 h-20"
-        style={{ background: 'linear-gradient(to bottom, transparent, #D97228)' }}
+        style={{ background: 'linear-gradient(to bottom, transparent, #080d1a)' }}
       />
     </section>
   )

@@ -22,7 +22,7 @@ body {
   --orange: #E07A2F;
   --yellow: #F9C125;
   --dark: #080d1a;
-  --muted: #A0622A;
+  --muted: rgba(255,255,255,0.5);
 }
 
 /* Transcript generating loader */

@@ -20,18 +20,18 @@ export function InterviewComparison() {
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
 
       {/* ── Before ── */}
-      <div className="flex flex-col rounded-2xl border border-[#A0622A] bg-white overflow-hidden">
+      <div className="flex flex-col rounded-2xl border border-white/10 bg-[rgba(8,13,26,0.6)] overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#A0622A] bg-[#FEFDF0]/60 px-6 py-4">
+        <div className="flex items-center justify-between border-b border-white/10 bg-white/5 px-6 py-4">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-[#A0622A]">Before</p>
-            <p className="mt-0.5 text-sm font-semibold text-[#E07A2F]">No format used</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">Before</p>
+            <p className="mt-0.5 text-sm font-semibold text-white/70">No format used</p>
           </div>
           <div className="flex items-center gap-3">
-            <span className="rounded-full border border-[#A0622A] bg-white px-3 py-0.5 text-xs font-semibold text-[#A0622A] line-through">
+            <span className="rounded-full border border-white/15 bg-white/5 px-3 py-0.5 text-xs font-semibold text-white/50 line-through">
               STAR
             </span>
-            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#A0622A]/50 text-xl font-black text-[#E07A2F]">
+            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-xl font-black text-white/50">
               D
             </span>
           </div>
@@ -39,17 +39,17 @@ export function InterviewComparison() {
 
         {/* Answer */}
         <div className="px-6 py-5">
-          <blockquote className="rounded-xl border border-[#A0622A] bg-[#FEFDF0]/50 p-4 text-sm italic leading-relaxed text-[#E07A2F]">
+          <blockquote className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm italic leading-relaxed text-white/70">
             "Um, so I'm Aditya. I was born in Chennai and I studied at VIT. I did my 10th with 91% and my 12th with 87%. I have done some projects in Python and I also know Java a little bit. I did an internship at a startup last year where I basically helped them with their app. I like coding and I want to work at a good company where I can grow. That's basically it about me."
           </blockquote>
         </div>
 
         {/* Flaws */}
-        <div className="mt-auto border-t border-[#A0622A]/60 px-6 py-5">
+        <div className="mt-auto border-t border-white/10 px-6 py-5">
           <ul className="space-y-2.5">
             {beforeFlaws.map((f) => (
-              <li key={f} className="flex items-start gap-2.5 text-sm text-[#E07A2F]">
-                <span className="mt-0.5 shrink-0 text-[#A0622A]">✕</span>
+              <li key={f} className="flex items-start gap-2.5 text-sm text-white/70">
+                <span className="mt-0.5 shrink-0 text-red-400/70">✕</span>
                 {f}
               </li>
             ))}
@@ -58,7 +58,7 @@ export function InterviewComparison() {
       </div>
 
       {/* ── After ── */}
-      <div className="flex flex-col rounded-2xl border-2 border-[#F9C125] overflow-hidden" style={{ backgroundColor: '#1C0A00' }}>
+      <div className="flex flex-col rounded-2xl border-2 border-[#F9C125] overflow-hidden" style={{ backgroundColor: '#080d1a' }}>
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[#F9C125]/30 bg-[#F9C125]/10 px-6 py-4">
           <div>
@@ -69,7 +69,7 @@ export function InterviewComparison() {
             <span className="rounded-full border border-[#F9C125] bg-[#F9C125]/20 px-3 py-0.5 text-xs font-semibold text-[#F9C125]">
               STAR
             </span>
-            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#F9C125] text-xl font-black text-[#1C0A00]">
+            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#F9C125] text-xl font-black text-[#080d1a]">
               A
             </span>
           </div>

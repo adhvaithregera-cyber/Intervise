@@ -96,7 +96,7 @@ function PricingSwitch({ onSwitch }: { onSwitch: (value: string) => void }) {
               onClick={() => handle(val)}
               className={cn(
                 'relative z-10 h-10 rounded-full px-6 text-sm font-semibold transition-colors',
-                active ? 'text-[#1C0A00]' : 'text-white/60 hover:text-white'
+                active ? 'text-[#080d1a]' : 'text-white/60 hover:text-white'
               )}
             >
               {active && (
@@ -147,7 +147,7 @@ export default function PricingSection() {
     <section
       id="pricing"
       className="relative overflow-hidden py-24"
-      style={{ backgroundColor: '#1C0A00' }}
+      style={{ backgroundColor: '#080d1a' }}
     >
       {/* Dot grid */}
       <div
@@ -212,7 +212,7 @@ export default function PricingSection() {
                   {plan.popular && (
                     <span
                       className="rounded-full px-3 py-1 text-xs font-bold uppercase tracking-widest"
-                      style={{ backgroundColor: '#F9C125', color: '#1C0A00' }}
+                      style={{ backgroundColor: '#F9C125', color: '#080d1a' }}
                     >
                       Most popular
                     </span>
@@ -245,7 +245,7 @@ export default function PricingSection() {
                   className={cn(
                     'mb-7 block w-full rounded-xl py-3 text-center text-sm font-bold transition-all',
                     plan.popular
-                      ? 'bg-[#1C0A00] text-[#F9C125] hover:bg-black'
+                      ? 'bg-[#080d1a] text-[#F9C125] hover:bg-black/80'
                       : 'text-white hover:bg-white/8'
                   )}
                   style={

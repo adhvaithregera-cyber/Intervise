@@ -16,9 +16,9 @@ const variantClasses: Record<Variant, string> = {
   outline:
     'border-2 border-[#E07A2F] text-[#E07A2F] hover:bg-[#E07A2F] hover:text-white focus:ring-[#E07A2F]',
   ghost:
-    'text-[#E07A2F] hover:bg-[#A0622A]/40 focus:ring-[#E07A2F]',
+    'text-[#E07A2F] hover:bg-white/10 focus:ring-[#E07A2F]',
   glass:
-    'bg-white/70 backdrop-blur-md border border-[#A0622A] text-[#E07A2F] hover:bg-white shadow-sm focus:ring-[#F9C125]',
+    'bg-white/70 backdrop-blur-md border border-white/15 text-white hover:bg-white shadow-sm focus:ring-[#F9C125]',
 }
 
 const sizeClasses: Record<Size, string> = {
@@ -40,7 +40,7 @@ export function Button({
     <button
       className={cn(
         'inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-150',
-        'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#FEFDF0]',
+        'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#080d1a]',
         'disabled:opacity-40 disabled:cursor-not-allowed',
         variantClasses[variant],
         sizeClasses[size],

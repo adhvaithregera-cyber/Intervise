@@ -32,16 +32,16 @@ function Pill({ num, label }: { num: string; label: string }) {
 
 export function CategoryStrip() {
   return (
-    <div className="relative w-full overflow-hidden py-3" style={{ backgroundColor: '#1C0A00' }}>
+    <div className="relative w-full overflow-hidden py-3" style={{ backgroundColor: '#080d1a' }}>
       {/* Left fade */}
       <div
         className="pointer-events-none absolute left-0 top-0 z-10 h-full w-20"
-        style={{ background: 'linear-gradient(to right, #1C0A00, transparent)' }}
+        style={{ background: 'linear-gradient(to right, #080d1a, transparent)' }}
       />
       {/* Right fade */}
       <div
         className="pointer-events-none absolute right-0 top-0 z-10 h-full w-20"
-        style={{ background: 'linear-gradient(to left, #1C0A00, transparent)' }}
+        style={{ background: 'linear-gradient(to left, #080d1a, transparent)' }}
       />
 
       <div

@@ -47,7 +47,7 @@ export function FinalCta({ showSignup }: { showSignup: boolean }) {
           >
             <Link
               href="/signup"
-              className="inline-flex items-center rounded-xl bg-[#1C0A00] px-10 py-4 text-base font-bold text-white shadow-lg shadow-black/30 hover:bg-black transition-colors"
+              className="inline-flex items-center rounded-xl bg-[#F9C125] px-10 py-4 text-base font-bold text-[#080d1a] shadow-lg shadow-black/30 hover:bg-[#F9C125]/90 transition-colors"
             >
               Start FREE →
             </Link>

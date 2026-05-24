@@ -12,10 +12,10 @@ export function Card({ className, tinted, glass, children, ...props }: CardProps
       className={cn(
         'rounded-2xl border p-6',
         glass
-          ? 'bg-white/60 backdrop-blur-md border-[#A0622A]/60 shadow-sm'
+          ? 'bg-[rgba(8,13,26,0.6)] backdrop-blur-xl border-[rgba(249,193,37,0.15)] shadow-sm'
           : tinted
           ? 'bg-[#F9C125]/10 border-[#F9C125]/30'
-          : 'bg-white border-[#A0622A] shadow-sm',
+          : 'bg-[rgba(8,13,26,0.75)] backdrop-blur-xl border-[rgba(249,193,37,0.18)] shadow-sm',
         className
       )}
       {...props}

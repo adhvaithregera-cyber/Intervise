@@ -60,7 +60,7 @@ export function ComparisonSection() {
       {/* Fade into dark pricing section */}
       <div
         className="absolute bottom-0 left-0 right-0 h-16"
-        style={{ background: 'linear-gradient(to bottom, transparent, #1C0A00)' }}
+        style={{ background: 'linear-gradient(to bottom, transparent, #080d1a)' }}
       />
     </section>
   )

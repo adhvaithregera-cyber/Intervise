@@ -23,7 +23,7 @@ export default async function LandingPage() {
   const showTryFree = !user
 
   return (
-    <div className="min-h-screen text-[#1C0A00]">
+    <div className="min-h-screen text-white">
       <Navbar />
 
       {/* ── HERO — solid orange + radial glow centred on headline ── */}
@@ -48,7 +48,7 @@ export default async function LandingPage() {
 
           <h1 className="mb-5 max-w-3xl text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl lg:text-7xl">
             Your next interview<br />
-            <span className="text-[#1C0A00]">is won before it starts.</span>
+            <span className="text-white">is won before it starts.</span>
           </h1>
 
           <p className="mb-8 max-w-[520px] text-base leading-relaxed text-white/80 sm:text-lg">
@@ -76,7 +76,7 @@ export default async function LandingPage() {
           <div className="flex flex-col items-center gap-3 sm:flex-row">
             <Link
               href="#how-it-works"
-              className="inline-flex w-full items-center justify-center rounded-xl bg-[#1C0A00] px-8 py-3.5 text-base font-bold text-white shadow-lg shadow-black/25 hover:bg-black transition-colors sm:w-auto"
+              className="inline-flex w-full items-center justify-center rounded-xl bg-[#F9C125] px-8 py-3.5 text-base font-bold text-[#080d1a] shadow-lg shadow-black/25 hover:bg-[#F9C125]/90 transition-colors sm:w-auto"
             >
               See how it works
             </Link>
@@ -104,7 +104,7 @@ export default async function LandingPage() {
         {/* Short downward fade into dark category strip — no upward gradient */}
         <div
           className="absolute bottom-0 left-0 right-0 h-20"
-          style={{ background: 'linear-gradient(to bottom, transparent, #1C0A00)' }}
+          style={{ background: 'linear-gradient(to bottom, transparent, #080d1a)' }}
         />
       </section>
 
@@ -124,7 +124,7 @@ export default async function LandingPage() {
       <FinalCta showSignup={showTryFree} />
 
       {/* Footer */}
-      <footer className="border-t border-white/10" style={{ backgroundColor: '#1C0A00' }}>
+      <footer className="border-t border-white/10" style={{ backgroundColor: '#080d1a' }}>
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 px-4 py-6 text-center text-sm text-white/40 sm:flex-row sm:justify-between sm:px-6 sm:text-left">
           <span>© 2026 Intervise</span>
           <div className="flex items-center gap-4">
