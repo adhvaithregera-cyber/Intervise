@@ -442,7 +442,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
               <div className="relative rounded-xl overflow-hidden">
                 {/* Blurred fake chart */}
                 <div style={{ filter: 'blur(6px)', userSelect: 'none', pointerEvents: 'none' }}>
-                  <div className="p-5" style={INNER_CARD}>
+                  <div className="p-5 min-h-[220px]" style={INNER_CARD}>
                     <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-3">WPM Trend · Last 8 sessions</p>
                     <div className="flex items-end gap-2 h-16">
                       {[80, 65, 90, 75, 88, 70, 95, 85].map((h, i) => (
