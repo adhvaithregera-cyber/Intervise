@@ -6,7 +6,7 @@ import { CategoryStrip } from '@/components/ui/category-strip'
 import { HowItWorks } from '@/components/ui/how-it-works'
 import { ComparisonSection } from '@/components/ui/comparison-section'
 import { FinalCta } from '@/components/ui/final-cta'
-import { BeamsBackground } from '@/components/ui/beams-background'
+import { HeroSection } from '@/components/ui/hero-section'
 import { createClient } from '@/lib/supabase/server'
 
 export default async function LandingPage() {
@@ -27,91 +27,8 @@ export default async function LandingPage() {
     <div className="min-h-screen text-white">
       <Navbar />
 
-      {/* ── HERO — animated gold beams background ── */}
-      <BeamsBackground
-        intensity="strong"
-        className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4 pb-32 sm:px-6"
-      >
-        {/* Radial golden glow centred on the text — layered on top of beams */}
-        <div
-          className="pointer-events-none absolute inset-0 z-[1]"
-          style={{
-            background: 'radial-gradient(ellipse 75% 55% at 50% 44%, rgba(249,193,37,0.22) 0%, rgba(249,193,37,0.06) 55%, transparent 75%)',
-          }}
-        />
-
-        <div className="relative z-10 flex flex-col items-center text-center pt-24 sm:pt-32">
-          {/* Badge */}
-          <span className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/10 border border-[#F9C125]/30 px-4 py-1.5 text-xs font-semibold text-white/90 backdrop-blur-sm">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#F9C125]" />
-            AI-powered interview coaching
-          </span>
-
-          <h1
-            className="mb-5 max-w-3xl text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl lg:text-7xl"
-            style={{ textShadow: '0 2px 32px rgba(0,0,0,0.9), 0 0 80px rgba(0,0,0,0.6)' }}
-          >
-            Your next interview<br />
-            <span className="text-white">is won before it starts.</span>
-          </h1>
-
-          <p className="mb-8 max-w-[520px] text-base leading-relaxed text-white/75 sm:text-lg" style={{ textShadow: '0 1px 16px rgba(0,0,0,0.8)' }}>
-            You practised for weeks. You knew your answers cold. Then the interviewer asked one question — and your mind went blank.
-          </p>
-
-          {/* Stat cards */}
-          <div className="mb-10 flex flex-wrap justify-center gap-3">
-            {[
-              { value: '8', label: 'Answer formats' },
-              { value: 'A–F', label: 'Instant grade' },
-              { value: 'WPM', label: 'Speed tracked' },
-            ].map((s) => (
-              <div
-                key={s.label}
-                className="flex flex-col items-center rounded-2xl px-7 py-3.5"
-                style={{ background: 'rgba(8,13,26,0.55)', boxShadow: '0 0 0 1px rgba(249,193,37,0.15), 0 4px 24px rgba(0,0,0,0.5)' }}
-              >
-                <span className="text-xl font-black text-white">{s.value}</span>
-                <span className="text-[11px] text-white/65">{s.label}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* CTAs */}
-          <div className="flex flex-col items-center gap-3 sm:flex-row">
-            <Link
-              href="#how-it-works"
-              className="inline-flex w-full items-center justify-center rounded-xl bg-[#F9C125] px-8 py-3.5 text-base font-bold text-[#080d1a] shadow-lg shadow-[#F9C125]/20 hover:bg-[#F9C125]/90 transition-colors sm:w-auto"
-            >
-              See how it works
-            </Link>
-            <Link
-              href={user ? '/session/setup' : '/signup'}
-              className="inline-flex w-full items-center justify-center rounded-xl border border-white/20 bg-white/8 px-8 py-3.5 text-base font-semibold text-white backdrop-blur-sm hover:bg-white/15 transition-colors sm:w-auto"
-            >
-              Start Session
-            </Link>
-          </div>
-
-          {/* Trust pills */}
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            {['No card needed', '2 free sessions', 'Cancel anytime'].map((t) => (
-              <span
-                key={t}
-                className="rounded-full bg-white/8 border border-white/10 px-4 py-1.5 text-xs font-medium text-white/70"
-              >
-                {t}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Downward fade into dark category strip */}
-        <div
-          className="absolute bottom-0 left-0 right-0 h-24 z-20"
-          style={{ background: 'linear-gradient(to bottom, transparent, #080d1a)' }}
-        />
-      </BeamsBackground>
+      {/* ── HERO ── */}
+      <HeroSection sessionHref={user ? '/session/setup' : '/signup'} />
 
       {/* Category strip — dark band */}
       <CategoryStrip />
