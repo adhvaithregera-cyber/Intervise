@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { Badge } from '@/components/ui/badge'
 import { FadeIn } from '@/components/ui/fade-in'
+import { ShareScorecard } from '@/components/session/share-scorecard'
 import { cn } from '@/lib/utils'
 import { Lock } from 'lucide-react'
 
@@ -140,12 +141,13 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
                 {new Date(session.created_at).toLocaleDateString('en-GB', { dateStyle: 'long' })} · {session.difficulty} difficulty
               </p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-3 flex-wrap sm:flex-nowrap">
               <Link href="/session/setup" className="flex-1 sm:flex-none">
                 <button className="w-full sm:w-auto rounded-xl bg-[#F9C125] px-5 py-2.5 text-sm font-bold text-[#1C0A00] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20">
                   New Session
                 </button>
               </Link>
+              <ShareScorecard sessionId={sessionId} />
               <Link href="/dashboard" className="flex-1 sm:flex-none">
                 <button className="w-full sm:w-auto rounded-xl border border-white/20 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white/70 hover:bg-white/10 transition-colors">
                   Dashboard
