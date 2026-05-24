@@ -281,6 +281,19 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
                       </div>
                     </div>
                   )}
+
+                  {/* Transcript — collapsible */}
+                  {answer.transcript && (
+                    <details className="mt-4 group">
+                      <summary className="cursor-pointer list-none flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 hover:text-[#F9C125]/80 transition-colors select-none">
+                        <span className="transition-transform group-open:rotate-90 inline-block">▶</span>
+                        Your answer
+                      </summary>
+                      <p className="mt-2 text-xs text-white/55 leading-relaxed border-l-2 border-[#F9C125]/20 pl-3">
+                        {answer.transcript}
+                      </p>
+                    </details>
+                  )}
                 </div>
               )
             })}
