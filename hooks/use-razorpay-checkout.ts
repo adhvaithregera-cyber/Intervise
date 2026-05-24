@@ -42,7 +42,12 @@ export function useRazorpayCheckout({ onError }: UseRazorpayCheckoutOptions = {}
       }
 
       // 2. Load Razorpay checkout.js (noop if already loaded)
-      await loadRazorpayScript()
+      try {
+        await loadRazorpayScript()
+      } catch {
+        onError?.('Failed to load payment system. Please refresh and try again.')
+        return
+      }
 
       // 3. Open Razorpay modal
       const planLabel =

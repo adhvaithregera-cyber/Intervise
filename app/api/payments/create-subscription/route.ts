@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import { createRazorpaySubscription, cancelRazorpaySubscription } from '@/lib/razorpay'
 import { createSubscriptionSchema } from '@/lib/validation'
+import { checkRateLimit, RATE_LIMITS } from '@/lib/ratelimit'
 
 export async function POST(request: Request) {
   // ── Auth ─────────────────────────────────────────────────────────────────
@@ -11,6 +12,15 @@ export async function POST(request: Request) {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  // ── Rate limiting ─────────────────────────────────────────────────────────
+  const rl = checkRateLimit(`${user.id}:create-subscription`, RATE_LIMITS.profile)
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests' },
+      { status: 429, headers: { 'Retry-After': String(Math.ceil((rl.retryAfterMs ?? 60000) / 1000)) } }
+    )
+  }
 
   // ── Validate body ─────────────────────────────────────────────────────────
   let rawBody: unknown

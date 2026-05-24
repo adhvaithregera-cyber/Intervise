@@ -55,59 +55,64 @@ export async function POST(request: NextRequest) {
         console.error('[webhook] unknown plan_id on activation:', planId)
         break
       }
-      const { error } = await supabase
+      const { error, count } = await supabase
         .from('profiles')
-        .update({ tier, subscription_status: 'active', tier_expires_at: expires })
+        .update({ tier, subscription_status: 'active', tier_expires_at: expires }, { count: 'exact' })
         .eq('razorpay_subscription_id', subscriptionId)
       if (error) console.error('[webhook] activated update error:', error.message)
+      if (!error && count === 0) console.error('[webhook] activated: no profile matched subscription_id', subscriptionId)
       break
     }
 
     case 'subscription.charged': {
-      const { error } = await supabase
+      const { error, count } = await supabase
         .from('profiles')
-        .update({ tier_expires_at: expires })
+        .update({ tier_expires_at: expires }, { count: 'exact' })
         .eq('razorpay_subscription_id', subscriptionId)
       if (error) console.error('[webhook] charged update error:', error.message)
+      if (!error && count === 0) console.error('[webhook] charged: no profile matched subscription_id', subscriptionId)
       break
     }
 
     case 'subscription.cancelled': {
       // Tier stays active until tier_expires_at — only update status
-      const { error } = await supabase
+      const { error, count } = await supabase
         .from('profiles')
-        .update({ subscription_status: 'cancelled' })
+        .update({ subscription_status: 'cancelled' }, { count: 'exact' })
         .eq('razorpay_subscription_id', subscriptionId)
       if (error) console.error('[webhook] cancelled update error:', error.message)
+      if (!error && count === 0) console.error('[webhook] cancelled: no profile matched subscription_id', subscriptionId)
       break
     }
 
     case 'subscription.halted': {
       // Payment failed after all retries — drop to free immediately
-      const { error } = await supabase
+      const { error, count } = await supabase
         .from('profiles')
         .update({
           tier: 'free',
           subscription_status: 'halted',
           tier_expires_at: null,
-        })
+        }, { count: 'exact' })
         .eq('razorpay_subscription_id', subscriptionId)
       if (error) console.error('[webhook] halted update error:', error.message)
+      if (!error && count === 0) console.error('[webhook] halted: no profile matched subscription_id', subscriptionId)
       break
     }
 
     case 'subscription.completed': {
       // Subscription ran its course — clear everything
-      const { error } = await supabase
+      const { error, count } = await supabase
         .from('profiles')
         .update({
           tier: 'free',
           subscription_status: null,
           tier_expires_at: null,
           razorpay_subscription_id: null,
-        })
+        }, { count: 'exact' })
         .eq('razorpay_subscription_id', subscriptionId)
       if (error) console.error('[webhook] completed update error:', error.message)
+      if (!error && count === 0) console.error('[webhook] completed: no profile matched subscription_id', subscriptionId)
       break
     }
 

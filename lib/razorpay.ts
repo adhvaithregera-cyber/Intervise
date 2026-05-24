@@ -1,4 +1,4 @@
-import { createHmac } from 'crypto'
+import { createHmac, timingSafeEqual } from 'crypto'
 
 const RAZORPAY_BASE = 'https://api.razorpay.com/v1'
 
@@ -19,8 +19,15 @@ export function verifyRazorpayWebhookSignature(
   signature: string,
   secret: string
 ): boolean {
-  const expected = createHmac('sha256', secret).update(rawBody).digest('hex')
-  return signature === expected
+  const expected = createHmac('sha256', secret).update(rawBody).digest()
+  let received: Buffer
+  try {
+    received = Buffer.from(signature, 'hex')
+  } catch {
+    return false
+  }
+  if (expected.length !== received.length) return false
+  return timingSafeEqual(expected, received)
 }
 
 /**
