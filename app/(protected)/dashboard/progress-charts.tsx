@@ -113,14 +113,15 @@ export const FillerBarChart = React.memo(function FillerBarChart({ data }: { dat
     <div className="p-5" style={INNER_CARD}>
       <SectionLabel>Filler words per session</SectionLabel>
       <ResponsiveContainer width="100%" height={140}>
-        <BarChart data={data} margin={{ top: 4, right: 4, left: -24, bottom: 0 }}>
+        <BarChart data={data} margin={{ top: 4, right: 4, left: -24, bottom: 16 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
           <XAxis
             dataKey="label"
-            tick={{ fill: 'rgba(249,193,37,0.75)', fontSize: 11 }}
+            tick={{ fill: 'rgba(249,193,37,0.75)', fontSize: 10, angle: -35, textAnchor: 'end' }}
             axisLine={false}
             tickLine={false}
             interval={0}
+            height={56}
           />
           <YAxis
             tick={{ fill: 'rgba(249,193,37,0.75)', fontSize: 12 }}
@@ -157,7 +158,7 @@ export const WpmLineChart = React.memo(function WpmLineChart({ data }: { data: S
     <div className="p-5" style={INNER_CARD}>
       <SectionLabel>Speech pace per session (wpm)</SectionLabel>
       <ResponsiveContainer width="100%" height={140}>
-        <LineChart data={filtered} margin={{ top: 4, right: 4, left: -24, bottom: 0 }}>
+        <LineChart data={filtered} margin={{ top: 4, right: 4, left: -24, bottom: 16 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
           <ReferenceArea
             y1={110}
@@ -168,10 +169,11 @@ export const WpmLineChart = React.memo(function WpmLineChart({ data }: { data: S
           />
           <XAxis
             dataKey="label"
-            tick={{ fill: 'rgba(249,193,37,0.75)', fontSize: 11 }}
+            tick={{ fill: 'rgba(249,193,37,0.75)', fontSize: 10, angle: -35, textAnchor: 'end' }}
             axisLine={false}
             tickLine={false}
             interval={0}
+            height={56}
           />
           <YAxis
             tick={{ fill: 'rgba(249,193,37,0.75)', fontSize: 12 }}
@@ -258,14 +260,15 @@ export const GradeTrendChart = React.memo(function GradeTrendChart({ data }: { d
     <div className="p-5" style={INNER_CARD}>
       <SectionLabel>Overall grade trend</SectionLabel>
       <ResponsiveContainer width="100%" height={140}>
-        <LineChart data={chartData} margin={{ top: 4, right: 4, left: -24, bottom: 0 }}>
+        <LineChart data={chartData} margin={{ top: 4, right: 4, left: -24, bottom: 16 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
           <XAxis
             dataKey="label"
-            tick={{ fill: 'rgba(249,193,37,0.75)', fontSize: 11 }}
+            tick={{ fill: 'rgba(249,193,37,0.75)', fontSize: 10, angle: -35, textAnchor: 'end' }}
             axisLine={false}
             tickLine={false}
             interval={0}
+            height={56}
           />
           <YAxis
             tick={{ fill: 'rgba(249,193,37,0.75)', fontSize: 11 }}
