@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 
 const CARD_STYLE = {
-  backgroundColor: 'rgba(28,10,0,0.75)',
+  backgroundColor: 'rgba(8,13,26,0.75)',
   backdropFilter: 'blur(16px)',
   WebkitBackdropFilter: 'blur(16px)',
   border: '1px solid rgba(249,193,37,0.20)',

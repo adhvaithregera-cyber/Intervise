@@ -29,7 +29,7 @@ export default async function ProtectedLayout({ children }: { children: React.Re
   }
 
   return (
-    <div className="relative min-h-screen" style={{ backgroundColor: '#E07A2F' }}>
+    <div className="relative min-h-screen" style={{ backgroundColor: '#080d1a' }}>
       {/* Radial golden glow */}
       <div
         className="pointer-events-none fixed inset-0 z-0"

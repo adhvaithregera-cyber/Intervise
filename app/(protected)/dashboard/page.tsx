@@ -13,7 +13,7 @@ const TIER_LABELS: Record<string, string> = { free: 'Free', student: 'Student', 
 const TIER_SESSION_LIMITS: Record<string, number> = { free: 2, student: 12, pro: 30 }
 
 const CARD_STYLE = {
-  backgroundColor: 'rgba(28,10,0,0.75)',
+  backgroundColor: 'rgba(8,13,26,0.75)',
   backdropFilter: 'blur(16px)',
   WebkitBackdropFilter: 'blur(16px)',
   border: '1px solid rgba(249,193,37,0.20)',
@@ -191,7 +191,7 @@ export default async function DashboardPage({
           <h1 className="text-2xl font-bold text-white">
             {profile.full_name ? `Hey, ${profile.full_name.split(' ')[0]}` : 'Dashboard'}
           </h1>
-          <p className="mt-1 text-sm font-medium" style={{ color: 'rgba(28,10,0,0.75)' }}>
+          <p className="mt-1 text-sm font-medium" style={{ color: 'rgba(8,13,26,0.75)' }}>
             {TIER_LABELS[profile.tier] ?? profile.tier} plan
           </p>
         </div>
@@ -208,7 +208,7 @@ export default async function DashboardPage({
           {exhausted ? (
             <div
               className="w-full flex flex-col items-center justify-center rounded-2xl gap-1 py-5 sm:py-0 min-h-[64px] sm:min-h-[80px]"
-              style={{ backgroundColor: 'rgba(28,10,0,0.4)', border: '1px solid rgba(249,193,37,0.15)' }}
+              style={{ backgroundColor: 'rgba(8,13,26,0.4)', border: '1px solid rgba(249,193,37,0.15)' }}
             >
               <span className="text-base sm:text-lg font-semibold text-center px-4" style={{ color: 'rgba(255,255,255,0.3)' }}>Start Practice Session</span>
               <p className="text-sm font-medium text-center px-4" style={{ color: 'rgba(255,255,255,0.25)' }}>
@@ -219,7 +219,7 @@ export default async function DashboardPage({
           ) : (
             <Link
               href="/session/setup"
-              className="w-full flex items-center justify-center rounded-2xl bg-[#F9C125] text-lg sm:text-xl font-bold text-[#1C0A00] hover:brightness-110 transition-all py-5 sm:py-0 min-h-[64px] sm:min-h-[80px]"
+              className="w-full flex items-center justify-center rounded-2xl bg-[#F9C125] text-lg sm:text-xl font-bold text-[#080d1a] hover:brightness-110 transition-all py-5 sm:py-0 min-h-[64px] sm:min-h-[80px]"
               style={{
                 boxShadow: '0 0 40px rgba(249,193,37,0.35), 0 8px 32px rgba(249,193,37,0.25)',
               }}
@@ -318,7 +318,7 @@ export default async function DashboardPage({
                   </div>
                 </div>
               </div>
-              <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(28,10,0,0.55)' }}>
+              <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(8,13,26,0.55)' }}>
                 <div className="text-center px-6">
                   <div className="flex justify-center mb-3">
                     <div className="rounded-full p-3" style={{ background: 'rgba(249,193,37,0.15)', border: '1px solid rgba(249,193,37,0.35)' }}>
@@ -328,7 +328,7 @@ export default async function DashboardPage({
                   <p className="font-bold text-white mb-1">Unlock Progress Charts</p>
                   <p className="text-sm text-white/60 mb-4">Track filler words, pace, and category performance over time</p>
                   <Link href="/#pricing">
-                    <button className="rounded-xl bg-[#F9C125] px-5 py-2.5 text-sm font-bold text-[#1C0A00] hover:brightness-110 transition-all">
+                    <button className="rounded-xl bg-[#F9C125] px-5 py-2.5 text-sm font-bold text-[#080d1a] hover:brightness-110 transition-all">
                       Upgrade to Student →
                     </button>
                   </Link>

@@ -11,7 +11,7 @@ const TIER_SESSIONS: Record<string, string> = {
 }
 
 const CARD_STYLE: React.CSSProperties = {
-  backgroundColor: 'rgba(28,10,0,0.75)',
+  backgroundColor: 'rgba(8,13,26,0.75)',
   backdropFilter: 'blur(16px)',
   WebkitBackdropFilter: 'blur(16px)',
   border: '1px solid rgba(249,193,37,0.20)',
@@ -155,7 +155,7 @@ export function ProfileForm({
                       <button
                         onClick={saveFullName}
                         disabled={savingName}
-                        className="shrink-0 rounded-lg bg-[#F9C125] px-3 py-2 text-xs font-bold text-[#1C0A00] hover:brightness-110 disabled:opacity-50 transition-all"
+                        className="shrink-0 rounded-lg bg-[#F9C125] px-3 py-2 text-xs font-bold text-[#080d1a] hover:brightness-110 disabled:opacity-50 transition-all"
                       >
                         {savingName ? '…' : 'Save'}
                       </button>
@@ -220,7 +220,7 @@ export function ProfileForm({
                     <button
                       onClick={handlePasswordChange}
                       disabled={changingPassword}
-                      className="rounded-lg bg-[#F9C125] px-3 py-1.5 text-xs font-bold text-[#1C0A00] hover:brightness-110 disabled:opacity-50 transition-all"
+                      className="rounded-lg bg-[#F9C125] px-3 py-1.5 text-xs font-bold text-[#080d1a] hover:brightness-110 disabled:opacity-50 transition-all"
                     >
                       {changingPassword ? 'Updating…' : 'Update password'}
                     </button>
@@ -291,7 +291,7 @@ export function ProfileForm({
             <button
               onClick={handleSave}
               disabled={saving}
-              className="rounded-lg bg-[#F9C125] px-5 py-2 text-sm font-bold text-[#1C0A00] hover:brightness-110 disabled:opacity-50 transition-all"
+              className="rounded-lg bg-[#F9C125] px-5 py-2 text-sm font-bold text-[#080d1a] hover:brightness-110 disabled:opacity-50 transition-all"
             >
               {saving ? 'Saving…' : 'Save changes'}
             </button>

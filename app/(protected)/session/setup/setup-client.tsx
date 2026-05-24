@@ -23,7 +23,7 @@ const TIER_ALLOWED_DIFFICULTIES: Record<string, Difficulty[]> = {
 }
 
 const CARD_STYLE = {
-  backgroundColor: 'rgba(28,10,0,0.75)',
+  backgroundColor: 'rgba(8,13,26,0.75)',
   backdropFilter: 'blur(16px)',
   WebkitBackdropFilter: 'blur(16px)',
   border: '1px solid rgba(249,193,37,0.20)',
@@ -31,7 +31,7 @@ const CARD_STYLE = {
 }
 
 const CARD_SELECTED_STYLE = {
-  backgroundColor: 'rgba(28,10,0,0.85)',
+  backgroundColor: 'rgba(8,13,26,0.85)',
   backdropFilter: 'blur(16px)',
   WebkitBackdropFilter: 'blur(16px)',
   border: '2px solid #F9C125',
@@ -39,7 +39,7 @@ const CARD_SELECTED_STYLE = {
 }
 
 const CARD_LOCKED_STYLE = {
-  backgroundColor: 'rgba(28,10,0,0.40)',
+  backgroundColor: 'rgba(8,13,26,0.40)',
   backdropFilter: 'blur(16px)',
   WebkitBackdropFilter: 'blur(16px)',
   border: '1px solid rgba(249,193,37,0.08)',
@@ -86,7 +86,7 @@ export function SetupClient({ tier }: { tier: string }) {
       <div
         className="rounded-2xl p-6 sm:p-8"
         style={{
-          backgroundColor: 'rgba(28,10,0,0.75)',
+          backgroundColor: 'rgba(8,13,26,0.75)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
           border: '1px solid rgba(249,193,37,0.18)',
@@ -193,7 +193,7 @@ export function SetupClient({ tier }: { tier: string }) {
         <button
           disabled={!canStart}
           onClick={handleStart}
-          className="w-full rounded-xl bg-[#F9C125] py-3.5 text-base font-bold text-[#1C0A00] shadow-lg shadow-[#F9C125]/25 transition-all hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
+          className="w-full rounded-xl bg-[#F9C125] py-3.5 text-base font-bold text-[#080d1a] shadow-lg shadow-[#F9C125]/25 transition-all hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
         >
           Start Session
         </button>

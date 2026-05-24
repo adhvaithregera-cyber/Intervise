@@ -30,7 +30,7 @@ export type ProgressSummary = {
 }
 
 const TOOLTIP_STYLE = {
-  backgroundColor: 'rgba(28,10,0,0.95)',
+  backgroundColor: 'rgba(8,13,26,0.95)',
   border: '1px solid rgba(249,193,37,0.25)',
   borderRadius: '0.5rem',
   color: '#fff',

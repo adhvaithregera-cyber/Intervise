@@ -11,7 +11,7 @@ export default function UnauthorizedPage({
       <div
         className="max-w-md w-full text-center p-10 rounded-2xl"
         style={{
-          backgroundColor: 'rgba(28,10,0,0.80)',
+          backgroundColor: 'rgba(8,13,26,0.80)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
           border: '1px solid rgba(249,193,37,0.20)',
@@ -37,7 +37,7 @@ export default function UnauthorizedPage({
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link href="/dashboard">
-            <button className="w-full sm:w-auto rounded-xl bg-[#F9C125] px-6 py-3 text-sm font-bold text-[#1C0A00] shadow-lg shadow-[#F9C125]/20 hover:brightness-110 transition-all">
+            <button className="w-full sm:w-auto rounded-xl bg-[#F9C125] px-6 py-3 text-sm font-bold text-[#080d1a] shadow-lg shadow-[#F9C125]/20 hover:brightness-110 transition-all">
               Go to Dashboard
             </button>
           </Link>

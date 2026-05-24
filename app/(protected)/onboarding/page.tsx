@@ -29,7 +29,7 @@ const FREQUENCY_OPTIONS = [
 ]
 
 const CARD_STYLE = {
-  backgroundColor: 'rgba(28,10,0,0.75)',
+  backgroundColor: 'rgba(8,13,26,0.75)',
   backdropFilter: 'blur(16px)',
   WebkitBackdropFilter: 'blur(16px)',
   border: '1px solid rgba(249,193,37,0.20)',
@@ -155,7 +155,7 @@ export default function OnboardingPage() {
                 </div>
               </div>
               <button
-                className="mt-8 w-full rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#1C0A00] disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all"
+                className="mt-8 w-full rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#080d1a] disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all"
                 disabled={!fullName.trim()}
                 onClick={() => setStep(2)}
               >
@@ -182,7 +182,7 @@ export default function OnboardingPage() {
               )}
               <div className="mt-8 flex gap-3">
                 <button onClick={() => setStep(1)} className="rounded-xl border border-white/20 px-5 py-3 text-sm font-medium text-white/70 hover:bg-white/10 transition-colors">Back</button>
-                <button disabled={!resolvedRole} onClick={() => setStep(3)} className="flex-1 rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#1C0A00] disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all">Continue</button>
+                <button disabled={!resolvedRole} onClick={() => setStep(3)} className="flex-1 rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#080d1a] disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all">Continue</button>
               </div>
             </div>
           )}
@@ -195,7 +195,7 @@ export default function OnboardingPage() {
               <button onClick={() => { setJustPracticing(!justPracticing); setInterviewDate('') }} className={optionClass(justPracticing)}>
                 <span className="flex items-center gap-3">
                   <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${justPracticing ? 'border-[#F9C125] bg-[#F9C125]' : 'border-white/40'}`}>
-                    {justPracticing && <span className="h-2 w-2 rounded-full bg-[#1C0A00]" />}
+                    {justPracticing && <span className="h-2 w-2 rounded-full bg-[#080d1a]" />}
                   </span>
                   I&apos;m just practising — no upcoming interview
                 </span>
@@ -209,7 +209,7 @@ export default function OnboardingPage() {
               )}
               <div className="mt-8 flex gap-3">
                 <button onClick={() => setStep(2)} className="rounded-xl border border-white/20 px-5 py-3 text-sm font-medium text-white/70 hover:bg-white/10 transition-colors">Back</button>
-                <button onClick={() => setStep(4)} className="flex-1 rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#1C0A00] hover:brightness-110 transition-all">Continue</button>
+                <button onClick={() => setStep(4)} className="flex-1 rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#080d1a] hover:brightness-110 transition-all">Continue</button>
               </div>
             </div>
           )}
@@ -230,7 +230,7 @@ export default function OnboardingPage() {
               )}
               <div className="mt-8 flex gap-3">
                 <button onClick={() => setStep(3)} className="rounded-xl border border-white/20 px-5 py-3 text-sm font-medium text-white/70 hover:bg-white/10 transition-colors">Back</button>
-                <button disabled={!resolvedWeakness} onClick={() => setStep(5)} className="flex-1 rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#1C0A00] disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all">Continue</button>
+                <button disabled={!resolvedWeakness} onClick={() => setStep(5)} className="flex-1 rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#080d1a] disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all">Continue</button>
               </div>
             </div>
           )}
@@ -251,7 +251,7 @@ export default function OnboardingPage() {
               )}
               <div className="mt-8 flex gap-3">
                 <button onClick={() => setStep(4)} className="rounded-xl border border-white/20 px-5 py-3 text-sm font-medium text-white/70 hover:bg-white/10 transition-colors">Back</button>
-                <button disabled={!resolvedExperience} onClick={() => setStep(6)} className="flex-1 rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#1C0A00] disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all">Continue</button>
+                <button disabled={!resolvedExperience} onClick={() => setStep(6)} className="flex-1 rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#080d1a] disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all">Continue</button>
               </div>
             </div>
           )}
@@ -272,7 +272,7 @@ export default function OnboardingPage() {
               )}
               <div className="mt-8 flex gap-3">
                 <button onClick={() => setStep(5)} className="rounded-xl border border-white/20 px-5 py-3 text-sm font-medium text-white/70 hover:bg-white/10 transition-colors">Back</button>
-                <button disabled={!resolvedInterviewType} onClick={() => setStep(7)} className="flex-1 rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#1C0A00] disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all">Continue</button>
+                <button disabled={!resolvedInterviewType} onClick={() => setStep(7)} className="flex-1 rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#080d1a] disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all">Continue</button>
               </div>
             </div>
           )}
@@ -294,7 +294,7 @@ export default function OnboardingPage() {
               {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
               <div className="mt-8 flex gap-3">
                 <button onClick={() => setStep(6)} className="rounded-xl border border-white/20 px-5 py-3 text-sm font-medium text-white/70 hover:bg-white/10 transition-colors">Back</button>
-                <button disabled={!resolvedFrequency || submitting} onClick={handleSubmit} className="flex-1 rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#1C0A00] disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all">
+                <button disabled={!resolvedFrequency || submitting} onClick={handleSubmit} className="flex-1 rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#080d1a] disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all">
                   {submitting ? 'Saving…' : 'Go to dashboard'}
                 </button>
               </div>

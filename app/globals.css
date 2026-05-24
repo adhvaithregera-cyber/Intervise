@@ -9,7 +9,7 @@ html {
 
 body {
   overflow-x: clip; /* clips horizontal overflow without blocking vertical scroll */
-  background-color: #1C0A00;
+  background-color: #080d1a;
   color: #ffffff;
 }
 
@@ -21,7 +21,7 @@ body {
 :root {
   --orange: #E07A2F;
   --yellow: #F9C125;
-  --dark: #1C0A00;
+  --dark: #080d1a;
   --muted: #A0622A;
 }
 

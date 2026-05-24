@@ -20,7 +20,7 @@ const GRADE_STARS: Record<string, number> = {
 }
 
 const PANEL = {
-  backgroundColor: 'rgba(28,10,0,0.75)',
+  backgroundColor: 'rgba(8,13,26,0.75)',
   backdropFilter: 'blur(20px)',
   WebkitBackdropFilter: 'blur(20px)',
   border: '1px solid rgba(249,193,37,0.18)',
@@ -143,7 +143,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
             </div>
             <div className="flex gap-3 flex-wrap sm:flex-nowrap">
               <Link href="/session/setup" className="flex-1 sm:flex-none">
-                <button className="w-full sm:w-auto rounded-xl bg-[#F9C125] px-5 py-2.5 text-sm font-bold text-[#1C0A00] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20">
+                <button className="w-full sm:w-auto rounded-xl bg-[#F9C125] px-5 py-2.5 text-sm font-bold text-[#080d1a] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20">
                   New Session
                 </button>
               </Link>
@@ -339,7 +339,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
                 ))}
               </div>
               {/* Lock overlay */}
-              <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(28,10,0,0.55)' }}>
+              <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(8,13,26,0.55)' }}>
                 <div className="text-center px-6">
                   <div className="flex justify-center mb-3">
                     <div className="rounded-full p-3" style={{ background: 'rgba(249,193,37,0.15)', border: '1px solid rgba(249,193,37,0.35)' }}>
@@ -349,7 +349,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
                   <p className="font-bold text-white mb-1">Unlock AI Feedback</p>
                   <p className="text-sm text-white/60 mb-4">STAR scores, ideal answers &amp; grammar analysis</p>
                   <Link href="/#pricing">
-                    <button className="rounded-xl bg-[#F9C125] px-5 py-2.5 text-sm font-bold text-[#1C0A00] hover:brightness-110 transition-all">
+                    <button className="rounded-xl bg-[#F9C125] px-5 py-2.5 text-sm font-bold text-[#080d1a] hover:brightness-110 transition-all">
                       Upgrade to Student →
                     </button>
                   </Link>
@@ -470,7 +470,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
                   </div>
                 </div>
                 {/* Lock overlay */}
-                <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(28,10,0,0.55)' }}>
+                <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(8,13,26,0.55)' }}>
                   <div className="text-center px-6">
                     <div className="flex justify-center mb-3">
                       <div className="rounded-full p-3" style={{ background: 'rgba(249,193,37,0.15)', border: '1px solid rgba(249,193,37,0.35)' }}>
@@ -480,7 +480,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
                     <p className="font-bold text-white mb-1">Unlock Progress Tracking</p>
                     <p className="text-sm text-white/60 mb-4">WPM trends, filler patterns &amp; weakness analysis</p>
                     <Link href="/#pricing">
-                      <button className="rounded-xl bg-[#F9C125] px-5 py-2.5 text-sm font-bold text-[#1C0A00] hover:brightness-110 transition-all">
+                      <button className="rounded-xl bg-[#F9C125] px-5 py-2.5 text-sm font-bold text-[#080d1a] hover:brightness-110 transition-all">
                         Upgrade to Pro →
                       </button>
                     </Link>

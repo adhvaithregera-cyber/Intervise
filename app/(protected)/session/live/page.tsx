@@ -23,7 +23,7 @@ type StoredAnswer =
   | { type: 'text'; transcript: string; duration: number; questionId: number; index: number }
 
 const glassCard = {
-  backgroundColor: 'rgba(28,10,0,0.70)',
+  backgroundColor: 'rgba(8,13,26,0.70)',
   backdropFilter: 'blur(20px)',
   WebkitBackdropFilter: 'blur(20px)',
   border: '1px solid rgba(249,193,37,0.25)',
@@ -408,7 +408,7 @@ export default function LiveSessionPage() {
             <p className="text-white text-lg mb-6">{errorMessage}</p>
             <button
               onClick={() => router.push('/session/setup')}
-              className="rounded-xl bg-[#F9C125] px-8 py-3 text-sm font-bold text-[#1C0A00] hover:brightness-110 transition-all"
+              className="rounded-xl bg-[#F9C125] px-8 py-3 text-sm font-bold text-[#080d1a] hover:brightness-110 transition-all"
             >
               Back to Setup
             </button>
@@ -439,7 +439,7 @@ export default function LiveSessionPage() {
             <div className="flex items-center justify-center gap-3">
               <button
                 onClick={skipPrep}
-                className="rounded-xl bg-[#F9C125] px-8 py-3 text-sm font-bold text-[#1C0A00] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20"
+                className="rounded-xl bg-[#F9C125] px-8 py-3 text-sm font-bold text-[#080d1a] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20"
               >
                 Start Now
               </button>
@@ -488,7 +488,7 @@ export default function LiveSessionPage() {
             <div className="flex items-center justify-center gap-3">
               <button
                 onClick={stopRecording}
-                className="rounded-xl bg-[#F9C125] px-10 py-3 text-base font-bold text-[#1C0A00] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20"
+                className="rounded-xl bg-[#F9C125] px-10 py-3 text-base font-bold text-[#080d1a] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20"
               >
                 Done
               </button>
@@ -525,7 +525,7 @@ export default function LiveSessionPage() {
               {isLastQuestion ? (
                 <button
                   onClick={finishAndProcess}
-                  className="rounded-xl bg-[#F9C125] px-10 py-3.5 text-base font-bold text-[#1C0A00] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20"
+                  className="rounded-xl bg-[#F9C125] px-10 py-3.5 text-base font-bold text-[#080d1a] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20"
                 >
                   See My Results
                 </button>
@@ -533,7 +533,7 @@ export default function LiveSessionPage() {
                 <>
                   <button
                     onClick={goNext}
-                    className="rounded-xl bg-[#F9C125] px-10 py-3.5 text-base font-bold text-[#1C0A00] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20"
+                    className="rounded-xl bg-[#F9C125] px-10 py-3.5 text-base font-bold text-[#080d1a] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20"
                   >
                     Next Question
                   </button>

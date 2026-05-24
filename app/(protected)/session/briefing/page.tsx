@@ -52,7 +52,7 @@ export default async function BriefingPage({
       <div
         className="rounded-2xl p-6 sm:p-8 space-y-8"
         style={{
-          backgroundColor: 'rgba(28,10,0,0.75)',
+          backgroundColor: 'rgba(8,13,26,0.75)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
           border: '1px solid rgba(249,193,37,0.18)',
@@ -115,7 +115,7 @@ export default async function BriefingPage({
       <FadeIn delay={0.24}>
         <div>
           <Link href={`/session/live?session_id=${sessionId}&q=${questionIds}&tier=${tier}`} className="block w-full sm:w-auto sm:inline-block">
-            <button className="w-full sm:w-auto bg-[#F9C125] text-[#1C0A00] font-bold rounded-xl px-8 py-3.5 text-base shadow-lg shadow-[#F9C125]/25 hover:brightness-110 transition-all">
+            <button className="w-full sm:w-auto bg-[#F9C125] text-[#080d1a] font-bold rounded-xl px-8 py-3.5 text-base shadow-lg shadow-[#F9C125]/25 hover:brightness-110 transition-all">
               Start Interview
             </button>
           </Link>

@@ -48,7 +48,7 @@ export async function Navbar({ prefetched }: NavbarProps = {}) {
     <nav
       className="sticky top-0 z-50 border-b"
       style={{
-        backgroundColor: '#1C0A00',
+        backgroundColor: '#080d1a',
         borderColor: 'rgba(249,193,37,0.15)',
         boxShadow: '0 1px 0 rgba(249,193,37,0.08), 0 4px 24px rgba(0,0,0,0.35)',
       }}
@@ -95,7 +95,7 @@ export async function Navbar({ prefetched }: NavbarProps = {}) {
               </Link>
               <Link
                 href="/signup"
-                className="rounded-xl bg-[#F9C125] px-3 py-1.5 text-sm font-semibold text-[#1C0A00] hover:bg-[#FFD84D] transition-colors shadow-sm shadow-[#F9C125]/20 sm:px-4"
+                className="rounded-xl bg-[#F9C125] px-3 py-1.5 text-sm font-semibold text-[#080d1a] hover:bg-[#FFD84D] transition-colors shadow-sm shadow-[#F9C125]/20 sm:px-4"
               >
                 <span className="sm:hidden">Join</span>
                 <span className="hidden sm:inline">Sign up</span>
