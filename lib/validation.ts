@@ -150,3 +150,14 @@ export const transcribeTextSchema = z.object({
   duration_seconds: z.number().int().positive('duration_seconds must be a positive integer greater than 0'),
   transcript: z.string().min(1, 'transcript must not be empty').max(10000),
 })
+
+// ─── Payments ────────────────────────────────────────────────────────────────
+
+export const createSubscriptionSchema = z.object({
+  plan: z.enum(['student', 'pro']),
+})
+
+export const cancelSubscriptionSchema = z.object({
+  /** If true, cancel immediately. If false (default), cancel at end of billing period. */
+  immediately: z.boolean().optional(),
+})
