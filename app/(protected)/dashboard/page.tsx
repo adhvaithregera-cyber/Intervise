@@ -288,21 +288,33 @@ export default async function DashboardPage({
             /* Blurred teaser for Free users */
             <div className="relative rounded-xl overflow-hidden" style={{ transform: 'translateZ(0)' }}>
               <div style={{ filter: 'blur(5px)', userSelect: 'none', pointerEvents: 'none', overflow: 'hidden' }}
-                className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-1">
-                <div className="p-5" style={INNER_CARD}>
-                  <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-3">Filler words per session</p>
-                  <div className="flex items-end gap-2 h-20">
-                    {[8, 5, 12, 3, 7, 4, 9, 2].map((h, i) => (
-                      <div key={i} className="flex-1 rounded-t" style={{ height: `${(h / 12) * 100}%`, background: 'rgba(249,193,37,0.5)' }} />
-                    ))}
-                  </div>
+                className="space-y-4 p-1">
+                {/* Fake stat pills */}
+                <div className="grid grid-cols-3 gap-3">
+                  {['Avg Fillers', 'Avg WPM', 'Best Grade'].map((label, i) => (
+                    <div key={label} className="rounded-xl px-4 py-3" style={INNER_CARD}>
+                      <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-1">{label}</p>
+                      <p className="text-2xl font-bold text-white">{['3', '142', 'A'][i]}</p>
+                    </div>
+                  ))}
                 </div>
-                <div className="p-5" style={INNER_CARD}>
-                  <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-3">Speech pace per session</p>
-                  <div className="flex items-end gap-2 h-20">
-                    {[60, 75, 55, 80, 70, 85, 65, 90].map((h, i) => (
-                      <div key={i} className="h-px flex-1" style={{ marginTop: 'auto', borderTop: '2px solid rgba(249,193,37,0.5)' }} />
-                    ))}
+                {/* Fake charts */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="p-5" style={INNER_CARD}>
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-3">Filler words per session</p>
+                    <div className="flex items-end gap-2 h-24">
+                      {[8, 5, 12, 3, 7, 4, 9, 2].map((h, i) => (
+                        <div key={i} className="flex-1 rounded-t" style={{ height: `${(h / 12) * 100}%`, background: 'rgba(249,193,37,0.5)' }} />
+                      ))}
+                    </div>
+                  </div>
+                  <div className="p-5" style={INNER_CARD}>
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-3">Speech pace per session</p>
+                    <div className="flex items-end gap-2 h-24">
+                      {[60, 75, 55, 80, 70, 85, 65, 90].map((h, i) => (
+                        <div key={i} className="h-px flex-1" style={{ marginTop: 'auto', borderTop: '2px solid rgba(249,193,37,0.5)' }} />
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
