@@ -30,18 +30,18 @@ export default async function ProtectedLayout({ children }: { children: React.Re
 
   return (
     <div className="relative min-h-screen" style={{ backgroundColor: '#080d1a' }}>
-      {/* Radial golden glow */}
+      {/* Ambient glow — behind content cards, not pinned to top */}
       <div
-        className="pointer-events-none fixed inset-0 z-0"
+        className="pointer-events-none absolute inset-0 z-0"
         style={{
-          background: 'radial-gradient(ellipse 80% 55% at 50% 15%, rgba(249,193,37,0.45) 0%, rgba(249,193,37,0.12) 50%, transparent 70%)',
+          background: 'radial-gradient(ellipse 65% 40% at 50% 36%, rgba(249,193,37,0.09) 0%, rgba(249,193,37,0.03) 55%, transparent 75%)',
         }}
       />
       {/* Dot grid */}
       <div
         className="pointer-events-none fixed inset-0 z-0"
         style={{
-          backgroundImage: 'radial-gradient(rgba(255,255,255,0.06) 1.5px, transparent 1.5px)',
+          backgroundImage: 'radial-gradient(rgba(255,255,255,0.04) 1.5px, transparent 1.5px)',
           backgroundSize: '26px 26px',
         }}
       />
