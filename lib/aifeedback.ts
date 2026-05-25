@@ -141,6 +141,65 @@ const RUBRICS: Record<number, object> = {
   },
 }
 
+// ── Delivery score computation (no AI needed) ────────────────────────────────
+
+function computeDeliveryScores(
+  fillerCount: number,
+  wpm: number | null,
+  durationSeconds: number,
+  dur: { min: number; max: number; tooShort: number; tooLong: number }
+): AiFeedback['delivery_scores'] {
+  // Filler words
+  let fillerScore: number
+  if      (fillerCount === 0)       fillerScore = 10
+  else if (fillerCount <= 2)        fillerScore = 8
+  else if (fillerCount <= 4)        fillerScore = 6
+  else if (fillerCount <= 7)        fillerScore = 3
+  else if (fillerCount <= 10)       fillerScore = 1
+  else                              fillerScore = 0
+
+  // WPM
+  let wpmScore: number
+  let wpmLabel: string
+  if (wpm === null) {
+    wpmScore = 5; wpmLabel = 'Unavailable'
+  } else if (wpm >= 120 && wpm <= 160) {
+    wpmScore = 10; wpmLabel = 'Ideal'
+  } else if ((wpm >= 110 && wpm < 120) || (wpm > 160 && wpm <= 175)) {
+    wpmScore = 7; wpmLabel = 'Slightly off'
+  } else if ((wpm >= 95 && wpm < 110) || (wpm > 175 && wpm <= 195)) {
+    wpmScore = 4; wpmLabel = 'Too fast/slow'
+  } else if ((wpm >= 80 && wpm < 95) || (wpm > 195 && wpm <= 220)) {
+    wpmScore = 2; wpmLabel = 'Significantly off'
+  } else {
+    wpmScore = 0; wpmLabel = 'Significantly off'
+  }
+
+  // Duration
+  let durScore: number
+  let durLabel: string
+  if (durationSeconds < dur.tooShort) {
+    durScore = 0; durLabel = 'Too short'
+  } else if (durationSeconds > dur.tooLong) {
+    durScore = 2; durLabel = 'Too long'
+  } else if (durationSeconds >= dur.min && durationSeconds <= dur.max) {
+    durScore = 10; durLabel = 'Ideal'
+  } else if (
+    durationSeconds >= dur.min - 15 && durationSeconds < dur.min ||
+    durationSeconds > dur.max && durationSeconds <= dur.max + 15
+  ) {
+    durScore = 7; durLabel = 'Slightly short/long'
+  } else {
+    durScore = 4; durLabel = 'Off pace'
+  }
+
+  return {
+    filler_words: { score: fillerScore, max: 10, count: fillerCount },
+    wpm:          { score: wpmScore,    max: 10, wpm: wpm ?? 0, label: wpmLabel },
+    duration:     { score: durScore,    max: 10, seconds: durationSeconds, label: durLabel },
+  }
+}
+
 // ── Prompt builders ───────────────────────────────────────────────────────────
 
 const SYSTEM_PROMPT = `You are a strict professional interview coach evaluating a candidate's answer.
@@ -156,20 +215,18 @@ function buildUserPrompt(params: {
   format: string
   rubric: object
   transcript: string
-  fillerCount: number
-  wpm: number | null
-  durationSeconds: number
-  durationRange: { min: number; max: number; tooShort: number; tooLong: number }
+  deliveryTotal: number
 }): string {
   const {
     questionText, categoryId, categoryName, format, rubric,
-    transcript, fillerCount, wpm, durationSeconds, durationRange,
+    transcript, deliveryTotal,
   } = params
 
   const componentKeys = Object.keys((rubric as Record<string, Record<string, unknown>>).components ?? {})
   const exampleComponents = Object.fromEntries(
     componentKeys.map(k => [k, { score: 0, max: 0, feedback: 'specific feedback here' }])
   )
+  const contentMax = 100 - 30 // 30 pts reserved for delivery
 
   return `You are evaluating a Category ${categoryId} — ${categoryName} question.
 The format for this category is: ${format}
@@ -177,23 +234,9 @@ The scoring rubric is: ${JSON.stringify(rubric, null, 2)}
 
 Question asked: "${questionText}"
 
-CANDIDATE METRICS (pre-computed — use these exactly, do not recalculate):
-- WPM: ${wpm ?? 'unavailable'}
-- Filler word count: ${fillerCount}
-- Answer duration: ${durationSeconds} seconds
-
-DELIVERY SCORING TABLES (apply to the metrics above):
-
-Filler words (10 pts max):
-0 fillers=10 | 1–2=8 | 3–4=6 | 5–7=3 | 8–10=1 | 11+=0
-
-WPM (10 pts max):
-120–160=10 (Ideal) | 110–119 or 161–175=7 (Slightly off) | 95–109 or 176–195=4 | 80–94 or 196–220=2 | <80 or >220=0
-If WPM is unavailable, award 5 pts and label "Unavailable".
-
-Duration (10 pts max):
-Ideal range is ${durationRange.min}–${durationRange.max}s.
-Within ideal=10 | within 15s either side=7 | within 30s=4 | <${durationRange.tooShort}s=0 | >${durationRange.tooLong}s=2
+NOTE: Delivery scores (filler words, WPM, duration) have already been computed = ${deliveryTotal}/30.
+You are scoring CONTENT ONLY. Content components sum to ${contentMax} pts max.
+Final score = your content score + ${deliveryTotal} (delivery already computed).
 
 Transcript:
 "${transcript}"
@@ -201,8 +244,8 @@ Transcript:
 SCORING INSTRUCTIONS:
 1. Score each content component 0 to its max using the rubric.
 2. Apply all automatic caps if triggered — list each that fired.
-3. Score all three delivery metrics using the tables above.
-4. Final score = sum of content component scores + sum of delivery scores (max 100).
+3. content_score = sum of all component scores (max ${contentMax}).
+4. final_score = content_score + ${deliveryTotal}.
 5. Grade: 90–100=A | 75–89=B | 55–74=C | 35–54=D | 0–34=F
 6. For each component below maximum: quote the exact phrase from the transcript, explain what was wrong, give one concrete replacement sentence.
 7. Grammar: identify specific grammar/vocabulary errors in the transcript (wrong tense, subject-verb disagreement, run-on sentences, awkward phrasing). Be specific — quote the error and explain it. If no errors, return empty issues array and score 10.
@@ -213,11 +256,6 @@ Return ONLY this JSON (no other text):
   "grade": "C",
   "score": 62,
   "component_scores": ${JSON.stringify(exampleComponents, null, 2)},
-  "delivery_scores": {
-    "filler_words": {"score": 8, "max": 10, "count": ${fillerCount}},
-    "wpm": {"score": 10, "max": 10, "wpm": ${wpm ?? 0}, "label": "Ideal"},
-    "duration": {"score": 7, "max": 10, "seconds": ${durationSeconds}, "label": "Slightly short"}
-  },
   "automatic_caps_applied": [],
   "biggest_gap": "Your [component] section [specific issue from transcript].",
   "ideal_answer_opening": "First sentence of what a strong answer would look like",
@@ -245,7 +283,10 @@ function isComponentScore(x: unknown): x is AiFeedbackComponentScore {
   return typeof o.score === 'number' && typeof o.max === 'number' && typeof o.feedback === 'string'
 }
 
-function parseAndValidate(raw: string): AiFeedback | null {
+function parseAndValidate(
+  raw: string,
+  deliveryScores: AiFeedback['delivery_scores']
+): AiFeedback | null {
   try {
     const parsed = JSON.parse(raw) as Record<string, unknown>
 
@@ -254,7 +295,6 @@ function parseAndValidate(raw: string): AiFeedback | null {
        parsed.grade !== 'D' && parsed.grade !== 'F') ||
       typeof parsed.score !== 'number' ||
       typeof parsed.component_scores !== 'object' || parsed.component_scores === null ||
-      typeof parsed.delivery_scores !== 'object' || parsed.delivery_scores === null ||
       typeof parsed.biggest_gap !== 'string' ||
       typeof parsed.ideal_answer_opening !== 'string' ||
       typeof parsed.coaching_tip !== 'string'
@@ -265,27 +305,13 @@ function parseAndValidate(raw: string): AiFeedback | null {
       if (!isComponentScore(v)) return null
     }
 
-    const ds = parsed.delivery_scores as Record<string, unknown>
-    const fw = ds.filler_words as Record<string, unknown>
-    const wpmDs = ds.wpm as Record<string, unknown>
-    const dur = ds.duration as Record<string, unknown>
-    if (
-      typeof fw?.score !== 'number' || typeof fw?.max !== 'number' || typeof fw?.count !== 'number' ||
-      typeof wpmDs?.score !== 'number' || typeof wpmDs?.max !== 'number' || typeof wpmDs?.wpm !== 'number' || typeof wpmDs?.label !== 'string' ||
-      typeof dur?.score !== 'number' || typeof dur?.max !== 'number' || typeof dur?.seconds !== 'number' || typeof dur?.label !== 'string'
-    ) return null
-
     const gf = parsed.grammar_feedback as Record<string, unknown> | undefined
 
     return {
-      grade:                parsed.grade as AiFeedback['grade'],
-      score:                parsed.score,
-      component_scores:     cs as Record<string, AiFeedbackComponentScore>,
-      delivery_scores: {
-        filler_words: { score: fw.score as number, max: fw.max as number, count: fw.count as number },
-        wpm:          { score: wpmDs.score as number, max: wpmDs.max as number, wpm: wpmDs.wpm as number, label: wpmDs.label as string },
-        duration:     { score: dur.score as number, max: dur.max as number, seconds: dur.seconds as number, label: dur.label as string },
-      },
+      grade:             parsed.grade as AiFeedback['grade'],
+      score:             parsed.score,
+      component_scores:  cs as Record<string, AiFeedbackComponentScore>,
+      delivery_scores:   deliveryScores,
       automatic_caps_applied: Array.isArray(parsed.automatic_caps_applied)
         ? (parsed.automatic_caps_applied as string[]).filter(s => typeof s === 'string')
         : [],
@@ -302,7 +328,7 @@ function parseAndValidate(raw: string): AiFeedback | null {
             overall: gf.overall as string,
           }
         : undefined,
-      coaching_tip:         parsed.coaching_tip,
+      coaching_tip: parsed.coaching_tip,
     }
   } catch {
     return null
@@ -327,11 +353,15 @@ export async function generateAnswerFeedback(params: {
   const rubric   = RUBRICS[categoryId] ?? { components: {}, automatic_caps: [] }
   const dur      = IDEAL_DURATION[categoryId] ?? { min: 60, max: 120, tooShort: 30, tooLong: 180 }
 
+  // Compute delivery scores locally — no AI needed
+  const deliveryScores = computeDeliveryScores(fillerCount, wpm, durationSeconds, dur)
+  const deliveryTotal  = deliveryScores.filler_words.score + deliveryScores.wpm.score + deliveryScores.duration.score
+
   try {
     const model = genAI.getGenerativeModel({
       model: 'gemini-2.0-flash',
       systemInstruction: SYSTEM_PROMPT,
-      generationConfig: { temperature: 0, maxOutputTokens: 1200 },
+      generationConfig: { temperature: 0, maxOutputTokens: 900 },
     })
 
     const result = await model.generateContent(buildUserPrompt({
@@ -341,17 +371,13 @@ export async function generateAnswerFeedback(params: {
       format:       category.format,
       rubric,
       transcript,
-      fillerCount,
-      wpm,
-      durationSeconds,
-      durationRange: dur,
+      deliveryTotal,
     }))
 
     const text = result.response.text().trim()
-    // Strip markdown code fences if present
     const json = text.startsWith('```') ? text.replace(/^```[a-z]*\n?/i, '').replace(/```$/, '').trim() : text
 
-    return parseAndValidate(json)
+    return parseAndValidate(json, deliveryScores)
   } catch (err) {
     console.error('[aifeedback] Gemini call failed:', err)
     return null
