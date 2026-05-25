@@ -13,13 +13,14 @@ import { createClient } from '@/lib/supabase/server'
 export default async function LandingPage({
   searchParams,
 }: {
-  searchParams: Promise<{ code?: string }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   // Supabase sometimes redirects to the site URL root with ?code= instead of
   // /auth/callback — forward it so the session is properly established.
   const params = await searchParams
-  if (params.code) {
-    redirect(`/auth/callback?code=${encodeURIComponent(params.code)}`)
+  const code = typeof params.code === 'string' ? params.code : undefined
+  if (code) {
+    redirect(`/auth/callback?code=${encodeURIComponent(code)}`)
   }
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
