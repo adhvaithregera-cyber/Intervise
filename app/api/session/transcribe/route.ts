@@ -95,6 +95,33 @@ async function handleTextPath(
     return NextResponse.json({ error: 'Session is not in progress' }, { status: 403 })
   }
 
+  // ── Verify question_id is valid for this session's tier/difficulty ────────
+  const { data: sessionRow } = await supabase
+    .from('sessions')
+    .select('difficulty, tier_at_time')
+    .eq('id', session_id)
+    .single()
+
+  if (!sessionRow) {
+    return NextResponse.json({ error: 'Session not found' }, { status: 404 })
+  }
+
+  // Build the allowed category filter based on tier
+  const tierAtTime = sessionRow.tier_at_time as string
+  const allowedCategories = tierAtTime === 'free' ? [1, 2] : [1, 2, 3, 4, 5, 6, 7, 8]
+
+  // Check if question belongs to allowed categories for this session
+  const { data: questionRow } = await supabase
+    .from('questions')
+    .select('id, category_id')
+    .eq('id', question_id)
+    .in('category_id', allowedCategories)
+    .single()
+
+  if (!questionRow) {
+    return NextResponse.json({ error: 'Question not valid for this session' }, { status: 403 })
+  }
+
   // ── Block duplicate submissions ───────────────────────────────────────────
   const { data: existing } = await supabase
     .from('answers')
@@ -223,6 +250,33 @@ async function handleAudioPath(
   if (!session) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   if (session.status !== 'in_progress') {
     return NextResponse.json({ error: 'Session is not in progress' }, { status: 403 })
+  }
+
+  // ── Verify question_id is valid for this session's tier/difficulty ────────
+  const { data: sessionRow } = await supabase
+    .from('sessions')
+    .select('difficulty, tier_at_time')
+    .eq('id', session_id)
+    .single()
+
+  if (!sessionRow) {
+    return NextResponse.json({ error: 'Session not found' }, { status: 404 })
+  }
+
+  // Build the allowed category filter based on tier
+  const tierAtTime = sessionRow.tier_at_time as string
+  const allowedCategories = tierAtTime === 'free' ? [1, 2] : [1, 2, 3, 4, 5, 6, 7, 8]
+
+  // Check if question belongs to allowed categories for this session
+  const { data: questionRow } = await supabase
+    .from('questions')
+    .select('id, category_id')
+    .eq('id', question_id)
+    .in('category_id', allowedCategories)
+    .single()
+
+  if (!questionRow) {
+    return NextResponse.json({ error: 'Question not valid for this session' }, { status: 403 })
   }
 
   const { data: existing } = await supabase
