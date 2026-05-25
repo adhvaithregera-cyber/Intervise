@@ -117,7 +117,8 @@ export async function POST(request: Request) {
     .select('wpm, filler_count, ai_feedback, transcription_failed')
     .eq('session_id', session_id)
 
-  const grade = calculateGrade(answers ?? [], 5)
+  const totalExpected = answers?.length ?? 5
+  const grade = calculateGrade(answers ?? [], totalExpected)
 
   const { error: updateError } = await supabase
     .from('sessions')

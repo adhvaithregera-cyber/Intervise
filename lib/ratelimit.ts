@@ -71,4 +71,6 @@ export const RATE_LIMITS = {
   onboarding:    { maxRequests: 10, windowMs: 10 * 60 * 1000 },  // 10 / 10 min
   /** Profile update */
   profile:       { maxRequests: 40, windowMs: 10 * 60 * 1000 },  // 40 / 10 min
+  /** Subscription creation — payment-sensitive, strict cap */
+  createSubscription: { maxRequests: 3, windowMs: 60 * 60 * 1000 }, // 3 per hour
 } as const satisfies Record<string, RateLimitConfig>

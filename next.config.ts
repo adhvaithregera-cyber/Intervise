@@ -21,9 +21,6 @@ const securityHeaders = [
     value: 'camera=(self), microphone=(self), geolocation=(), payment=()',
   },
 
-  // Remove the "X-Powered-By: Next.js" fingerprint header
-  { key: 'X-Powered-By', value: '' },
-
   /**
    * Content Security Policy
    *

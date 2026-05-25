@@ -61,6 +61,14 @@ async function uploadAudio(
   }
 
   const data = (await response.json()) as { upload_url: string }
+  if (
+    !data.upload_url?.startsWith('https://cdn.assemblyai.com/') &&
+    !data.upload_url?.startsWith('https://storage.googleapis.com/')
+  ) {
+    // Unexpected upload URL — reject to prevent SSRF
+    console.error('[assemblyai] unexpected upload_url domain:', data.upload_url)
+    return { failed: true, reason: 'upload_failed' } as const
+  }
   return data
 }
 

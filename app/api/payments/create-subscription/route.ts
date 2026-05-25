@@ -14,7 +14,7 @@ export async function POST(request: Request) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   // ── Rate limiting ─────────────────────────────────────────────────────────
-  const rl = checkRateLimit(`${user.id}:create-subscription`, RATE_LIMITS.profile)
+  const rl = checkRateLimit(`${user.id}:create-subscription`, RATE_LIMITS.createSubscription)
   if (!rl.allowed) {
     return NextResponse.json(
       { error: 'Too many requests' },

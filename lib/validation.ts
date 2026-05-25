@@ -118,7 +118,8 @@ export const transcribeFormSchema = z.object({
   answer_index: z
     .string()
     .regex(/^[1-9]\d*$/, 'answer_index must be a positive integer')
-    .transform(Number),
+    .transform(Number)
+    .pipe(z.number().int().min(1).max(10)),
   // Must be at least 1 second — a 0-second answer is meaningless and would
   // cause a division-by-zero in WPM calculation if the guard were ever removed
   duration_seconds: z
@@ -148,7 +149,7 @@ export const transcribeTextSchema = z.object({
   question_id: z.number().int().positive('question_id must be a positive integer'),
   answer_index: z.number().int().positive('answer_index must be a positive integer'),
   duration_seconds: z.number().int().positive('duration_seconds must be a positive integer greater than 0'),
-  transcript: z.string().min(1, 'transcript must not be empty').max(10000),
+  transcript: z.string().min(1, 'transcript must not be empty').max(3000),
 })
 
 // ─── Payments ────────────────────────────────────────────────────────────────
