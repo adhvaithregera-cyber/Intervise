@@ -123,7 +123,7 @@ export default async function DashboardPage({
           : null
         const diff = s.difficulty.charAt(0).toUpperCase() + s.difficulty.slice(1)
         const label = (dateCount[st.date] ?? 1) > 1 ? `${diff} · ${st.date}` : st.date
-        return { label, date: st.date, fillers: st.fillers, wpm: avgWpm, grade: s.overall_grade ?? null }
+        return { label, date: st.date, isoDate: s.created_at, fillers: st.fillers, wpm: avgWpm, grade: s.overall_grade ?? null }
       })
 
       // Per-category stats

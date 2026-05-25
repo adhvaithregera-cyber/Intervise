@@ -10,6 +10,7 @@ import {
 export type SessionStat = {
   label: string       // display label — de-duped by difficulty if same date
   date: string        // formatted date e.g. "12 May"
+  isoDate: string     // ISO date string for filtering e.g. "2026-05-25T10:30:00Z"
   fillers: number
   wpm: number | null
   grade: string | null
