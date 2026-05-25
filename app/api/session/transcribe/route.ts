@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server'
+import type { SupabaseClient } from '@supabase/supabase-js'
+import type { Database } from '@/types/database'
 
 export const maxDuration = 60
 
@@ -47,8 +49,7 @@ export async function POST(request: Request) {
 async function handleTextPath(
   request: Request,
   userId: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  supabase: any,
+  supabase: SupabaseClient<Database>,
 ) {
   let body: unknown
   try {
@@ -161,9 +162,14 @@ async function handleTextPath(
 async function handleAudioPath(
   request: Request,
   userId: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  supabase: any,
+  supabase: SupabaseClient<Database>,
 ) {
+  // Tier guard — free users must use the Web Speech API text path
+  const { data: profile } = await supabase.from('profiles').select('tier').eq('id', userId).single()
+  if (!profile || profile.tier === 'free') {
+    return NextResponse.json({ error: 'Audio transcription requires a paid plan' }, { status: 403 })
+  }
+
   let formData: FormData
   try {
     formData = await request.formData()
@@ -244,6 +250,7 @@ async function handleAudioPath(
       wpm:                  null,
       eye_contact_pct:      eye_contact_pct ?? null,
       duration_seconds,
+      ai_feedback:          null,
     })
     if (insertError) {
       console.error('[transcribe] insert failed:', insertError.message)
