@@ -10,7 +10,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.98.0",
+    "@google/generative-ai": "^0.24.1",
     "@hcaptcha/react-hcaptcha": "^2.0.2",
     "@number-flow/react": "^0.6.0",
     "@supabase/ssr": "^0.10.3",
