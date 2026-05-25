@@ -33,7 +33,6 @@ function authHeaders(): Record<string, string> {
 async function uploadAudio(
   audioBlob: Blob
 ): Promise<{ upload_url: string } | TranscriptionError> {
-  console.log('[assemblyai] uploading audio, size:', audioBlob.size, 'type:', audioBlob.type)
   let response: Response
   try {
     const arrayBuffer = await audioBlob.arrayBuffer()
@@ -62,7 +61,6 @@ async function uploadAudio(
   }
 
   const data = (await response.json()) as { upload_url: string }
-  console.log('[assemblyai] upload_url domain:', data.upload_url?.split('/').slice(0, 3).join('/'))
   if (
     !data.upload_url?.startsWith('https://cdn.assemblyai.com/') &&
     !data.upload_url?.startsWith('https://storage.googleapis.com/')
@@ -101,7 +99,6 @@ async function requestTranscription(
   }
 
   const data = (await response.json()) as { id: string }
-  console.log('[assemblyai] transcript requested, id:', data.id)
   return data
 }
 
@@ -140,7 +137,6 @@ async function pollForCompletion(
     const transcript = (await response.json()) as AssemblyAITranscript
 
     if (transcript.status === 'completed') {
-      console.log('[assemblyai] transcription completed, duration:', transcript.audio_duration)
       return {
         text: transcript.text ?? '',
         words: transcript.words ?? [],
@@ -155,8 +151,6 @@ async function pollForCompletion(
         reason: transcript.error ?? 'transcription_failed',
       }
     }
-
-    console.log('[assemblyai] poll', poll + 1, 'status:', transcript.status)
 
     // 'queued' or 'processing' — keep polling
   }
