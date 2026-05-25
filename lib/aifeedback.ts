@@ -30,7 +30,6 @@ const IDEAL_DURATION: Record<number, { min: number; max: number; tooShort: numbe
 }
 
 // ── Rubrics per category ──────────────────────────────────────────────────────
-// Each component key must match the keys returned in component_scores JSON.
 
 const RUBRICS: Record<number, object> = {
   1: {
@@ -149,16 +148,14 @@ function computeDeliveryScores(
   durationSeconds: number,
   dur: { min: number; max: number; tooShort: number; tooLong: number }
 ): AiFeedback['delivery_scores'] {
-  // Filler words
   let fillerScore: number
-  if      (fillerCount === 0)       fillerScore = 10
-  else if (fillerCount <= 2)        fillerScore = 8
-  else if (fillerCount <= 4)        fillerScore = 6
-  else if (fillerCount <= 7)        fillerScore = 3
-  else if (fillerCount <= 10)       fillerScore = 1
-  else                              fillerScore = 0
+  if      (fillerCount === 0)  fillerScore = 10
+  else if (fillerCount <= 2)   fillerScore = 8
+  else if (fillerCount <= 4)   fillerScore = 6
+  else if (fillerCount <= 7)   fillerScore = 3
+  else if (fillerCount <= 10)  fillerScore = 1
+  else                         fillerScore = 0
 
-  // WPM
   let wpmScore: number
   let wpmLabel: string
   if (wpm === null) {
@@ -175,7 +172,6 @@ function computeDeliveryScores(
     wpmScore = 0; wpmLabel = 'Significantly off'
   }
 
-  // Duration
   let durScore: number
   let durLabel: string
   if (durationSeconds < dur.tooShort) {
@@ -185,8 +181,8 @@ function computeDeliveryScores(
   } else if (durationSeconds >= dur.min && durationSeconds <= dur.max) {
     durScore = 10; durLabel = 'Ideal'
   } else if (
-    durationSeconds >= dur.min - 15 && durationSeconds < dur.min ||
-    durationSeconds > dur.max && durationSeconds <= dur.max + 15
+    (durationSeconds >= dur.min - 15 && durationSeconds < dur.min) ||
+    (durationSeconds > dur.max && durationSeconds <= dur.max + 15)
   ) {
     durScore = 7; durLabel = 'Slightly short/long'
   } else {
@@ -200,7 +196,204 @@ function computeDeliveryScores(
   }
 }
 
-// ── Prompt builders ───────────────────────────────────────────────────────────
+// ── Step 1: Grade + score computation (no AI needed) ─────────────────────────
+
+export function computeGradeAndScore(
+  componentScores: Record<string, AiFeedbackComponentScore>,
+  deliveryTotal: number,
+  appliedCaps: string[],
+): { grade: AiFeedback['grade']; score: number } {
+  const contentTotal = Object.values(componentScores).reduce((sum, c) => sum + c.score, 0)
+  let score = contentTotal + deliveryTotal
+
+  for (const cap of appliedCaps) {
+    if (/automatic\s+F|final score 0/i.test(cap)) {
+      score = 0
+      break
+    }
+    const maxMatch = cap.match(/max total (\d+)/i)
+    if (maxMatch) score = Math.min(score, Number(maxMatch[1]))
+    const deductMatch = cap.match(/deduct (\d+) points/i)
+    if (deductMatch) score = Math.max(0, score - Number(deductMatch[1]))
+  }
+
+  const grade: AiFeedback['grade'] =
+    score >= 90 ? 'A' : score >= 75 ? 'B' : score >= 55 ? 'C' : score >= 35 ? 'D' : 'F'
+
+  return { grade, score }
+}
+
+// ── Step 2: Rule-based automatic caps detection ───────────────────────────────
+
+export function detectAutomaticCaps(
+  transcript: string,
+  durationSeconds: number,
+  categoryId: number,
+): string[] {
+  const caps = (RUBRICS as Record<number, { automatic_caps?: string[] }>)[categoryId]?.automatic_caps ?? []
+  const fired: string[] = []
+  const words = transcript.split(/\s+/)
+  const first40 = words.slice(0, 40).join(' ')
+  const last30  = words.slice(-30).join(' ')
+  const first80chars = transcript.slice(0, 80)
+
+  if (categoryId === 1) {
+    if (/\b(born\s+in|school|marks|percentage|scored|10th|12th|cgpa|gpa|hsc|ssc)\b/i.test(first40))
+      fired.push(caps[0])
+    if (/that'?s?\s+(basically\s+it|all\s+about\s+me)/i.test(last30))
+      fired.push(caps[2])
+  }
+
+  if (categoryId === 2) {
+    if (!/\b\d+(\.\d+)?(%|percent|per\s+cent|rupees?|lakhs?|crores?|times?|hours?|days?|weeks?|months?|years?|rank(ing)?|position)\b/i.test(transcript))
+      fired.push(caps[2])
+    if (durationSeconds < 60)
+      fired.push(caps[4])
+  }
+
+  if (categoryId === 3) {
+    if (/\b(hardworking|hard-working|dedicated|passionate|perfectionist|team\s*player|people\s*pleaser)\b/i.test(first40))
+      fired.push(caps[0])
+  }
+
+  if (categoryId === 4) {
+    if (/\bperfectionist\b/i.test(transcript))
+      fired.push(caps[0])
+    if (/\b(i\s+work\s+too\s+hard|i\s+care\s+too\s+much)\b/i.test(transcript))
+      fired.push(caps[1])
+  }
+
+  if (categoryId === 5) {
+    if (/\b(very\s+reputed|great\s+company|well[\s-]known\s+company|good\s+reputation)\b/i.test(transcript))
+      fired.push(caps[0])
+    if (/\b(salary|pay|compensation|package|ctc|job\s+security|better\s+pay|higher\s+pay)\b/i.test(transcript))
+      fired.push(caps[1])
+  }
+
+  if (categoryId === 6) {
+    if (/\b(ceo|chief\s+executive|start\s+(my\s+)?own\s+(company|startup))\b/i.test(transcript))
+      fired.push(caps[0])
+    const first50words = words.slice(0, 50).join(' ')
+    if (/\b(don'?t\s+know|not\s+sure|hard\s+to\s+say|difficult\s+to\s+predict)\b/i.test(first50words))
+      fired.push(caps[1])
+    if (/\b(mba|master\s+of\s+business|b-?school)\b/i.test(transcript))
+      fired.push(caps[2])
+  }
+
+  if (categoryId === 7) {
+    if (!/\b(colleague|team|manager|stakeholder|involve|notify|inform|communicate|tell)\b/i.test(transcript))
+      fired.push(caps[1])
+    if (/^.{0,80}(sorry|apologize|apology|my\s+fault|i\s+apologise)/i.test(first80chars))
+      fired.push(caps[2])
+  }
+
+  if (categoryId === 8) {
+    if (/\b(don'?t\s+(really\s+)?have\s+any\s+failure|can'?t\s+think\s+of\s+any\s+failure|no\s+(real\s+)?failures?)\b/i.test(transcript))
+      fired.push(caps[0])
+    if (/\b(can'?t\s+think\s+of\s+(anything|any\s+example)|nothing\s+comes\s+to\s+mind|i\s+don'?t\s+have\s+any)\b/i.test(transcript))
+      fired.push(caps[1])
+    if (durationSeconds < 20)
+      fired.push(caps[3])
+  }
+
+  return fired.filter(Boolean)
+}
+
+// ── Step 3: Grammar pre-scan ──────────────────────────────────────────────────
+
+const GRAMMAR_PATTERNS: RegExp[] = [
+  /\bthey\s+was\b/i,
+  /\bwe\s+was\b/i,
+  /\bi\s+are\b/i,
+  /\bhe\s+have\b/i,
+  /\bshe\s+have\b/i,
+  /\bit\s+have\b/i,
+  /\byou\s+was\b/i,
+  /\byesterday\s+i\s+(go|come|do|make|take|give|have|am|is)\b/i,
+  /\bwill\s+went\b/i,
+  /\bhad\s+went\b/i,
+  /\bhave\s+went\b/i,
+  /\bhas\s+went\b/i,
+  /\b(\w{3,})\s+\1\b/i,
+  /\bis\s+is\b/i,
+]
+
+export function preCheckGrammar(transcript: string): boolean {
+  return !GRAMMAR_PATTERNS.some(p => p.test(transcript))
+}
+
+// ── Step 4: Coaching tip templates ────────────────────────────────────────────
+
+const COACHING_TEMPLATES: Record<number, Record<string, string>> = {
+  1: {
+    present:  "Write your current-role sentence as: '[Title] at [company], where I [specific skill] and [one achievement].' Rehearse it cold — it should take under 15 seconds.",
+    past:     "Pick one past experience and practise: what you did + what resulted in under 25 seconds. Time yourself until it is automatic.",
+    future:   "Research the exact role you are applying for and write one sentence connecting your goal directly to that job description's language. Generic future statements score zero.",
+  },
+  2: {
+    situation: "Drill this opening: 'In [month/year], at [company], on [project name], the situation was...' — practice until it comes out in under 10 seconds.",
+    task:      "Rewrite your task sentence to start with 'My specific responsibility was...' — never use 'we' in this sentence.",
+    action:    "Record yourself delivering 3 numbered personal steps in under 40 seconds: 'First I did X. Then I did Y. Finally I did Z.' Count every 'we' — each one costs points.",
+    result:    "Before each session, pick 3 past experiences and write the measurable outcome — a %, time saved, ranking, or revenue figure. If you cannot find a number, the story is not ready.",
+  },
+  3: {
+    name_it:    "Replace generic strength words. List 5 things a past manager or teacher said specifically to praise you — pick the most unusual one.",
+    prove_it:   "Your proof must be a mini STAR — situation, your action, measurable result — delivered in under 45 seconds.",
+    connect_it: "Write one sentence that names the job title and explains why this strength is critical for that specific role. Generic connections score zero.",
+  },
+  4: {
+    name_it:        "Choose a real weakness that has caused a documented problem — not perfectionism, not 'I work too hard'. Write down the last time it cost you something specific.",
+    show_awareness: "Your awareness section must name when, where, and what the concrete consequence was. Hypotheticals score zero.",
+    show_action:    "Name the exact course, book, habit, or system you have adopted. 'I am working on it' scores zero — 'I completed X / I now use Y system' scores full marks.",
+    show_progress:  "Prepare a recent positive signal — a situation where the weakness showed up and you handled it better than before.",
+  },
+  5: {
+    them:     "Research one specific decision the company made in the past 12 months — a product launch, pivot, or public statement — and name it by its exact title or date.",
+    you:      "Use the word 'because' to force the connection: 'I want to join because my [X] maps to your [Y].'",
+    together: "Write your closing as: 'This role specifically allows me to [your goal] while contributing to [their stated direction].' Generic closings score zero.",
+  },
+  6: {
+    near_term: "Write your near-term goal as: 'In this role, within 18 months, I want to [specific skill or ownership] by [specific activity].' Avoid 'I want to learn a lot.'",
+    long_term: "State a direction, not a title: 'I want to lead [type of work] in [domain]' — not 'I want to be X.'",
+    bridge:    "Your bridge sentence must name this exact role: 'This role gives me [specific exposure] that I cannot get elsewhere because [reason].'",
+  },
+  7: {
+    prioritise:  "Open every situational answer with your first concrete action, not a principle: 'I would first...' followed by a specific step — not 'I believe it is important to...'",
+    act:         "List your actions as numbered steps — at least two: 'First I would... then I would...' is the minimum structure.",
+    communicate: "Every situational answer must name at least one other person: 'I would notify my manager of...' is the minimum — no one mentioned scores zero.",
+    evaluate:    "End with a resolution signal: 'I would know it was handled when...' — one sentence is enough.",
+  },
+  8: {
+    pause:    "Practise a composure opener: 'That is a great question — let me think for a second.' This buys 3 seconds and signals confidence, not panic.",
+    reframe:  "Your failure must include: what happened (no softening), your specific role in it, and the real consequence. Deliver this in under 30 seconds without deflection.",
+    redirect: "Prepare a redirect for each past failure: 'What this taught me was [lesson] which I now apply by [specific behaviour].' End on the redirect, not the failure.",
+  },
+}
+
+export function selectCoachingTemplate(
+  categoryId: number,
+  componentScores: Record<string, AiFeedbackComponentScore>,
+): string | null {
+  const templates = COACHING_TEMPLATES[categoryId]
+  if (!templates) return null
+
+  const entries = Object.entries(componentScores)
+    .filter(([, c]) => c.max > 0)
+    .map(([key, c]) => ({ key, pct: c.score / c.max }))
+    .sort((a, b) => a.pct - b.pct)
+
+  if (entries.length < 1) return null
+
+  const lowest = entries[0]
+  if (lowest.pct >= 0.60) return null
+
+  // Only use template if lowest is clearly the weakest (gap > 5% to next)
+  if (entries.length > 1 && entries[1].pct - lowest.pct <= 0.05) return null
+
+  return templates[lowest.key] ?? null
+}
+
+// ── Prompt builder ────────────────────────────────────────────────────────────
 
 const SYSTEM_PROMPT = `You are a strict professional interview coach evaluating a candidate's answer.
 You do not give encouragement. You do not soften feedback. You tell the truth.
@@ -216,17 +409,34 @@ function buildUserPrompt(params: {
   rubric: object
   transcript: string
   deliveryTotal: number
+  preFiredCaps: string[]
+  skipGrammar: boolean
 }): string {
   const {
     questionText, categoryId, categoryName, format, rubric,
-    transcript, deliveryTotal,
+    transcript, deliveryTotal, preFiredCaps, skipGrammar,
   } = params
 
   const componentKeys = Object.keys((rubric as Record<string, Record<string, unknown>>).components ?? {})
   const exampleComponents = Object.fromEntries(
     componentKeys.map(k => [k, { score: 0, max: 0, feedback: 'specific feedback here' }])
   )
-  const contentMax = 100 - 30 // 30 pts reserved for delivery
+  const contentMax = 100 - 30
+
+  const preFiredBlock = preFiredCaps.length > 0
+    ? `\nThe following caps are already confirmed fired — return them verbatim in automatic_caps_applied plus any additional caps you detect:\n${preFiredCaps.map(c => `- ${c}`).join('\n')}\n`
+    : ''
+
+  const grammarInstruction = skipGrammar ? '' :
+    '\n6. Grammar: identify specific grammar/vocabulary errors (wrong tense, subject-verb disagreement, run-on sentences, awkward phrasing). Quote the error and explain it. If no errors, return empty issues array and score 10.'
+
+  const grammarJsonBlock = skipGrammar ? '' : `,
+  "grammar_feedback": {
+    "score": 8,
+    "max": 10,
+    "issues": ["Quote error from transcript — explain what is wrong and the correct form"],
+    "overall": "One sentence summary of grammar quality"
+  }`
 
   return `You are evaluating a Category ${categoryId} — ${categoryName} question.
 The format for this category is: ${format}
@@ -235,26 +445,20 @@ The scoring rubric is: ${JSON.stringify(rubric, null, 2)}
 Question asked: "${questionText}"
 
 NOTE: Delivery scores (filler words, WPM, duration) have already been computed = ${deliveryTotal}/30.
+Grade and final score are computed server-side — do NOT return "grade" or "score" fields.
 You are scoring CONTENT ONLY. Content components sum to ${contentMax} pts max.
-Final score = your content score + ${deliveryTotal} (delivery already computed).
-
+${preFiredBlock}
 Transcript:
 "${transcript}"
 
 SCORING INSTRUCTIONS:
 1. Score each content component 0 to its max using the rubric.
 2. Apply all automatic caps if triggered — list each that fired.
-3. content_score = sum of all component scores (max ${contentMax}).
-4. final_score = content_score + ${deliveryTotal}.
-5. Grade: 90–100=A | 75–89=B | 55–74=C | 35–54=D | 0–34=F
-6. For each component below maximum: quote the exact phrase from the transcript, explain what was wrong, give one concrete replacement sentence.
-7. Grammar: identify specific grammar/vocabulary errors in the transcript (wrong tense, subject-verb disagreement, run-on sentences, awkward phrasing). Be specific — quote the error and explain it. If no errors, return empty issues array and score 10.
-8. Ideal answer pointers: 3–4 bullet points showing exactly what a strong answer to THIS question would include. Be specific to the question, not generic advice.
+3. For each component below maximum: quote the exact phrase from the transcript, explain what was wrong, give one concrete replacement sentence.
+4. Ideal answer pointers: 3–4 bullet points showing exactly what a strong answer to THIS question would include. Be specific to the question, not generic advice.${grammarInstruction}
 
 Return ONLY this JSON (no other text):
 {
-  "grade": "C",
-  "score": 62,
   "component_scores": ${JSON.stringify(exampleComponents, null, 2)},
   "automatic_caps_applied": [],
   "biggest_gap": "Your [component] section [specific issue from transcript].",
@@ -264,13 +468,7 @@ Return ONLY this JSON (no other text):
     "Include: [key point specific to this question]",
     "Quantify: [what metric or detail to include]",
     "Close with: [how to land the answer]"
-  ],
-  "grammar_feedback": {
-    "score": 8,
-    "max": 10,
-    "issues": ["Quote error from transcript — explain what is wrong and the correct form"],
-    "overall": "One sentence summary of grammar quality"
-  },
+  ]${grammarJsonBlock},
   "coaching_tip": "One specific thing to practise before the next session"
 }`
 }
@@ -285,15 +483,16 @@ function isComponentScore(x: unknown): x is AiFeedbackComponentScore {
 
 function parseAndValidate(
   raw: string,
-  deliveryScores: AiFeedback['delivery_scores']
+  deliveryScores: AiFeedback['delivery_scores'],
+  overrides?: {
+    automatic_caps_applied?: string[]
+    grammar_feedback?: AiFeedback['grammar_feedback']
+  }
 ): AiFeedback | null {
   try {
     const parsed = JSON.parse(raw) as Record<string, unknown>
 
     if (
-      (parsed.grade !== 'A' && parsed.grade !== 'B' && parsed.grade !== 'C' &&
-       parsed.grade !== 'D' && parsed.grade !== 'F') ||
-      typeof parsed.score !== 'number' ||
       typeof parsed.component_scores !== 'object' || parsed.component_scores === null ||
       typeof parsed.biggest_gap !== 'string' ||
       typeof parsed.ideal_answer_opening !== 'string' ||
@@ -305,29 +504,45 @@ function parseAndValidate(
       if (!isComponentScore(v)) return null
     }
 
-    const gf = parsed.grammar_feedback as Record<string, unknown> | undefined
+    const componentScores = cs as Record<string, AiFeedbackComponentScore>
+
+    // Merge pre-fired caps with any AI-detected additional caps
+    const aiCaps: string[] = Array.isArray(parsed.automatic_caps_applied)
+      ? (parsed.automatic_caps_applied as string[]).filter(s => typeof s === 'string')
+      : []
+    const allCaps = overrides?.automatic_caps_applied
+      ? [...new Set([...overrides.automatic_caps_applied, ...aiCaps])]
+      : aiCaps
+
+    // Compute grade and score server-side
+    const { grade, score } = computeGradeAndScore(componentScores, deliveryScores.filler_words.score + deliveryScores.wpm.score + deliveryScores.duration.score, allCaps)
+
+    // Grammar: use override if pre-scanned clean, otherwise parse AI response
+    let grammarFeedback = overrides?.grammar_feedback
+    if (!grammarFeedback) {
+      const gf = parsed.grammar_feedback as Record<string, unknown> | undefined
+      if (gf && typeof gf.score === 'number' && typeof gf.max === 'number' && typeof gf.overall === 'string') {
+        grammarFeedback = {
+          score:   gf.score as number,
+          max:     gf.max as number,
+          issues:  Array.isArray(gf.issues) ? (gf.issues as unknown[]).filter((s): s is string => typeof s === 'string') : [],
+          overall: gf.overall as string,
+        }
+      }
+    }
 
     return {
-      grade:             parsed.grade as AiFeedback['grade'],
-      score:             parsed.score,
-      component_scores:  cs as Record<string, AiFeedbackComponentScore>,
+      grade,
+      score,
+      component_scores:  componentScores,
       delivery_scores:   deliveryScores,
-      automatic_caps_applied: Array.isArray(parsed.automatic_caps_applied)
-        ? (parsed.automatic_caps_applied as string[]).filter(s => typeof s === 'string')
-        : [],
+      automatic_caps_applied: allCaps,
       biggest_gap:          parsed.biggest_gap,
       ideal_answer_opening: parsed.ideal_answer_opening,
       ideal_answer_pointers: Array.isArray(parsed.ideal_answer_pointers)
         ? (parsed.ideal_answer_pointers as unknown[]).filter((s): s is string => typeof s === 'string')
         : undefined,
-      grammar_feedback: gf && typeof gf.score === 'number' && typeof gf.max === 'number' && typeof gf.overall === 'string'
-        ? {
-            score:   gf.score as number,
-            max:     gf.max as number,
-            issues:  Array.isArray(gf.issues) ? (gf.issues as unknown[]).filter((s): s is string => typeof s === 'string') : [],
-            overall: gf.overall as string,
-          }
-        : undefined,
+      grammar_feedback: grammarFeedback,
       coaching_tip: parsed.coaching_tip,
     }
   } catch {
@@ -353,15 +568,23 @@ export async function generateAnswerFeedback(params: {
   const rubric   = RUBRICS[categoryId] ?? { components: {}, automatic_caps: [] }
   const dur      = IDEAL_DURATION[categoryId] ?? { min: 60, max: 120, tooShort: 30, tooLong: 180 }
 
-  // Compute delivery scores locally — no AI needed
+  // Delivery scores — no AI needed
   const deliveryScores = computeDeliveryScores(fillerCount, wpm, durationSeconds, dur)
-  const deliveryTotal  = deliveryScores.filler_words.score + deliveryScores.wpm.score + deliveryScores.duration.score
+
+  // Step 2: Detect rule-based caps server-side
+  const preFiredCaps = detectAutomaticCaps(transcript, durationSeconds, categoryId)
+
+  // Step 3: Grammar pre-scan — skip AI grammar for clean transcripts
+  const grammarIsClean = preCheckGrammar(transcript)
+  const preGrammarFeedback: AiFeedback['grammar_feedback'] | undefined = grammarIsClean
+    ? { score: 10, max: 10, issues: [], overall: 'No grammar issues detected.' }
+    : undefined
 
   try {
     const model = genAI.getGenerativeModel({
       model: 'gemini-2.0-flash',
       systemInstruction: SYSTEM_PROMPT,
-      generationConfig: { temperature: 0, maxOutputTokens: 900 },
+      generationConfig: { temperature: 0, maxOutputTokens: 800 },
     })
 
     const result = await model.generateContent(buildUserPrompt({
@@ -371,13 +594,25 @@ export async function generateAnswerFeedback(params: {
       format:       category.format,
       rubric,
       transcript,
-      deliveryTotal,
+      deliveryTotal: deliveryScores.filler_words.score + deliveryScores.wpm.score + deliveryScores.duration.score,
+      preFiredCaps,
+      skipGrammar: grammarIsClean,
     }))
 
     const text = result.response.text().trim()
     const json = text.startsWith('```') ? text.replace(/^```[a-z]*\n?/i, '').replace(/```$/, '').trim() : text
 
-    return parseAndValidate(json, deliveryScores)
+    const feedback = parseAndValidate(json, deliveryScores, {
+      automatic_caps_applied: preFiredCaps.length > 0 ? preFiredCaps : undefined,
+      grammar_feedback:       preGrammarFeedback,
+    })
+
+    if (!feedback) return null
+
+    // Step 4: Override coaching tip with deterministic template if high-confidence
+    const templateTip = selectCoachingTemplate(categoryId, feedback.component_scores)
+    return templateTip ? { ...feedback, coaching_tip: templateTip } : feedback
+
   } catch (err) {
     console.error('[aifeedback] Gemini call failed:', err)
     return null
