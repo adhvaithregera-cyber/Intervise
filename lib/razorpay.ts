@@ -90,7 +90,13 @@ export async function cancelRazorpaySubscription(
  * Returns null if the plan ID is unknown.
  */
 export function planIdToTier(planId: string): 'student' | 'pro' | null {
-  if (planId === process.env.RAZORPAY_PLAN_ID_STUDENT) return 'student'
-  if (planId === process.env.RAZORPAY_PLAN_ID_PRO) return 'pro'
+  if (
+    planId === process.env.RAZORPAY_PLAN_ID_STUDENT ||
+    planId === process.env.RAZORPAY_PLAN_ID_STUDENT_QUARTERLY
+  ) return 'student'
+  if (
+    planId === process.env.RAZORPAY_PLAN_ID_PRO ||
+    planId === process.env.RAZORPAY_PLAN_ID_PRO_QUARTERLY
+  ) return 'pro'
   return null
 }
