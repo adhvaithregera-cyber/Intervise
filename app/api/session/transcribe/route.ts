@@ -293,6 +293,7 @@ async function handleAudioPath(
   const result = await transcribeAudio(audioFile)
 
   if (isTranscriptionError(result)) {
+    console.error('[transcribe] AssemblyAI failed:', result.reason)
     const { error: insertError } = await supabase.from('answers').insert({
       session_id,
       question_id,
