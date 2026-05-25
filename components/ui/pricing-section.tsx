@@ -15,7 +15,7 @@ const plans = [
     name: 'Free',
     description: 'Start practising today — no commitment, no card.',
     price: 0,
-    yearlyPrice: 0,
+    quarterlyPrice: 0,
     buttonText: 'Get started free',
     popular: false,
     accent: false,
@@ -36,7 +36,7 @@ const plans = [
     name: 'Student',
     description: 'For anyone serious about landing their next role.',
     price: 199,
-    yearlyPrice: 1990,
+    quarterlyPrice: 499,
     buttonText: 'Start Student plan',
     popular: true,
     accent: false,
@@ -56,8 +56,8 @@ const plans = [
   {
     name: 'Pro',
     description: 'Maximum prep power for placement season.',
-    price: 499,
-    yearlyPrice: 4990,
+    price: 349,
+    quarterlyPrice: 999,
     buttonText: 'Start Pro plan',
     popular: false,
     accent: false,
@@ -88,7 +88,7 @@ function PricingSwitch({ onSwitch }: { onSwitch: (value: string) => void }) {
         className="relative flex w-fit rounded-full p-1"
         style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(249,193,37,0.25)' }}
       >
-        {['Monthly', 'Yearly'].map((label, i) => {
+        {['Monthly', 'Quarterly'].map((label, i) => {
           const val = String(i)
           const active = selected === val
           return (
@@ -112,7 +112,7 @@ function PricingSwitch({ onSwitch }: { onSwitch: (value: string) => void }) {
                 {label}
                 {i === 1 && (
                   <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-white/70">
-                    Save 17%
+                    Save up to 16%
                   </span>
                 )}
               </span>
@@ -141,12 +141,12 @@ function FadeUp({ children, delay = 0, className }: { children: React.ReactNode;
 }
 
 export default function PricingSection({ userTier }: { userTier?: string | null } = {}) {
-  const [isYearly, setIsYearly] = useState(false)
+  const [isQuarterly, setIsQuarterly] = useState(false)
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null)
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
   const { startCheckout } = useRazorpayCheckout({ onError: setCheckoutError })
 
-  function togglePeriod(value: string) { setIsYearly(Number(value) === 1) }
+  function togglePeriod(value: string) { setIsQuarterly(Number(value) === 1) }
 
   async function handleCheckout(plan: 'student' | 'pro') {
     setCheckoutError(null)
@@ -253,11 +253,11 @@ export default function PricingSection({ userTier }: { userTier?: string | null 
                 <div className="mb-6 flex items-baseline gap-1">
                   <span className={cn('text-sm', plan.popular ? 'text-white/60' : 'text-white/40')}>₹</span>
                   <span className="text-5xl font-bold text-white">
-                    <NumberFlow value={isYearly ? plan.yearlyPrice : plan.price} />
+                    <NumberFlow value={isQuarterly ? plan.quarterlyPrice : plan.price} />
                   </span>
                   {plan.price > 0 && (
                     <span className={cn('text-sm', plan.popular ? 'text-white/60' : 'text-white/40')}>
-                      /{isYearly ? 'yr' : 'mo'}
+                      /{isQuarterly ? 'qtr' : 'mo'}
                     </span>
                   )}
                 </div>
