@@ -419,15 +419,53 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
                           <p className="text-xs text-amber-200/80 leading-relaxed">{fb.biggest_gap}</p>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {/* Ideal answer */}
+                        <div className="p-4" style={INNER_CARD}>
+                          <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-2">Ideal Answer</p>
+                          <p className="text-xs text-white/75 leading-relaxed italic mb-3">&ldquo;{fb.ideal_answer_opening}&rdquo;</p>
+                          {fb.ideal_answer_pointers?.length > 0 && (
+                            <ul className="space-y-1.5">
+                              {fb.ideal_answer_pointers.map((point: string, i: number) => (
+                                <li key={i} className="flex items-start gap-2">
+                                  <span className="mt-0.5 h-1.5 w-1.5 rounded-full bg-[#F9C125]/60 shrink-0" />
+                                  <span className="text-xs text-white/60 leading-relaxed">{point}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+
+                        {/* Grammar analysis */}
+                        {fb.grammar_feedback && (
                           <div className="p-4" style={INNER_CARD}>
-                            <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-2">Ideal Answer Opening</p>
-                            <p className="text-xs text-white/75 leading-relaxed italic">&ldquo;{fb.ideal_answer_opening}&rdquo;</p>
+                            <div className="flex items-center justify-between mb-2">
+                              <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60">Grammar</p>
+                              <span className="text-xs font-bold text-white">{fb.grammar_feedback.score}/{fb.grammar_feedback.max}</span>
+                            </div>
+                            <div className="h-1.5 w-full rounded-full bg-white/10 mb-3">
+                              <div
+                                className="h-1.5 rounded-full bg-[#F9C125]"
+                                style={{ width: `${Math.round((fb.grammar_feedback.score / fb.grammar_feedback.max) * 100)}%` }}
+                              />
+                            </div>
+                            <p className="text-xs text-white/60 mb-2">{fb.grammar_feedback.overall}</p>
+                            {fb.grammar_feedback.issues?.length > 0 && (
+                              <ul className="space-y-1.5">
+                                {fb.grammar_feedback.issues.map((issue: string, i: number) => (
+                                  <li key={i} className="flex items-start gap-2">
+                                    <span className="mt-0.5 text-red-400 text-[10px]">✕</span>
+                                    <span className="text-xs text-red-300/70 leading-relaxed">{issue}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
                           </div>
-                          <div className="p-4" style={INNER_CARD}>
-                            <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-2">Coaching Tip</p>
-                            <p className="text-xs text-white/75 leading-relaxed">{fb.coaching_tip}</p>
-                          </div>
+                        )}
+
+                        {/* Coaching tip */}
+                        <div className="p-4" style={INNER_CARD}>
+                          <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-2">Coaching Tip</p>
+                          <p className="text-xs text-white/75 leading-relaxed">{fb.coaching_tip}</p>
                         </div>
                       </div>
                     ) : (

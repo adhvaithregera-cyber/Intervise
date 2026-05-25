@@ -65,6 +65,8 @@ export type AiFeedback = {
   automatic_caps_applied: string[]
   biggest_gap: string
   ideal_answer_opening: string
+  ideal_answer_pointers?: string[]
+  grammar_feedback?: { score: number; max: number; issues: string[]; overall: string }
   coaching_tip: string
 }
 

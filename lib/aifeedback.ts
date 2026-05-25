@@ -205,6 +205,8 @@ SCORING INSTRUCTIONS:
 4. Final score = sum of content component scores + sum of delivery scores (max 100).
 5. Grade: 90–100=A | 75–89=B | 55–74=C | 35–54=D | 0–34=F
 6. For each component below maximum: quote the exact phrase from the transcript, explain what was wrong, give one concrete replacement sentence.
+7. Grammar: identify specific grammar/vocabulary errors in the transcript (wrong tense, subject-verb disagreement, run-on sentences, awkward phrasing). Be specific — quote the error and explain it. If no errors, return empty issues array and score 10.
+8. Ideal answer pointers: 3–4 bullet points showing exactly what a strong answer to THIS question would include. Be specific to the question, not generic advice.
 
 Return ONLY this JSON (no other text):
 {
@@ -219,6 +221,18 @@ Return ONLY this JSON (no other text):
   "automatic_caps_applied": [],
   "biggest_gap": "Your [component] section [specific issue from transcript].",
   "ideal_answer_opening": "First sentence of what a strong answer would look like",
+  "ideal_answer_pointers": [
+    "Open with: [specific opening for this question]",
+    "Include: [key point specific to this question]",
+    "Quantify: [what metric or detail to include]",
+    "Close with: [how to land the answer]"
+  ],
+  "grammar_feedback": {
+    "score": 8,
+    "max": 10,
+    "issues": ["Quote error from transcript — explain what is wrong and the correct form"],
+    "overall": "One sentence summary of grammar quality"
+  },
   "coaching_tip": "One specific thing to practise before the next session"
 }`
 }
@@ -261,6 +275,8 @@ function parseAndValidate(raw: string): AiFeedback | null {
       typeof dur?.score !== 'number' || typeof dur?.max !== 'number' || typeof dur?.seconds !== 'number' || typeof dur?.label !== 'string'
     ) return null
 
+    const gf = parsed.grammar_feedback as Record<string, unknown> | undefined
+
     return {
       grade:                parsed.grade as AiFeedback['grade'],
       score:                parsed.score,
@@ -275,6 +291,17 @@ function parseAndValidate(raw: string): AiFeedback | null {
         : [],
       biggest_gap:          parsed.biggest_gap,
       ideal_answer_opening: parsed.ideal_answer_opening,
+      ideal_answer_pointers: Array.isArray(parsed.ideal_answer_pointers)
+        ? (parsed.ideal_answer_pointers as unknown[]).filter((s): s is string => typeof s === 'string')
+        : undefined,
+      grammar_feedback: gf && typeof gf.score === 'number' && typeof gf.max === 'number' && typeof gf.overall === 'string'
+        ? {
+            score:   gf.score as number,
+            max:     gf.max as number,
+            issues:  Array.isArray(gf.issues) ? (gf.issues as unknown[]).filter((s): s is string => typeof s === 'string') : [],
+            overall: gf.overall as string,
+          }
+        : undefined,
       coaching_tip:         parsed.coaching_tip,
     }
   } catch {
