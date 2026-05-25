@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
 import { Navbar } from '@/components/layout/navbar'
 import PricingSection from '@/components/ui/pricing-section'
 import { InterviewComparison } from '@/components/ui/interview-comparison'
@@ -10,18 +9,7 @@ import { FinalCta } from '@/components/ui/final-cta'
 import { HeroSection } from '@/components/ui/hero-section'
 import { createClient } from '@/lib/supabase/server'
 
-export default async function LandingPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
-}) {
-  // Supabase sometimes redirects to the site URL root with ?code= instead of
-  // /auth/callback — forward it so the session is properly established.
-  const params = await searchParams
-  const code = typeof params.code === 'string' ? params.code : undefined
-  if (code) {
-    redirect(`/auth/callback?code=${encodeURIComponent(code)}`)
-  }
+export default async function LandingPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   let tier: string | null = null

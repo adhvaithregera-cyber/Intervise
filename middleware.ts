@@ -28,6 +28,15 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   const { pathname } = request.nextUrl
+
+  // Supabase sometimes sends ?code= to the site URL root — forward to /auth/callback
+  if (pathname === '/') {
+    const code = request.nextUrl.searchParams.get('code')
+    if (code) {
+      return NextResponse.redirect(new URL(`/auth/callback?code=${encodeURIComponent(code)}`, request.url))
+    }
+  }
+
   const isPublicPath   = pathname === '/' || pathname === '/login' || pathname === '/signup'
   const isAuthCallback = pathname.startsWith('/auth/')
   const isApiPath      = pathname.startsWith('/api/')
