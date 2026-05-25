@@ -18,9 +18,12 @@ type Question = {
   category_name: string
 }
 
-type StoredAnswer =
-  | { type: 'audio'; blob: Blob; duration: number; questionId: number; index: number }
-  | { type: 'text'; transcript: string; duration: number; questionId: number; index: number }
+type StoredAnswer = {
+  blob: Blob
+  duration: number
+  questionId: number
+  index: number
+}
 
 const glassCard = {
   backgroundColor: 'rgba(8,13,26,0.70)',
@@ -40,8 +43,6 @@ export default function LiveSessionPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [cameraStream, setCameraStream] = useState<MediaStream | null>(null)
 
-  // Shared refs
-  const tierRef = useRef<string>('free')
   const prepTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const answerTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const answerStartTimeRef = useRef<number>(0)
@@ -50,23 +51,15 @@ export default function LiveSessionPage() {
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const cameraStreamRef = useRef<MediaStream | null>(null)
 
-  // Audio path refs (Student/Pro)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
   const micStreamRef = useRef<MediaStream | null>(null)
   const mimeTypeRef = useRef<string | undefined>(undefined)
 
-  // Text path refs (Free)
-  const recognitionRef = useRef<SpeechRecognition | null>(null)
-  const recognitionManualStopRef = useRef(false)
-  const finalTranscriptRef = useRef('')
-  const interimTranscriptRef = useRef('')
-
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const sessionId = params.get('session_id')
     const q = params.get('q')
-    tierRef.current = params.get('tier') ?? 'free'
 
     if (!sessionId || !q) {
       setPhase('error')
@@ -88,38 +81,25 @@ export default function LiveSessionPage() {
       const sorted = questionIds.map(id => data.find(q => q.id === id)!).filter(Boolean)
       setQuestions(sorted as Question[])
 
-      if (tierRef.current === 'free') {
-        // Free path: check SpeechRecognition support
-        const SR = typeof window !== 'undefined'
-          ? (window.SpeechRecognition || (window as Window & { webkitSpeechRecognition?: typeof SpeechRecognition }).webkitSpeechRecognition)
-          : null
-        if (!SR) {
-          setPhase('error')
-          setErrorMessage('Your browser does not support speech recognition. Please use Chrome, Safari, or Edge for free sessions.')
-          return
-        }
-      } else {
-        // Paid path: request mic via MediaDevices
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-          micStreamRef.current = stream
-        } catch {
-          setPhase('error')
-          setErrorMessage('Microphone access is required to record answers.')
-          return
-        }
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+        micStreamRef.current = stream
+      } catch {
+        setPhase('error')
+        setErrorMessage('Microphone access is required to record answers.')
+        return
+      }
 
-        // Camera (optional, Coming Soon — will never be granted until feature launches)
-        try {
-          const perm = await navigator.permissions.query({ name: 'camera' as PermissionName })
-          if (perm.state === 'granted') {
-            const camStream = await navigator.mediaDevices.getUserMedia({ video: true })
-            setCameraStream(camStream)
-            cameraStreamRef.current = camStream
-          }
-        } catch {
-          // camera optional
+      // Camera (optional, Coming Soon)
+      try {
+        const perm = await navigator.permissions.query({ name: 'camera' as PermissionName })
+        if (perm.state === 'granted') {
+          const camStream = await navigator.mediaDevices.getUserMedia({ video: true })
+          setCameraStream(camStream)
+          cameraStreamRef.current = camStream
         }
+      } catch {
+        // camera optional
       }
 
       setPhase('prep')
@@ -133,10 +113,6 @@ export default function LiveSessionPage() {
       if (prepTimerRef.current) clearInterval(prepTimerRef.current)
       if (answerTimerRef.current) clearInterval(answerTimerRef.current)
       if (mediaRecorderRef.current?.state === 'recording') mediaRecorderRef.current.stop()
-      if (recognitionRef.current) {
-        recognitionManualStopRef.current = true
-        recognitionRef.current.stop()
-      }
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -163,95 +139,6 @@ export default function LiveSessionPage() {
   }, [cameraStream])
 
   function startRecording() {
-    if (tierRef.current === 'free') {
-      startRecordingFree()
-    } else {
-      startRecordingAudio()
-    }
-  }
-
-  // ── Free path: SpeechRecognition ─────────────────────────────────────────
-
-  function startRecordingFree() {
-    const SR = window.SpeechRecognition ||
-      (window as Window & { webkitSpeechRecognition?: typeof SpeechRecognition }).webkitSpeechRecognition
-    if (!SR) return
-
-    const recognition = new SR()
-    recognition.continuous = true
-    recognition.interimResults = true
-    recognition.lang = 'en-US'
-
-    finalTranscriptRef.current = ''
-    interimTranscriptRef.current = ''
-    recognitionManualStopRef.current = false
-
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
-      let interim = ''
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        if (event.results[i].isFinal) {
-          finalTranscriptRef.current += event.results[i][0].transcript + ' '
-        } else {
-          interim += event.results[i][0].transcript
-        }
-      }
-      interimTranscriptRef.current = interim
-    }
-
-    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-      if (event.error === 'not-allowed' || event.error === 'audio-capture') {
-        setPhase('error')
-        setErrorMessage('Microphone access is required. Please allow microphone access in your browser settings.')
-      }
-      // network/aborted errors are non-fatal — onend will fire and restart
-    }
-
-    recognition.onend = () => {
-      if (!recognitionManualStopRef.current) {
-        // Browser auto-stopped (silence timeout) — restart to keep recording
-        try { recognition.start() } catch { /* already stopped manually */ }
-        return
-      }
-      // Manual stop — combine final + any remaining interim as fallback
-      const transcript = (finalTranscriptRef.current + interimTranscriptRef.current).trim()
-      const elapsed = Math.round((Date.now() - answerStartTimeRef.current) / 1000)
-      storedAnswersRef.current.push({
-        type: 'text',
-        transcript,
-        duration: elapsed,
-        questionId: questions[currentIndex].id,
-        index: currentIndex + 1,
-      })
-      if (endingSessionRef.current) {
-        finishAndProcess()
-      } else {
-        setPhase('between')
-      }
-    }
-
-    recognition.start()
-    recognitionRef.current = recognition
-    answerStartTimeRef.current = Date.now()
-    setPhase('recording')
-
-    const timeLimit = questions[currentIndex]?.time_limit_seconds ?? 60
-    setAnswerTimeLeft(timeLimit)
-    const id = setInterval(() => {
-      setAnswerTimeLeft(prev => {
-        if (prev <= 1) {
-          clearInterval(id)
-          stopRecording()
-          return 0
-        }
-        return prev - 1
-      })
-    }, 1000)
-    answerTimerRef.current = id
-  }
-
-  // ── Audio path: MediaRecorder ─────────────────────────────────────────────
-
-  function startRecordingAudio() {
     if (!micStreamRef.current) return
     const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
       ? 'audio/webm;codecs=opus'
@@ -269,7 +156,6 @@ export default function LiveSessionPage() {
       const blob = new Blob(chunksRef.current, { type: mimeTypeRef.current ?? 'audio/webm' })
       const elapsed = Math.round((Date.now() - answerStartTimeRef.current) / 1000)
       storedAnswersRef.current.push({
-        type: 'audio',
         blob,
         duration: elapsed,
         questionId: questions[currentIndex].id,
@@ -301,20 +187,10 @@ export default function LiveSessionPage() {
     answerTimerRef.current = id
   }
 
-  // ── Shared stop ───────────────────────────────────────────────────────────
-
   function stopRecording() {
     if (answerTimerRef.current) clearInterval(answerTimerRef.current)
-    if (tierRef.current === 'free') {
-      if (recognitionRef.current) {
-        recognitionManualStopRef.current = true
-        recognitionRef.current.stop()
-        recognitionRef.current = null
-      }
-    } else {
-      if (mediaRecorderRef.current?.state === 'recording') {
-        mediaRecorderRef.current.stop()
-      }
+    if (mediaRecorderRef.current?.state === 'recording') {
+      mediaRecorderRef.current.stop()
     }
   }
 
@@ -331,9 +207,7 @@ export default function LiveSessionPage() {
   function endSession() {
     endingSessionRef.current = true
     if (prepTimerRef.current) clearInterval(prepTimerRef.current)
-    const isRecording = tierRef.current === 'free'
-      ? recognitionRef.current !== null
-      : mediaRecorderRef.current?.state === 'recording'
+    const isRecording = mediaRecorderRef.current?.state === 'recording'
     if (isRecording) {
       stopRecording()
     } else {
@@ -348,29 +222,13 @@ export default function LiveSessionPage() {
 
     for (const answer of storedAnswersRef.current) {
       try {
-        if (answer.type === 'audio') {
-          const formData = new FormData()
-          formData.append('audio', answer.blob, 'answer.webm')
-          formData.append('session_id', sessionId)
-          formData.append('question_id', String(answer.questionId))
-          formData.append('answer_index', String(answer.index))
-          formData.append('duration_seconds', String(answer.duration))
-          await fetch('/api/session/transcribe', { method: 'POST', body: formData })
-        } else {
-          const transcript = answer.transcript || 'No response recorded.'
-          const duration = Math.max(1, answer.duration)
-          await fetch('/api/session/transcribe', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              session_id: sessionId,
-              question_id: answer.questionId,
-              answer_index: answer.index,
-              duration_seconds: duration,
-              transcript,
-            }),
-          })
-        }
+        const formData = new FormData()
+        formData.append('audio', answer.blob, 'answer.webm')
+        formData.append('session_id', sessionId)
+        formData.append('question_id', String(answer.questionId))
+        formData.append('answer_index', String(answer.index))
+        formData.append('duration_seconds', String(answer.duration))
+        await fetch('/api/session/transcribe', { method: 'POST', body: formData })
       } catch {
         // continue even if one answer fails
       }
