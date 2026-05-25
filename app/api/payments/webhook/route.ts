@@ -8,6 +8,12 @@ import {
 // Razorpay requires the raw body for HMAC verification.
 // Do NOT call request.json() before request.text().
 export async function POST(request: NextRequest) {
+  const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET
+  if (!webhookSecret) {
+    console.error('[webhook] RAZORPAY_WEBHOOK_SECRET is not set — rejecting request')
+    return NextResponse.json({ error: 'Misconfigured' }, { status: 500 })
+  }
+
   const rawBody = await request.text()
   const sig = request.headers.get('x-razorpay-signature') ?? ''
 
@@ -15,7 +21,7 @@ export async function POST(request: NextRequest) {
     !verifyRazorpayWebhookSignature(
       rawBody,
       sig,
-      process.env.RAZORPAY_WEBHOOK_SECRET!
+      webhookSecret
     )
   ) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
@@ -53,14 +59,17 @@ export async function POST(request: NextRequest) {
       const tier = planIdToTier(planId)
       if (!tier) {
         console.error('[webhook] unknown plan_id on activation:', planId)
-        break
+        return NextResponse.json({ error: 'Unknown plan' }, { status: 500 })
       }
       const { error, count } = await supabase
         .from('profiles')
         .update({ tier, subscription_status: 'active', tier_expires_at: expires }, { count: 'exact' })
         .eq('razorpay_subscription_id', subscriptionId)
       if (error) console.error('[webhook] activated update error:', error.message)
-      if (!error && count === 0) console.error('[webhook] activated: no profile matched subscription_id', subscriptionId)
+      if (!error && count === 0) {
+        console.error('[webhook] activated: no profile matched subscription_id', subscriptionId)
+        return NextResponse.json({ error: 'Profile not found' }, { status: 500 })
+      }
       break
     }
 
@@ -96,7 +105,10 @@ export async function POST(request: NextRequest) {
         }, { count: 'exact' })
         .eq('razorpay_subscription_id', subscriptionId)
       if (error) console.error('[webhook] halted update error:', error.message)
-      if (!error && count === 0) console.error('[webhook] halted: no profile matched subscription_id', subscriptionId)
+      if (!error && count === 0) {
+        console.error('[webhook] halted: no profile matched subscription_id', subscriptionId)
+        return NextResponse.json({ error: 'Profile not found' }, { status: 500 })
+      }
       break
     }
 

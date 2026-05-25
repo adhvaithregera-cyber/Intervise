@@ -3,10 +3,10 @@ import { createHmac, timingSafeEqual } from 'crypto'
 const RAZORPAY_BASE = 'https://api.razorpay.com/v1'
 
 function razorpayAuth(): string {
-  const credentials = Buffer.from(
-    `${process.env.RAZORPAY_KEY_ID}:${process.env.RAZORPAY_KEY_SECRET}`
-  ).toString('base64')
-  return `Basic ${credentials}`
+  const keyId = process.env.RAZORPAY_KEY_ID
+  const keySecret = process.env.RAZORPAY_KEY_SECRET
+  if (!keyId || !keySecret) throw new Error('Razorpay credentials are not configured')
+  return `Basic ${Buffer.from(`${keyId}:${keySecret}`).toString('base64')}`
 }
 
 /**
