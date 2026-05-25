@@ -95,10 +95,13 @@ async function requestTranscription(
   }
 
   if (!response.ok) {
+    const body = await response.text().catch(() => '')
+    console.error('[assemblyai] transcript request failed', response.status, body)
     return { failed: true, reason: 'request_failed' }
   }
 
   const data = (await response.json()) as { id: string }
+  console.log('[assemblyai] transcript requested, id:', data.id)
   return data
 }
 

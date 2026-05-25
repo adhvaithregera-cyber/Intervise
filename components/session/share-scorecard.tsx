@@ -18,7 +18,7 @@ export function ShareScorecard({ sessionId }: ShareScorecardProps) {
     }
   }, [])
 
-  const url = `${window.location.origin}/api/og/scorecard/${sessionId}`
+  const url = typeof window !== 'undefined' ? `${window.location.origin}/api/og/scorecard/${sessionId}` : `/api/og/scorecard/${sessionId}`
 
   function handleOpen() {
     setOpen(true)
