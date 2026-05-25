@@ -57,8 +57,11 @@ export async function POST(request: Request) {
       // Cancel immediately so new subscription starts fresh
       await cancelRazorpaySubscription(profile.razorpay_subscription_id, false)
     } catch (err) {
-      // Non-fatal: log and continue — old subscription may already be gone
       console.error('[payments] pre-upgrade cancel failed:', err)
+      return NextResponse.json(
+        { error: 'Could not cancel existing subscription. Please contact support or try again.' },
+        { status: 500 }
+      )
     }
   }
 
