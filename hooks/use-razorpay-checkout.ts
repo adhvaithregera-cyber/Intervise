@@ -20,12 +20,12 @@ export function useRazorpayCheckout({ onError }: UseRazorpayCheckoutOptions = {}
   const router = useRouter()
 
   const startCheckout = useCallback(
-    async (plan: 'student' | 'pro') => {
+    async (plan: 'student' | 'pro', period: 'monthly' | 'quarterly' = 'monthly') => {
       // 1. Create subscription server-side
       const res = await fetch('/api/payments/create-subscription', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan }),
+        body: JSON.stringify({ plan, period }),
       })
 
       if (!res.ok) {
@@ -51,7 +51,9 @@ export function useRazorpayCheckout({ onError }: UseRazorpayCheckoutOptions = {}
 
       // 3. Open Razorpay modal
       const planLabel =
-        plan === 'student' ? 'Student Plan – ₹199/mo' : 'Pro Plan – ₹499/mo'
+        plan === 'student'
+          ? period === 'quarterly' ? 'Student Plan – ₹499/3 mo' : 'Student Plan – ₹199/mo'
+          : period === 'quarterly' ? 'Pro Plan – ₹999/3 mo'     : 'Pro Plan – ₹349/mo'
 
       const rzp = new window.Razorpay({
         key: key_id,

@@ -156,6 +156,7 @@ export const transcribeTextSchema = z.object({
 
 export const createSubscriptionSchema = z.object({
   plan: z.enum(['student', 'pro']),
+  period: z.enum(['monthly', 'quarterly']).default('monthly'),
 })
 
 export const cancelSubscriptionSchema = z.object({

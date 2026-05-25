@@ -35,11 +35,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'plan must be student or pro' }, { status: 400 })
   }
 
-  const { plan } = parsed.data
+  const { plan, period } = parsed.data
   const planId =
     plan === 'student'
-      ? process.env.RAZORPAY_PLAN_ID_STUDENT!
-      : process.env.RAZORPAY_PLAN_ID_PRO!
+      ? period === 'quarterly'
+        ? process.env.RAZORPAY_PLAN_ID_STUDENT_QUARTERLY!
+        : process.env.RAZORPAY_PLAN_ID_STUDENT!
+      : period === 'quarterly'
+        ? process.env.RAZORPAY_PLAN_ID_PRO_QUARTERLY!
+        : process.env.RAZORPAY_PLAN_ID_PRO!
 
   // ── Cancel existing active subscription (upgrade path) ────────────────────
   const serviceSupabase = createServiceClient()

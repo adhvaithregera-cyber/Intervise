@@ -151,7 +151,7 @@ export default function PricingSection({ userTier }: { userTier?: string | null 
   async function handleCheckout(plan: 'student' | 'pro') {
     setCheckoutError(null)
     setCheckoutLoading(plan)
-    await startCheckout(plan)
+    await startCheckout(plan, isQuarterly ? 'quarterly' : 'monthly')
     setCheckoutLoading(null)
   }
 
