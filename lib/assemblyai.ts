@@ -87,7 +87,6 @@ async function requestTranscription(
       },
       body: JSON.stringify({
         audio_url: audioUrl,
-        speech_model: 'nano',
       }),
     })
   } catch {
