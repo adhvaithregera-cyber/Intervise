@@ -88,7 +88,7 @@ function PricingSwitch({ onSwitch }: { onSwitch: (value: string) => void }) {
         className="relative flex w-fit rounded-full p-1"
         style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(249,193,37,0.25)' }}
       >
-        {['Monthly', 'Quarterly'].map((label, i) => {
+        {['Monthly', 'Quarterly (3 months)'].map((label, i) => {
           const val = String(i)
           const active = selected === val
           return (
