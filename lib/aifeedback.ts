@@ -1,7 +1,7 @@
-import Anthropic from '@anthropic-ai/sdk'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 import type { AiFeedback, AiFeedbackComponentScore } from '@/types/database'
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
 // ── Category metadata ─────────────────────────────────────────────────────────
 
@@ -48,16 +48,17 @@ const RUBRICS: Record<number, object> = {
   },
   2: {
     components: {
-      situation: { max: 10, scoring: "Context in 1–2 sentences. Specific time/place/project named. Vague ('once at work') or missing = 0pts." },
-      task:      { max: 15, scoring: "THEIR specific responsibility. Must use 'I' not 'we'. Team attribution = -10pts. Missing = 0pts." },
-      action:    { max: 25, scoring: "Most important component. Use 'I'. At least 2 specific personal steps. 'We' used >2 times = -15pts. One sentence or less = 0pts." },
-      result:    { max: 20, scoring: "What changed. Quantified if possible (%, time saved). No quantification attempt = -10pts. Missing or 'we got through it' = 0pts." },
+      situation: { max: 10, scoring: "Specific time, place, AND project/team named — all three required for full marks. Missing any one = -4pts. Vague context ('once at work', 'in a project') = 0pts. Situation longer than 2 sentences = -5pts." },
+      task:      { max: 15, scoring: "THEIR specific individual responsibility, stated with 'I'. Must distinguish their role from the team's role. 'We were responsible' or team framing = 0pts. 'I had to' without specifying what = -8pts. Missing = 0pts." },
+      action:    { max: 25, scoring: "Most important component. Must use 'I' throughout. Requires at least 3 distinct, specific personal steps. Each 'we' costs -6pts. Fewer than 3 steps = -15pts. Generic steps ('I communicated', 'I worked hard') without specifics = -10pts. One sentence or less = 0pts." },
+      result:    { max: 20, scoring: "Quantified outcome required for more than 10pts (%, time saved, money, ranking, or concrete metric). Vague positive outcome ('it went well', 'the team was happy', 'it was successful') = max 5pts. No quantification at all = max 10pts. Missing result or 'we got through it' = 0pts." },
     },
     automatic_caps: [
-      "'We' used more than 5 times in Action → cap at D (max total 54)",
+      "'We' used more than 3 times in Action → cap at D (max total 54)",
       "No Result stated → cap at D (max total 54)",
-      "Situation takes more than 40% of total answer → cap at C (max total 74)",
-      "Answer under 45 seconds → cap at F (max total 34)",
+      "No quantified result (no numbers, %, or concrete metric) → cap at C (max total 74)",
+      "Situation takes more than 30% of total answer → cap at C (max total 74)",
+      "Answer under 60 seconds → cap at F (max total 34)",
     ],
   },
   3: {
@@ -145,7 +146,7 @@ const RUBRICS: Record<number, object> = {
 const SYSTEM_PROMPT = `You are a strict professional interview coach evaluating a candidate's answer.
 You do not give encouragement. You do not soften feedback. You tell the truth.
 Your job is to score the answer and give specific, actionable feedback that references exact lines from the transcript.
-Default assumption: a typical unpractised candidate starts at C (55). Most real interview answers score C or D.
+Default assumption: a typical unpractised candidate starts at D (45). Most real interview answers score D or F. Only award B or above when the answer is genuinely strong with specific examples, quantified results, and correct structure. When in doubt, score lower.
 Return ONLY valid JSON — no markdown, no text outside the JSON object.`
 
 function buildUserPrompt(params: {
@@ -300,34 +301,32 @@ export async function generateAnswerFeedback(params: {
   const dur      = IDEAL_DURATION[categoryId] ?? { min: 60, max: 120, tooShort: 30, tooLong: 180 }
 
   try {
-    const message = await client.messages.create({
-      model:       'claude-haiku-4-5-20251001',
-      max_tokens:  1200,
-      temperature: 0,
-      system:      SYSTEM_PROMPT,
-      messages: [{
-        role: 'user',
-        content: buildUserPrompt({
-          questionText,
-          categoryId,
-          categoryName: category.name,
-          format:       category.format,
-          rubric,
-          transcript,
-          fillerCount,
-          wpm,
-          durationSeconds,
-          durationRange: dur,
-        }),
-      }],
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.0-flash',
+      systemInstruction: SYSTEM_PROMPT,
+      generationConfig: { temperature: 0, maxOutputTokens: 1200 },
     })
 
-    const content = message.content[0]
-    if (content.type !== 'text') return null
+    const result = await model.generateContent(buildUserPrompt({
+      questionText,
+      categoryId,
+      categoryName: category.name,
+      format:       category.format,
+      rubric,
+      transcript,
+      fillerCount,
+      wpm,
+      durationSeconds,
+      durationRange: dur,
+    }))
 
-    return parseAndValidate(content.text.trim())
+    const text = result.response.text().trim()
+    // Strip markdown code fences if present
+    const json = text.startsWith('```') ? text.replace(/^```[a-z]*\n?/i, '').replace(/```$/, '').trim() : text
+
+    return parseAndValidate(json)
   } catch (err) {
-    console.error('[aifeedback] Claude call failed:', err)
+    console.error('[aifeedback] Gemini call failed:', err)
     return null
   }
 }
