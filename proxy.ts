@@ -67,19 +67,9 @@ export async function middleware(request: NextRequest) {
     }
 
     // ── Tier-based URL access control ─────────────────────────────────────
-    // Prevent users from bypassing the UI by crafting URLs to gated features.
-    // The API routes enforce these too, but this guard gives a proper error page.
     if (profile) {
       const tier = profile.tier ?? 'free'
-
-      // Session pages require onboarding to be complete and a valid tier
       const isSessionPath = pathname.startsWith('/session/')
-
-      // /session/report/[id] — ownership is verified in the page's server component
-      // /session/briefing    — ownership is verified in the page's server component
-      // /session/live        — Supabase RLS prevents cross-user data access
-
-      // Block entirely unknown tiers from accessing session features
       const VALID_TIERS = new Set(['free', 'student', 'pro'])
       if (isSessionPath && !VALID_TIERS.has(tier)) {
         return NextResponse.redirect(new URL('/unauthorized', request.url))
