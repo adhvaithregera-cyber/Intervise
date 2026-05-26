@@ -71,7 +71,7 @@ export function HeroSection({ sessionHref }: { sessionHref: string }) {
           transition={{ duration: 0.7, delay: 0.55 }}
           className="mb-10 max-w-[500px] text-base leading-relaxed text-white/50 sm:text-lg"
         >
-          You practised for weeks. You knew your answers cold. Then the interviewer asked one question — and your mind went blank.
+          Experience the pressure of a real interview and find out exactly where your answers fall short.
         </motion.p>
 
         {/* Stat cards */}
