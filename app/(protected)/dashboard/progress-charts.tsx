@@ -47,6 +47,11 @@ const INNER_CARD = {
 const GRADE_VALUES: Record<string, number> = { A: 10, B: 8, C: 6, D: 4, F: 2 }
 const GRADE_LABELS: Record<number, string> = { 10: 'A', 8: 'B', 6: 'C', 4: 'D', 2: 'F' }
 
+// Show at most ~6 x-axis labels regardless of session count
+function xInterval(len: number): number {
+  return Math.max(0, Math.ceil(len / 6) - 1)
+}
+
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <p className="text-xs font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-3">
@@ -121,7 +126,7 @@ export const FillerBarChart = React.memo(function FillerBarChart({ data }: { dat
             tick={{ fill: 'rgba(249,193,37,0.75)', fontSize: 10, angle: -35, textAnchor: 'end' }}
             axisLine={false}
             tickLine={false}
-            interval={0}
+            interval={xInterval(data.length)}
             height={56}
           />
           <YAxis
@@ -173,7 +178,7 @@ export const WpmLineChart = React.memo(function WpmLineChart({ data }: { data: S
             tick={{ fill: 'rgba(249,193,37,0.75)', fontSize: 10, angle: -35, textAnchor: 'end' }}
             axisLine={false}
             tickLine={false}
-            interval={0}
+            interval={xInterval(filtered.length)}
             height={56}
           />
           <YAxis
@@ -268,7 +273,7 @@ export const GradeTrendChart = React.memo(function GradeTrendChart({ data }: { d
             tick={{ fill: 'rgba(249,193,37,0.75)', fontSize: 10, angle: -35, textAnchor: 'end' }}
             axisLine={false}
             tickLine={false}
-            interval={0}
+            interval={xInterval(chartData.length)}
             height={56}
           />
           <YAxis
