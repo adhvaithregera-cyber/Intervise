@@ -7,7 +7,7 @@ Desktop-first AI interview coaching web app. Users learn 8 structured answer for
 - Next.js 16 (App Router), TypeScript, Tailwind CSS v3
 - Supabase SSR auth + Postgres (`@supabase/ssr`)
 - AssemblyAI — post-answer audio transcription
-- Anthropic Claude API (`claude-haiku-4-5-20251001`) — AI feedback + question generation
+- Google Gemini API (`gemini-2.0-flash`) — AI feedback + question generation
 - MediaPipe FaceMesh — in-browser body language + expression analysis (Coming Soon, all tiers)
 - Razorpay — payments (scaffolded, inactive)
 - Resend — transactional email sequences
@@ -21,7 +21,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 SUPABASE_DB_PASSWORD=
 ASSEMBLYAI_API_KEY=
-ANTHROPIC_API_KEY=
+GEMINI_API_KEY=
 RESEND_API_KEY=
 NEXT_PUBLIC_HCAPTCHA_SITE_KEY=
 HCAPTCHA_SECRET_KEY=

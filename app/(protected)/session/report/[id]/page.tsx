@@ -48,18 +48,29 @@ function Stars({ count }: { count: number }) {
   )
 }
 
-function getWpmLabel(wpm: number | null): string {
+const WPM_IDEAL: Record<string, [number, number]> = {
+  easy:   [130, 170],
+  medium: [120, 160],
+  hard:   [100, 140],
+  mixed:  [120, 160],
+}
+
+function getWpmLabel(wpm: number | null, difficulty = 'medium'): string {
   if (wpm === null) return ''
-  if (wpm >= 120 && wpm <= 160) return 'Ideal'
-  if ((wpm >= 110 && wpm < 120) || (wpm > 160 && wpm <= 175)) return 'Slightly off'
-  if ((wpm >= 95 && wpm < 110) || (wpm > 175 && wpm <= 195)) return 'Too slow/fast'
+  const [lo, hi] = WPM_IDEAL[difficulty] ?? WPM_IDEAL.medium
+  const slack = Math.round((hi - lo) * 0.25)
+  if (wpm >= lo && wpm <= hi) return 'Ideal'
+  if ((wpm >= lo - slack && wpm < lo) || (wpm > hi && wpm <= hi + slack)) return 'Slightly off'
+  if ((wpm >= lo - slack * 2 && wpm < lo - slack) || (wpm > hi + slack && wpm <= hi + slack * 2)) return 'Too slow/fast'
   return 'Significantly off'
 }
 
-function getWpmColor(wpm: number | null): string {
+function getWpmColor(wpm: number | null, difficulty = 'medium'): string {
   if (wpm === null) return 'text-white/40'
-  if (wpm >= 120 && wpm <= 160) return 'text-green-400'
-  if ((wpm >= 110 && wpm < 120) || (wpm > 160 && wpm <= 175)) return 'text-amber-400'
+  const [lo, hi] = WPM_IDEAL[difficulty] ?? WPM_IDEAL.medium
+  const slack = Math.round((hi - lo) * 0.25)
+  if (wpm >= lo && wpm <= hi) return 'text-green-400'
+  if ((wpm >= lo - slack && wpm < lo) || (wpm > hi && wpm <= hi + slack)) return 'text-amber-400'
   return 'text-red-400'
 }
 
@@ -125,8 +136,10 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
     ? `${Math.floor(totalSeconds / 60)}m ${totalSeconds % 60}s`
     : `${totalSeconds}s`
 
-  const avgWpmLabel = getWpmLabel(avgWpm)
-  const avgWpmColor = getWpmColor(avgWpm)
+  const sessionDifficulty = session.difficulty ?? 'medium'
+  const avgWpmLabel = getWpmLabel(avgWpm, sessionDifficulty)
+  const avgWpmColor = getWpmColor(avgWpm, sessionDifficulty)
+  const [wpmLo, wpmHi] = WPM_IDEAL[sessionDifficulty] ?? WPM_IDEAL.medium
 
   return (
     <div className="max-w-6xl mx-auto pb-10">
@@ -183,7 +196,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
               {avgWpm !== null && (
                 <p className={cn('text-xs font-semibold mt-1', avgWpmColor)}>{avgWpmLabel}</p>
               )}
-              <p className="text-[10px] text-white/35 mt-1">Ideal: 120–160 wpm</p>
+              <p className="text-[10px] text-white/35 mt-1">Ideal: {wpmLo}–{wpmHi} wpm</p>
             </div>
 
             {/* Total fillers */}

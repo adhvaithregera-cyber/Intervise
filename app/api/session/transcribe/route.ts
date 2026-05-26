@@ -184,6 +184,7 @@ async function handleAudioPath(
         fillerCount:     analysis.fillerCount,
         wpm:             analysis.wpm,
         durationSeconds: duration_seconds,
+        difficulty:      sessionRow.difficulty,
       })
     : null
 

@@ -140,13 +140,35 @@ const RUBRICS: Record<number, object> = {
   },
 }
 
+// ── WPM ranges per difficulty ─────────────────────────────────────────────────
+// Hard/mixed: slower speech is expected — more thinking time needed.
+// Easy: slightly faster speech is acceptable.
+
+const WPM_RANGES: Record<string, { ideal: [number, number]; slightlyOff: [[number,number],[number,number]]; tooFarOff: [[number,number],[number,number]]; significantlyOff: [[number,number],[number,number]] }> = {
+  easy:   { ideal: [130,170], slightlyOff:  [[120,129],[171,185]], tooFarOff:  [[105,119],[186,205]], significantlyOff: [[90,104],[206,230]] },
+  medium: { ideal: [120,160], slightlyOff:  [[110,119],[161,175]], tooFarOff:  [[95,109], [176,195]], significantlyOff: [[80,94], [196,220]] },
+  hard:   { ideal: [100,140], slightlyOff:  [[90,99],  [141,155]], tooFarOff:  [[75,89],  [156,175]], significantlyOff: [[60,74], [176,200]] },
+  mixed:  { ideal: [120,160], slightlyOff:  [[110,119],[161,175]], tooFarOff:  [[95,109], [176,195]], significantlyOff: [[80,94], [196,220]] },
+}
+
+// ── Grade thresholds per difficulty ───────────────────────────────────────────
+// Harder difficulty = stricter thresholds to earn the same grade.
+
+const GRADE_THRESHOLDS: Record<string, { A: number; B: number; C: number; D: number }> = {
+  easy:   { A: 90, B: 75, C: 55, D: 35 },
+  medium: { A: 90, B: 77, C: 58, D: 37 },
+  hard:   { A: 90, B: 80, C: 62, D: 40 },
+  mixed:  { A: 90, B: 77, C: 58, D: 37 },
+}
+
 // ── Delivery score computation (no AI needed) ────────────────────────────────
 
 function computeDeliveryScores(
   fillerCount: number,
   wpm: number | null,
   durationSeconds: number,
-  dur: { min: number; max: number; tooShort: number; tooLong: number }
+  dur: { min: number; max: number; tooShort: number; tooLong: number },
+  difficulty = 'medium',
 ): AiFeedback['delivery_scores'] {
   let fillerScore: number
   if      (fillerCount === 0)  fillerScore = 10
@@ -156,17 +178,27 @@ function computeDeliveryScores(
   else if (fillerCount <= 10)  fillerScore = 1
   else                         fillerScore = 0
 
+  const ranges = WPM_RANGES[difficulty] ?? WPM_RANGES.medium
   let wpmScore: number
   let wpmLabel: string
   if (wpm === null) {
     wpmScore = 5; wpmLabel = 'Unavailable'
-  } else if (wpm >= 120 && wpm <= 160) {
+  } else if (wpm >= ranges.ideal[0] && wpm <= ranges.ideal[1]) {
     wpmScore = 10; wpmLabel = 'Ideal'
-  } else if ((wpm >= 110 && wpm < 120) || (wpm > 160 && wpm <= 175)) {
+  } else if (
+    (wpm >= ranges.slightlyOff[0][0] && wpm <= ranges.slightlyOff[0][1]) ||
+    (wpm >= ranges.slightlyOff[1][0] && wpm <= ranges.slightlyOff[1][1])
+  ) {
     wpmScore = 7; wpmLabel = 'Slightly off'
-  } else if ((wpm >= 95 && wpm < 110) || (wpm > 175 && wpm <= 195)) {
+  } else if (
+    (wpm >= ranges.tooFarOff[0][0] && wpm <= ranges.tooFarOff[0][1]) ||
+    (wpm >= ranges.tooFarOff[1][0] && wpm <= ranges.tooFarOff[1][1])
+  ) {
     wpmScore = 4; wpmLabel = 'Too fast/slow'
-  } else if ((wpm >= 80 && wpm < 95) || (wpm > 195 && wpm <= 220)) {
+  } else if (
+    (wpm >= ranges.significantlyOff[0][0] && wpm <= ranges.significantlyOff[0][1]) ||
+    (wpm >= ranges.significantlyOff[1][0] && wpm <= ranges.significantlyOff[1][1])
+  ) {
     wpmScore = 2; wpmLabel = 'Significantly off'
   } else {
     wpmScore = 0; wpmLabel = 'Significantly off'
@@ -202,6 +234,7 @@ export function computeGradeAndScore(
   componentScores: Record<string, AiFeedbackComponentScore>,
   deliveryTotal: number,
   appliedCaps: string[],
+  difficulty = 'medium',
 ): { grade: AiFeedback['grade']; score: number } {
   const contentTotal = Object.values(componentScores).reduce((sum, c) => sum + c.score, 0)
   let score = contentTotal + deliveryTotal
@@ -217,8 +250,9 @@ export function computeGradeAndScore(
     if (deductMatch) score = Math.max(0, score - Number(deductMatch[1]))
   }
 
+  const t = GRADE_THRESHOLDS[difficulty] ?? GRADE_THRESHOLDS.medium
   const grade: AiFeedback['grade'] =
-    score >= 90 ? 'A' : score >= 75 ? 'B' : score >= 55 ? 'C' : score >= 35 ? 'D' : 'F'
+    score >= t.A ? 'A' : score >= t.B ? 'B' : score >= t.C ? 'C' : score >= t.D ? 'D' : 'F'
 
   return { grade, score }
 }
@@ -484,6 +518,7 @@ function isComponentScore(x: unknown): x is AiFeedbackComponentScore {
 function parseAndValidate(
   raw: string,
   deliveryScores: AiFeedback['delivery_scores'],
+  difficulty: string,
   overrides?: {
     automatic_caps_applied?: string[]
     grammar_feedback?: AiFeedback['grammar_feedback']
@@ -515,7 +550,7 @@ function parseAndValidate(
       : aiCaps
 
     // Compute grade and score server-side
-    const { grade, score } = computeGradeAndScore(componentScores, deliveryScores.filler_words.score + deliveryScores.wpm.score + deliveryScores.duration.score, allCaps)
+    const { grade, score } = computeGradeAndScore(componentScores, deliveryScores.filler_words.score + deliveryScores.wpm.score + deliveryScores.duration.score, allCaps, difficulty)
 
     // Grammar: use override if pre-scanned clean, otherwise parse AI response
     let grammarFeedback = overrides?.grammar_feedback
@@ -561,15 +596,16 @@ export async function generateAnswerFeedback(params: {
   fillerCount: number
   wpm: number | null
   durationSeconds: number
+  difficulty?: string
 }): Promise<AiFeedback | null> {
-  const { questionText, categoryId, categoryName, transcript, fillerCount, wpm, durationSeconds } = params
+  const { questionText, categoryId, categoryName, transcript, fillerCount, wpm, durationSeconds, difficulty = 'medium' } = params
 
   const category = CATEGORIES[categoryId] ?? { name: categoryName, format: params.answerFormat }
   const rubric   = RUBRICS[categoryId] ?? { components: {}, automatic_caps: [] }
   const dur      = IDEAL_DURATION[categoryId] ?? { min: 60, max: 120, tooShort: 30, tooLong: 180 }
 
   // Delivery scores — no AI needed
-  const deliveryScores = computeDeliveryScores(fillerCount, wpm, durationSeconds, dur)
+  const deliveryScores = computeDeliveryScores(fillerCount, wpm, durationSeconds, dur, difficulty)
 
   // Step 2: Detect rule-based caps server-side
   const preFiredCaps = detectAutomaticCaps(transcript, durationSeconds, categoryId)
@@ -602,7 +638,7 @@ export async function generateAnswerFeedback(params: {
     const text = result.response.text().trim()
     const json = text.startsWith('```') ? text.replace(/^```[a-z]*\n?/i, '').replace(/```$/, '').trim() : text
 
-    const feedback = parseAndValidate(json, deliveryScores, {
+    const feedback = parseAndValidate(json, deliveryScores, difficulty, {
       automatic_caps_applied: preFiredCaps.length > 0 ? preFiredCaps : undefined,
       grammar_feedback:       preGrammarFeedback,
     })

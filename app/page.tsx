@@ -4,6 +4,7 @@ import PricingSection from '@/components/ui/pricing-section'
 import { InterviewComparison } from '@/components/ui/interview-comparison'
 import { CategoryStrip } from '@/components/ui/category-strip'
 import { HowItWorks } from '@/components/ui/how-it-works'
+import { AppPreview } from '@/components/ui/app-preview'
 import { ComparisonSection } from '@/components/ui/comparison-section'
 import { FinalCta } from '@/components/ui/final-cta'
 import { HeroSection } from '@/components/ui/hero-section'
@@ -32,6 +33,9 @@ export default async function LandingPage() {
 
       {/* Category strip — dark band */}
       <CategoryStrip />
+
+      {/* ── APP PREVIEW ── */}
+      <AppPreview />
 
       {/* ── HOW IT WORKS ── */}
       <HowItWorks />
