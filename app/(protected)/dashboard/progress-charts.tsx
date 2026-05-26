@@ -78,7 +78,7 @@ export const StatPills = React.memo(function StatPills({ summary }: { summary: P
             </span>
           )}
         </div>
-        <p className="text-[10px] text-white/30 mt-0.5">per session</p>
+        <p className="text-[10px] text-white/30 mt-0.5">per answer</p>
       </div>
 
       {/* Avg WPM */}
@@ -92,7 +92,7 @@ export const StatPills = React.memo(function StatPills({ summary }: { summary: P
             </span>
           )}
         </div>
-        <p className="text-[10px] text-white/30 mt-0.5">ideal: 110–160</p>
+        <p className="text-[10px] text-white/30 mt-0.5">words per minute</p>
       </div>
 
       {/* Best grade */}

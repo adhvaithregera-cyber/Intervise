@@ -94,18 +94,20 @@ export default async function DashboardPage({
       const questionMap = Object.fromEntries((questions ?? []).map((q) => [q.id, q.category_name]))
 
       // Per-session stats
-      const statsBySession: Record<string, { fillers: number; wpms: number[]; date: string }> = {}
+      const statsBySession: Record<string, { fillerTotal: number; fillerCount: number; wpms: number[]; date: string }> = {}
       for (const s of chartSessions ?? []) {
         const d = new Date(s.created_at)
         statsBySession[s.id] = {
           date: d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }),
-          fillers: 0,
+          fillerTotal: 0,
+          fillerCount: 0,
           wpms: [],
         }
       }
       for (const a of answers ?? []) {
         if (!statsBySession[a.session_id]) continue
-        statsBySession[a.session_id].fillers += a.filler_count ?? 0
+        statsBySession[a.session_id].fillerTotal += a.filler_count ?? 0
+        statsBySession[a.session_id].fillerCount += 1
         if (a.wpm !== null) statsBySession[a.session_id].wpms.push(a.wpm)
       }
 
@@ -118,12 +120,13 @@ export default async function DashboardPage({
 
       sessionStats = (chartSessions ?? []).map((s) => {
         const st = statsBySession[s.id]
+        const avgFillers = st.fillerCount > 0 ? Math.round(st.fillerTotal / st.fillerCount) : 0
         const avgWpm = st.wpms.length > 0
           ? Math.round(st.wpms.reduce((a, b) => a + b, 0) / st.wpms.length)
           : null
         const diff = s.difficulty.charAt(0).toUpperCase() + s.difficulty.slice(1)
         const label = (dateCount[st.date] ?? 1) > 1 ? `${diff} · ${st.date}` : st.date
-        return { label, date: st.date, isoDate: s.created_at, fillers: st.fillers, wpm: avgWpm, grade: s.overall_grade ?? null }
+        return { label, date: st.date, isoDate: s.created_at, fillers: avgFillers, wpm: avgWpm, grade: s.overall_grade ?? null }
       })
 
       // Per-category stats

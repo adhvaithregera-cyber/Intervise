@@ -12,10 +12,10 @@ const steps = [
       "Most candidates fail not because they don't know the answer — but because they don't know how to structure it. Every question in Intervise is paired with a briefing card that shows you exactly which format to use.",
     details: [
       'Choose from 8 proven frameworks: STAR, PACE, SOAR, CAR, PREP, and more',
-      'Each format has a colour-coded breakdown of what to say in each section',
+      'Each format has a structured breakdown of what to say in each section',
       'You see the briefing card before the timer starts — never cold-called',
     ],
-    formats: ['STAR', 'PACE', 'SOAR', 'CAR', 'PREP'],
+    formats: ['STAR', 'PACE'],
   },
   {
     number: '02',
@@ -25,7 +25,7 @@ const steps = [
       "A real interview doesn't pause for you to collect your thoughts. Intervise doesn't either. Once you start, a countdown timer runs. Your mic records. You answer as if the interviewer is right there.",
     details: [
       'Countdown timer matches the actual time limit for each question type',
-      'Your audio is recorded via your browser — nothing leaves your device during the session',
+      'Your audio is sent to AssemblyAI for transcription — no raw audio file is ever stored',
       'Tap Done early or let the timer run out — both trigger the next step',
     ],
     formats: [],
@@ -146,7 +146,7 @@ function StepCard({ step, index }: { step: (typeof steps)[number]; index: number
                 </span>
               ))}
               <span className="rounded-xl bg-white/10 px-3 py-1 text-xs font-semibold text-white/60">
-                +3 more
+                +6 more
               </span>
             </div>
           )}
