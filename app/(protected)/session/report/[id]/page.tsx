@@ -326,30 +326,14 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
 
           {!isStudent ? (
             <div className="relative rounded-xl overflow-hidden">
-              {/* Blurred fake content */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" style={{ filter: 'blur(6px)', userSelect: 'none', pointerEvents: 'none' }}>
-                {[1, 2].map((n) => (
-                  <div key={n} className="p-5" style={INNER_CARD}>
-                    <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-3">STAR Analysis — Q{n}</p>
-                    <div className="space-y-2 mb-4">
-                      {[['Situation', '2/3', '66%'], ['Task', '3/3', '100%'], ['Action', '1/3', '33%'], ['Result', '2/3', '66%']].map(([label, score, pct]) => (
-                        <div key={label}>
-                          <div className="flex justify-between mb-1">
-                            <span className="text-xs text-white/70">{label}</span>
-                            <span className="text-xs font-semibold text-[#F9C125]">{score}</span>
-                          </div>
-                          <div className="h-1.5 rounded-full" style={{ background: 'rgba(255,255,255,0.08)' }}>
-                            <div className="h-1.5 rounded-full bg-[#F9C125]" style={{ width: pct }} />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="border-t border-white/8 pt-3">
-                      <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-2">Ideal Answer</p>
-                      <p className="text-xs text-white/55 leading-relaxed">The situation involved a critical deadline where the team needed to deliver under pressure. I took ownership and coordinated with stakeholders to align on priorities before executing a revised plan that met the deadline...</p>
-                    </div>
-                  </div>
-                ))}
+              {/* Blurred placeholder image */}
+              <div style={{ filter: 'blur(6px)', userSelect: 'none', pointerEvents: 'none' }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/screenshots/ai-feedback.png"
+                  alt=""
+                  className="w-full rounded-xl object-cover"
+                />
               </div>
               {/* Lock overlay */}
               <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(8,13,26,0.55)' }}>
@@ -539,7 +523,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
                 </div>
               </div>
             ) : (
-              <Link href="/progress">
+              <Link href="/dashboard#progress">
                 <div className="p-6 text-center cursor-pointer hover:opacity-80 transition-opacity" style={INNER_CARD}>
                   <p className="text-white/60 text-sm">View your full progress dashboard →</p>
                 </div>

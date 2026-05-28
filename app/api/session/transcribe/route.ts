@@ -174,6 +174,8 @@ async function handleAudioPath(
     .eq('id', question_id)
     .single()
 
+  if (!question) console.error('[transcribe] question not found for id:', question_id)
+
   const aiFeedback = question
     ? await generateAnswerFeedback({
         questionText:    question.question_text,
@@ -187,6 +189,8 @@ async function handleAudioPath(
         difficulty:      sessionRow.difficulty,
       })
     : null
+
+  if (!aiFeedback) console.error('[transcribe] aiFeedback is null for question_id:', question_id)
 
   const { error: insertError } = await supabase.from('answers').insert({
     session_id,

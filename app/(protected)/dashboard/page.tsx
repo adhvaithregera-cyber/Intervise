@@ -279,7 +279,7 @@ export default async function DashboardPage({
 
       {/* ── Your Progress (Student+) ──────────────────────────────────────── */}
       <FadeIn>
-        <div className="p-6" style={CARD_STYLE}>
+        <div id="progress" className="p-6" style={CARD_STYLE}>
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-xl font-semibold text-white">Your Progress</h2>
             {!isStudent && (

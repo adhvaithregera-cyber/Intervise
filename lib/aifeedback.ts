@@ -532,11 +532,22 @@ function parseAndValidate(
       typeof parsed.biggest_gap !== 'string' ||
       typeof parsed.ideal_answer_opening !== 'string' ||
       typeof parsed.coaching_tip !== 'string'
-    ) return null
+    ) {
+      console.error('[aifeedback] parseAndValidate: top-level field missing or wrong type', {
+        component_scores: typeof parsed.component_scores,
+        biggest_gap: typeof parsed.biggest_gap,
+        ideal_answer_opening: typeof parsed.ideal_answer_opening,
+        coaching_tip: typeof parsed.coaching_tip,
+      })
+      return null
+    }
 
     const cs = parsed.component_scores as Record<string, unknown>
-    for (const v of Object.values(cs)) {
-      if (!isComponentScore(v)) return null
+    for (const [k, v] of Object.entries(cs)) {
+      if (!isComponentScore(v)) {
+        console.error('[aifeedback] parseAndValidate: invalid component_score for key', k, v)
+        return null
+      }
     }
 
     const componentScores = cs as Record<string, AiFeedbackComponentScore>
@@ -580,7 +591,8 @@ function parseAndValidate(
       grammar_feedback: grammarFeedback,
       coaching_tip: parsed.coaching_tip,
     }
-  } catch {
+  } catch (err) {
+    console.error('[aifeedback] parseAndValidate JSON.parse failed:', err, '\nraw:', raw.slice(0, 500))
     return null
   }
 }
@@ -620,7 +632,7 @@ export async function generateAnswerFeedback(params: {
     const model = genAI.getGenerativeModel({
       model: 'gemini-2.0-flash',
       systemInstruction: SYSTEM_PROMPT,
-      generationConfig: { temperature: 0, maxOutputTokens: 1500 },
+      generationConfig: { temperature: 0, maxOutputTokens: 2048 },
     })
 
     const result = await model.generateContent(buildUserPrompt({
