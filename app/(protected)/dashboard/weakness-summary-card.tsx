@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { RefreshCw } from 'lucide-react'
 
 interface Props {
@@ -33,6 +33,14 @@ export function WeaknessSummaryCard({ initialSummary, initialSummaryAt }: Props)
     }
   }
 
+  // Auto-generate on first load if no cached summary
+  useEffect(() => {
+    if (!initialSummary) {
+      generate()
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const formattedDate = summaryAt
     ? new Date(summaryAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
     : null
@@ -53,23 +61,23 @@ export function WeaknessSummaryCard({ initialSummary, initialSummaryAt }: Props)
           <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-1">Pro</p>
           <h2 className="text-xl font-semibold text-white">Your Biggest Weakness</h2>
         </div>
-        <button
-          onClick={generate}
-          disabled={loading}
-          className="shrink-0 flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold text-[#F9C125] transition-all hover:brightness-110 disabled:opacity-50"
-          style={{ border: '1px solid rgba(249,193,37,0.25)', backgroundColor: 'rgba(249,193,37,0.08)' }}
-          title="Regenerate"
-        >
-          <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
-          {summary ? 'Refresh' : 'Generate'}
-        </button>
+        {summary && (
+          <button
+            onClick={generate}
+            disabled={loading}
+            className="shrink-0 rounded-lg p-2 text-white/25 transition-all hover:text-white/50 disabled:opacity-40"
+            title="Refresh analysis"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+        )}
       </div>
 
       {error && (
         <p className="text-sm text-red-400/80">{error}</p>
       )}
 
-      {loading && !summary && (
+      {loading && (
         <div className="space-y-2 animate-pulse">
           <div className="h-3 rounded-full bg-white/10 w-full" />
           <div className="h-3 rounded-full bg-white/10 w-5/6" />
@@ -78,13 +86,7 @@ export function WeaknessSummaryCard({ initialSummary, initialSummaryAt }: Props)
         </div>
       )}
 
-      {!loading && !summary && !error && (
-        <p className="text-sm text-white/40">
-          Generate a personalised weakness summary based on your last 10 sessions.
-        </p>
-      )}
-
-      {summary && (
+      {!loading && summary && (
         <div
           className="p-4 rounded-xl"
           style={{
@@ -98,7 +100,7 @@ export function WeaknessSummaryCard({ initialSummary, initialSummaryAt }: Props)
       )}
 
       {formattedDate && !loading && (
-        <p className="text-[11px] text-white/25">Last generated {formattedDate}</p>
+        <p className="text-[11px] text-white/25">Last analysed {formattedDate}</p>
       )}
     </div>
   )
