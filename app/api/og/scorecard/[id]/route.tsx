@@ -6,7 +6,6 @@ import type { Difficulty } from '@/types/database'
 
 export const runtime = 'edge'
 
-// Load Inter at 700 and 900 weight from jsDelivr (stable CDN, no auth required)
 async function loadFonts(): Promise<{ bold: ArrayBuffer; black: ArrayBuffer }> {
   const [bold, black] = await Promise.all([
     fetch('https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.0/files/inter-latin-700-normal.woff', { cache: 'force-cache' as RequestCache }).then(r => r.arrayBuffer()),
@@ -61,20 +60,8 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
           backgroundColor: '#080d1a',
           position: 'relative',
           fontFamily: 'Inter',
-          overflow: 'hidden',
         }}
       >
-        {/* Dot grid — simulated with repeating background */}
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundImage: 'radial-gradient(rgba(255,255,255,0.06) 1.5px, transparent 1.5px)',
-            backgroundSize: '28px 28px',
-            display: 'flex',
-          }}
-        />
-
         {/* Ambient glow — grade colour at top-centre */}
         <div
           style={{
@@ -86,7 +73,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
             backgroundColor: style.color,
             borderRadius: '50%',
             filter: 'blur(140px)',
-            opacity: 0.14,
+            opacity: 0.18,
             display: 'flex',
           }}
         />
@@ -95,9 +82,12 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
         <div
           style={{
             position: 'absolute',
-            inset: 32,
-            border: '1px solid rgba(249,193,37,0.18)',
-            borderRadius: 24,
+            top: 32,
+            left: 32,
+            right: 32,
+            bottom: 32,
+            border: '1px solid rgba(249,193,37,0.22)',
+            borderRadius: 20,
             display: 'flex',
           }}
         />
@@ -123,9 +113,9 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
         <div
           style={{
             position: 'absolute',
-            top: 56,
+            top: 58,
             right: 72,
-            color: 'rgba(255,255,255,0.25)',
+            color: 'rgba(255,255,255,0.22)',
             fontSize: 18,
             fontWeight: 700,
             letterSpacing: 3,
@@ -144,12 +134,10 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
             justifyContent: 'center',
             width: '100%',
             height: '100%',
-            gap: 0,
           }}
         >
-          {/* Grade letter */}
+          {/* Grade letter with glow */}
           <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            {/* Soft glow behind letter */}
             <div
               style={{
                 position: 'absolute',
@@ -158,7 +146,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
                 backgroundColor: style.color,
                 borderRadius: '50%',
                 filter: 'blur(60px)',
-                opacity: 0.28,
+                opacity: 0.3,
                 display: 'flex',
               }}
             />
@@ -180,11 +168,11 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
           {stats.avgScore !== null && (
             <div
               style={{
-                color: 'rgba(255,255,255,0.35)',
+                color: 'rgba(255,255,255,0.30)',
                 fontSize: 22,
                 fontWeight: 700,
                 letterSpacing: 5,
-                marginTop: 8,
+                marginTop: 10,
                 display: 'flex',
               }}
             >
@@ -205,7 +193,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
           />
 
           {/* Stats row — WPM · FILLERS · DIFFICULTY */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
             <StatItem label="WPM"        value={stats.avgWpm !== null ? String(stats.avgWpm) : '—'} accent={style.color} />
             <Pipe />
             <StatItem label="FILLERS"    value={String(stats.totalFillers)} accent={style.color} />
@@ -214,14 +202,14 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
           </div>
         </div>
 
-        {/* @intervisehq — bottom-right */}
+        {/* intervise.in — bottom-right */}
         <div
           style={{
             position: 'absolute',
             bottom: 56,
             right: 72,
-            color: 'rgba(255,255,255,0.2)',
-            fontSize: 20,
+            color: 'rgba(255,255,255,0.18)',
+            fontSize: 18,
             fontWeight: 700,
             letterSpacing: 1,
             display: 'flex',
@@ -247,11 +235,11 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
 
 function StatItem({ label, value, accent }: { label: string; value: string; accent: string }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 220, gap: 8 }}>
-      <span style={{ color: 'rgba(255,255,255,0.85)', fontSize: 40, fontWeight: 700, display: 'flex', lineHeight: 1 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 220 }}>
+      <span style={{ color: 'rgba(255,255,255,0.88)', fontSize: 40, fontWeight: 700, display: 'flex', lineHeight: 1, marginBottom: 8 }}>
         {value}
       </span>
-      <span style={{ color: accent, fontSize: 13, fontWeight: 700, letterSpacing: 3, opacity: 0.6, display: 'flex' }}>
+      <span style={{ color: accent, fontSize: 13, fontWeight: 700, letterSpacing: 3, opacity: 0.55, display: 'flex' }}>
         {label}
       </span>
     </div>
