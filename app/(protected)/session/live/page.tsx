@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import posthog from 'posthog-js'
 
 type LivePhase =
   | 'loading'
@@ -102,6 +103,7 @@ export default function LiveSessionPage() {
         // camera optional
       }
 
+      posthog.capture('session_started', { session_id: sessionId, question_count: questionIds.length })
       setPhase('prep')
     }
 
@@ -239,6 +241,10 @@ export default function LiveSessionPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ session_id: sessionId }),
+      })
+      posthog.capture('session_completed', {
+        session_id: sessionId,
+        answers_recorded: storedAnswersRef.current.length,
       })
     } finally {
       router.push('/session/report/' + sessionId)

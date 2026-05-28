@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useRef, useState } from 'react'
+import posthog from 'posthog-js'
 import type HCaptchaType from '@hcaptcha/react-hcaptcha'
 import dynamic from 'next/dynamic'
 import { createClient } from '@/lib/supabase/client'
@@ -20,6 +21,7 @@ export default function SignupPage() {
   const captchaRef = useRef<HCaptchaType>(null)
 
   async function handleGoogleSignIn() {
+    posthog.capture('signup_initiated', { method: 'google' })
     const supabase = createClient()
     await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -47,9 +49,11 @@ export default function SignupPage() {
 
     if (data.session) {
       // Email confirmation disabled — user is immediately signed in
+      posthog.capture('signed_up', { method: 'email' })
       window.location.href = '/onboarding'
     } else {
       // Email confirmation required — show check-your-inbox screen
+      posthog.capture('signup_initiated', { method: 'email' })
       setConfirmed(true)
       setLoading(false)
     }

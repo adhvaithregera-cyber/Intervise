@@ -9,6 +9,7 @@ const NumberFlow = dynamic(() => import('@number-flow/react'), { ssr: false })
 import { Mic2, BarChart2, CalendarDays, CheckCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useRazorpayCheckout } from '@/hooks/use-razorpay-checkout'
+import posthog from 'posthog-js'
 
 const plans = [
   {
@@ -149,9 +150,11 @@ export default function PricingSection({ userTier }: { userTier?: string | null 
   function togglePeriod(value: string) { setIsQuarterly(Number(value) === 1) }
 
   async function handleCheckout(plan: 'student' | 'pro') {
+    const period = isQuarterly ? 'quarterly' : 'monthly'
+    posthog.capture('checkout_initiated', { plan, period })
     setCheckoutError(null)
     setCheckoutLoading(plan)
-    await startCheckout(plan, isQuarterly ? 'quarterly' : 'monthly')
+    await startCheckout(plan, period)
     setCheckoutLoading(null)
   }
 
