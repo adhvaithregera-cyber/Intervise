@@ -18,7 +18,6 @@ async function loadFonts(): Promise<{ bold: ArrayBuffer; black: ArrayBuffer }> {
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
 
-  // Service-role client — bypasses RLS, server-side only
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -31,23 +30,11 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   const { data: session, error: sessionError } = sessionResult
 
   if (sessionError) {
-    if (sessionError.code === 'PGRST116') {
-      return new Response('Not found', { status: 404 })
-    }
+    if (sessionError.code === 'PGRST116') return new Response('Not found', { status: 404 })
     return new Response(null, { status: 500 })
   }
-  if (!session) {
-    return new Response('Not found', { status: 404 })
-  }
-
-  if (answersResult.error) {
-    return new Response(null, { status: 500 })
-  }
-  const answers = answersResult.data
-
-  if (!session.overall_grade) {
-    return new Response('Not found', { status: 404 })
-  }
+  if (!session || !session.overall_grade) return new Response('Not found', { status: 404 })
+  if (answersResult.error) return new Response(null, { status: 500 })
 
   const fonts = await loadFonts().catch(() => null)
   if (!fonts) return new Response(null, { status: 503 })
@@ -62,7 +49,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   const difficulty = VALID_DIFFICULTIES.has(String(session.difficulty).toLowerCase())
     ? (session.difficulty as Difficulty)
     : ('medium' as Difficulty)
-  const stats = computeScorecardStats(difficulty, answers ?? [])
+  const stats = computeScorecardStats(difficulty, answersResult.data ?? [])
 
   return new ImageResponse(
     (
@@ -71,23 +58,46 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
           display: 'flex',
           width: '100%',
           height: '100%',
-          backgroundColor: style.bg,
+          backgroundColor: '#080d1a',
           position: 'relative',
           fontFamily: 'Inter',
+          overflow: 'hidden',
         }}
       >
-        {/* Radial glow at top-centre — blurred circle simulates gradient */}
+        {/* Dot grid — simulated with repeating background */}
         <div
           style={{
             position: 'absolute',
-            top: -120,
-            left: '30%',
-            width: '40%',
-            height: 420,
+            inset: 0,
+            backgroundImage: 'radial-gradient(rgba(255,255,255,0.06) 1.5px, transparent 1.5px)',
+            backgroundSize: '28px 28px',
+            display: 'flex',
+          }}
+        />
+
+        {/* Ambient glow — grade colour at top-centre */}
+        <div
+          style={{
+            position: 'absolute',
+            top: -160,
+            left: '20%',
+            width: '60%',
+            height: 480,
             backgroundColor: style.color,
             borderRadius: '50%',
-            filter: 'blur(130px)',
-            opacity: 0.18,
+            filter: 'blur(140px)',
+            opacity: 0.14,
+            display: 'flex',
+          }}
+        />
+
+        {/* Gold border frame */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 32,
+            border: '1px solid rgba(249,193,37,0.18)',
+            borderRadius: 24,
             display: 'flex',
           }}
         />
@@ -96,17 +106,33 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
         <div
           style={{
             position: 'absolute',
-            top: 52,
-            left: 64,
-            color: style.color,
-            fontSize: 22,
+            top: 56,
+            left: 72,
+            color: '#F9C125',
+            fontSize: 20,
             fontWeight: 700,
-            letterSpacing: 3,
-            opacity: 0.8,
+            letterSpacing: 4,
+            opacity: 0.7,
             display: 'flex',
           }}
         >
           INTERVISE
+        </div>
+
+        {/* Grade label — top-right */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 56,
+            right: 72,
+            color: 'rgba(255,255,255,0.25)',
+            fontSize: 18,
+            fontWeight: 700,
+            letterSpacing: 3,
+            display: 'flex',
+          }}
+        >
+          {style.label.toUpperCase()}
         </div>
 
         {/* Centre content */}
@@ -118,26 +144,27 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
             justifyContent: 'center',
             width: '100%',
             height: '100%',
+            gap: 0,
           }}
         >
-          {/* Grade letter with glow simulation */}
+          {/* Grade letter */}
           <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            {/* Glow blob behind grade */}
+            {/* Soft glow behind letter */}
             <div
               style={{
                 position: 'absolute',
-                width: 240,
-                height: 240,
+                width: 200,
+                height: 200,
                 backgroundColor: style.color,
                 borderRadius: '50%',
-                filter: 'blur(70px)',
-                opacity: 0.22,
+                filter: 'blur(60px)',
+                opacity: 0.28,
                 display: 'flex',
               }}
             />
             <div
               style={{
-                fontSize: 220,
+                fontSize: 200,
                 fontWeight: 900,
                 color: style.color,
                 lineHeight: 1,
@@ -149,43 +176,41 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
             </div>
           </div>
 
-          {/* Score line — only when AI feedback exists */}
+          {/* Score below grade */}
           {stats.avgScore !== null && (
             <div
               style={{
-                color: 'rgba(255,255,255,0.45)',
-                fontSize: 28,
+                color: 'rgba(255,255,255,0.35)',
+                fontSize: 22,
                 fontWeight: 700,
-                letterSpacing: 4,
-                marginTop: 12,
+                letterSpacing: 5,
+                marginTop: 8,
                 display: 'flex',
               }}
             >
-              {stats.avgScore} / 100 · {style.label.toUpperCase()}
+              {stats.avgScore} / 100
             </div>
           )}
 
-          {/* Divider */}
+          {/* Gold divider */}
           <div
             style={{
-              width: 480,
+              width: 520,
               height: 1,
-              backgroundColor: 'rgba(255,255,255,0.1)',
-              marginTop: stats.avgScore !== null ? 36 : 28,
-              marginBottom: 28,
+              backgroundColor: 'rgba(249,193,37,0.2)',
+              marginTop: stats.avgScore !== null ? 40 : 32,
+              marginBottom: 36,
               display: 'flex',
             }}
           />
 
-          {/* Stats row */}
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <StatItem label="WPM"        value={stats.avgWpm !== null ? String(stats.avgWpm) : '—'} />
+          {/* Stats row — WPM · FILLERS · DIFFICULTY */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
+            <StatItem label="WPM"        value={stats.avgWpm !== null ? String(stats.avgWpm) : '—'} accent={style.color} />
             <Pipe />
-            <StatItem label="FILLERS"    value={String(stats.totalFillers)} />
+            <StatItem label="FILLERS"    value={String(stats.totalFillers)} accent={style.color} />
             <Pipe />
-            <StatItem label="QUESTIONS"  value={String(stats.questionCount)} />
-            <Pipe />
-            <StatItem label="DIFFICULTY" value={stats.difficulty.toUpperCase()} />
+            <StatItem label="DIFFICULTY" value={stats.difficulty.toUpperCase()} accent={style.color} />
           </div>
         </div>
 
@@ -193,16 +218,16 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
         <div
           style={{
             position: 'absolute',
-            bottom: 52,
-            right: 64,
-            color: style.color,
-            opacity: 0.45,
-            fontSize: 24,
-            fontWeight: 600,
+            bottom: 56,
+            right: 72,
+            color: 'rgba(255,255,255,0.2)',
+            fontSize: 20,
+            fontWeight: 700,
+            letterSpacing: 1,
             display: 'flex',
           }}
         >
-          @intervisehq
+          intervise.in
         </div>
       </div>
     ),
@@ -220,13 +245,13 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   )
 }
 
-function StatItem({ label, value }: { label: string; value: string }) {
+function StatItem({ label, value, accent }: { label: string; value: string; accent: string }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 200 }}>
-      <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: 38, fontWeight: 700, display: 'flex' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 220, gap: 8 }}>
+      <span style={{ color: 'rgba(255,255,255,0.85)', fontSize: 40, fontWeight: 700, display: 'flex', lineHeight: 1 }}>
         {value}
       </span>
-      <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 18, letterSpacing: 3, display: 'flex' }}>
+      <span style={{ color: accent, fontSize: 13, fontWeight: 700, letterSpacing: 3, opacity: 0.6, display: 'flex' }}>
         {label}
       </span>
     </div>
@@ -238,8 +263,8 @@ function Pipe() {
     <div
       style={{
         width: 1,
-        height: 48,
-        backgroundColor: 'rgba(255,255,255,0.12)',
+        height: 52,
+        backgroundColor: 'rgba(249,193,37,0.15)',
         display: 'flex',
         flexShrink: 0,
       }}
