@@ -3,7 +3,7 @@ import Link from 'next/link'
 export default function NotFound() {
   return (
     <div
-      className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6"
+      className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4"
       style={{ backgroundColor: '#080d1a' }}
     >
       {/* Dot grid */}
@@ -15,134 +15,92 @@ export default function NotFound() {
         }}
       />
 
-      {/* Ghost 404 — editorial typographic background */}
+      {/* Ambient gold glow */}
       <div
-        className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center select-none overflow-hidden"
-        aria-hidden="true"
-      >
-        <span
-          style={{
-            fontSize: 'clamp(180px, 28vw, 280px)',
-            fontWeight: 700,
-            letterSpacing: '-0.06em',
-            lineHeight: 0.85,
-            color: 'rgba(249,193,37,0.055)',
-            fontFamily: 'inherit',
-          }}
-        >
-          404
-        </span>
-      </div>
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{
+          background:
+            'radial-gradient(ellipse 70% 55% at 50% 50%, rgba(249,193,37,0.06) 0%, transparent 70%)',
+        }}
+      />
 
-      {/* Content */}
-      <div className="relative z-10 w-full max-w-xl">
+      <div className="relative z-10 flex flex-col items-center text-center">
 
-        {/* "Off topic" — section label */}
+        {/* Giant 404 — editorial typographic centerpiece */}
+        <div className="relative mb-6 select-none">
+          <p
+            className="text-[clamp(120px,22vw,240px)] font-black leading-none tracking-tighter"
+            style={{
+              background:
+                'linear-gradient(to bottom, rgba(249,193,37,0.95) 0%, rgba(249,193,37,0.18) 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
+            404
+          </p>
+          {/* Depth layer */}
+          <p
+            className="absolute inset-0 -z-10 text-[clamp(120px,22vw,240px)] font-black leading-none tracking-tighter"
+            style={{
+              WebkitTextStroke: '1px rgba(249,193,37,0.08)',
+              WebkitTextFillColor: 'transparent',
+              transform: 'translate(3px, 3px)',
+            }}
+          >
+            404
+          </p>
+        </div>
+
+        {/* Label */}
         <p
-          style={{
-            fontSize: '11px',
-            fontWeight: 600,
-            letterSpacing: '0.22em',
-            textTransform: 'uppercase',
-            color: 'rgba(255,255,255,0.40)',
-            marginBottom: '18px',
-          }}
+          className="mb-4 text-[11px] font-semibold uppercase tracking-[0.25em]"
+          style={{ color: '#F9C125' }}
         >
-          Off topic
+          Page not found
         </p>
 
-        {/* Gold divider */}
-        <div
-          style={{
-            height: '1px',
-            width: '100%',
-            background: 'rgba(249,193,37,0.25)',
-            marginBottom: '32px',
-          }}
-        />
-
-        {/* Main headline */}
-        <h1
-          style={{
-            fontSize: 'clamp(32px, 6vw, 44px)',
-            fontWeight: 700,
-            letterSpacing: '-0.02em',
-            lineHeight: 1.1,
-            color: '#ffffff',
-            marginBottom: '4px',
-          }}
-        >
-          Good answer.
-        </h1>
-        <h1
-          style={{
-            fontSize: 'clamp(32px, 6vw, 44px)',
-            fontWeight: 700,
-            letterSpacing: '-0.02em',
-            lineHeight: 1.1,
-            color: '#ffffff',
-            marginBottom: '32px',
-          }}
-        >
-          Wrong question.
+        {/* Headline */}
+        <h1 className="mb-3 text-2xl font-bold text-white sm:text-3xl">
+          This one didn&apos;t make it through.
         </h1>
 
-        {/* Body */}
+        {/* Subtext */}
         <p
-          style={{
-            fontSize: '14px',
-            fontWeight: 400,
-            lineHeight: '1.7',
-            color: 'rgba(255,255,255,0.55)',
-            marginBottom: '40px',
-            maxWidth: '420px',
-          }}
+          className="mb-10 max-w-xs text-sm leading-relaxed"
+          style={{ color: 'rgba(255,255,255,0.42)' }}
         >
-          This page isn&apos;t in any Intervise module. The timer isn&apos;t
-          running yet — point us at a real question and we&apos;ll grade what
-          comes next.
+          The page you&apos;re looking for doesn&apos;t exist or has been moved. Let&apos;s get you back on track.
         </p>
 
         {/* CTAs */}
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row">
           <Link
-            href="/#app-preview"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '10px 24px',
-              borderRadius: '10px',
-              border: '1px solid rgba(255,255,255,0.15)',
-              fontSize: '13px',
-              fontWeight: 600,
-              color: 'rgba(255,255,255,0.70)',
-              textDecoration: 'none',
-              transition: 'border-color 0.2s, color 0.2s',
-            }}
+            href="/"
+            className="inline-flex items-center justify-center rounded-xl bg-[#F9C125] px-7 py-3 text-sm font-bold text-[#080d1a] shadow-lg shadow-[#F9C125]/15 transition-colors hover:bg-[#FFD24A]"
           >
-            Learn how it works
+            Back to home
           </Link>
           <Link
-            href="/session/setup"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '10px 24px',
-              borderRadius: '10px',
-              backgroundColor: '#F9C125',
-              fontSize: '13px',
-              fontWeight: 700,
-              color: 'rgb(26,18,6)',
-              textDecoration: 'none',
-              boxShadow: '0 4px 20px rgba(249,193,37,0.20)',
-            }}
+            href="/dashboard"
+            className="inline-flex items-center justify-center rounded-xl border border-white/15 px-7 py-3 text-sm font-semibold text-white/70 transition-colors hover:border-white/30 hover:text-white"
           >
-            Start a mock interview
+            Go to dashboard
           </Link>
         </div>
 
+        {/* Footer rule */}
+        <div
+          className="mt-14 h-px w-20"
+          style={{ background: 'rgba(249,193,37,0.18)' }}
+        />
+        <p
+          className="mt-4 text-[11px]"
+          style={{ color: 'rgba(255,255,255,0.22)' }}
+        >
+          Intervise · AI interview coaching
+        </p>
       </div>
     </div>
   )
