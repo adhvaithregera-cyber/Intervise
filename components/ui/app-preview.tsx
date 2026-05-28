@@ -157,6 +157,7 @@ export function AppPreview() {
           >
             From zero to feedback in under 20 minutes
           </motion.h2>
+          <p className="mt-2 text-xs text-white/30">No app to install. Just a browser and a microphone.</p>
         </div>
 
         {/* Workflow steps — 5 columns on desktop, 2 on mobile */}

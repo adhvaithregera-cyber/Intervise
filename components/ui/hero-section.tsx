@@ -125,7 +125,7 @@ export function HeroSection({ sessionHref }: { sessionHref: string }) {
           transition={{ duration: 0.6, delay: 0.9 }}
           className="mt-6 flex flex-wrap items-center justify-center gap-4"
         >
-          {['No card needed', '2 free sessions', 'Cancel anytime'].map((t) => (
+          {['No card needed', '2 free sessions', 'Cancel anytime', 'No download — works in your browser'].map((t) => (
             <span key={t} className="text-xs text-white/35">{t}</span>
           ))}
         </motion.div>
