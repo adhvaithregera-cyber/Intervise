@@ -5,6 +5,7 @@ import { FadeIn } from '@/components/ui/fade-in'
 import { ProfileEditCard } from './profile-edit-card'
 import { RecentSessionsList } from './recent-sessions-list'
 import { ChartsClient } from './charts-client'
+import { WeaknessSummaryCard } from './weakness-summary-card'
 import type { SessionStat, ProgressSummary } from './charts-client'
 import { Lock } from 'lucide-react'
 
@@ -276,6 +277,16 @@ export default async function DashboardPage({
           )}
         </div>
       </FadeIn>
+
+      {/* ── Weakness Summary (Pro only) ──────────────────────────────────── */}
+      {isPro && (
+        <FadeIn>
+          <WeaknessSummaryCard
+            initialSummary={profile.weakness_summary ?? null}
+            initialSummaryAt={profile.weakness_summary_at ?? null}
+          />
+        </FadeIn>
+      )}
 
       {/* ── Your Progress (Student+) ──────────────────────────────────────── */}
       <FadeIn>

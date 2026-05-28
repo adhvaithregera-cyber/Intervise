@@ -19,6 +19,9 @@ export type Profile = {
   razorpay_subscription_id: string | null
   subscription_status: 'active' | 'cancelled' | 'halted' | 'pending' | null
   tier_expires_at: string | null
+  weakness_summary: string | null
+  weakness_summary_at: string | null
+  weakness_summary_session_count: number | null
   created_at: string
 }
 

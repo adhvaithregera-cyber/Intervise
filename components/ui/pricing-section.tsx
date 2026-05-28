@@ -21,15 +21,16 @@ const plans = [
     accent: false,
     features: [
       { text: '2 sessions per month', icon: <CalendarDays size={18} /> },
-      { text: '3 questions per session', icon: <Mic2 size={18} /> },
+      { text: '5 questions per session', icon: <Mic2 size={18} /> },
       { text: 'Easy difficulty only', icon: <BarChart2 size={18} /> },
     ],
     includes: [
       'Free includes:',
-      'Filler word count',
-      'Words per minute score',
+      'Filler word count & breakdown',
+      'Words per minute (WPM) score',
       'Overall session grade (A–F)',
       'Identity & Behavioural questions only',
+      'AI feedback preview (blurred)',
     ],
   },
   {
@@ -42,15 +43,15 @@ const plans = [
     accent: false,
     features: [
       { text: '12 sessions per month', icon: <CalendarDays size={18} /> },
-      { text: '5 questions per session', icon: <Mic2 size={18} /> },
-      { text: 'All 8 question categories', icon: <BarChart2 size={18} /> },
+      { text: 'All 8 question categories', icon: <Mic2 size={18} /> },
+      { text: 'Easy + Medium difficulty', icon: <BarChart2 size={18} /> },
     ],
     includes: [
       'Everything in Free, plus:',
-      'Full filler word breakdown',
-      'Eye contact analysis (in-browser)',
-      'Behavioural + technical questions',
-      'All 8 answer formats',
+      'Full AI feedback — unblurred',
+      'Per-answer coaching tips & grammar check',
+      'Progress charts (fillers + WPM)',
+      '30-day session history',
     ],
   },
   {
@@ -63,15 +64,14 @@ const plans = [
     accent: false,
     features: [
       { text: '30 sessions per month', icon: <CalendarDays size={18} /> },
-      { text: '5–8 questions per session', icon: <Mic2 size={18} /> },
-      { text: 'All difficulty levels', icon: <BarChart2 size={18} /> },
+      { text: 'Hard + Mixed difficulty', icon: <BarChart2 size={18} /> },
+      { text: 'Unlimited session history', icon: <CalendarDays size={18} /> },
     ],
     includes: [
       'Everything in Student, plus:',
-      'Progress trend charts',
-      'Company-specific question sets',
-      'Eye contact trend over time',
-      'Priority support',
+      'Hard + Mixed difficulty questions',
+      'AI weakness summary',
+      'Unlimited session history',
     ],
   },
 ]
