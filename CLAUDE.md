@@ -7,8 +7,8 @@ Desktop-first AI interview coaching web app. Users learn 8 structured answer for
 - Next.js 16 (App Router), TypeScript, Tailwind CSS v3
 - Supabase SSR auth + Postgres (`@supabase/ssr`)
 - AssemblyAI — post-answer audio transcription
-- Google Gemini API (`gemini-2.0-flash`) — AI feedback + question generation
-- Razorpay — payments (scaffolded, inactive)
+- Google Gemini API (`gemini-2.5-flash`) — AI feedback + question generation
+- Razorpay — payments (live)
 - Vercel — hosting (`intervise.in`)
 - Vitest + @testing-library/react — unit tests
 
