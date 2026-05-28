@@ -160,7 +160,7 @@ export function AppPreview() {
           <p className="mt-2 text-xs text-white/30">No app to install. Just a browser and a microphone.</p>
         </div>
 
-        {/* Workflow steps — 5 columns on desktop, 2 on mobile */}
+        {/* Workflow steps — 5 columns on desktop, 2 on mobile (Briefing hidden below lg) */}
         <div className="mb-16 grid grid-cols-2 gap-6 sm:gap-8 lg:grid-cols-5">
           {WORKFLOW_STEPS.map((step, i) => (
             <motion.div
@@ -168,7 +168,7 @@ export function AppPreview() {
               initial={{ opacity: 0, y: 12 }}
               animate={headingInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.45, delay: 0.12 + i * 0.08, ease: 'easeOut' }}
-              className="flex flex-col gap-3"
+              className={step.label === 'Briefing' ? 'hidden lg:flex flex-col gap-3' : 'flex flex-col gap-3'}
             >
               <ScreenshotFrame src={step.src} alt={step.alt} delay={0.15 + i * 0.08} />
               <div>

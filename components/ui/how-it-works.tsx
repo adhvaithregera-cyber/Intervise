@@ -6,16 +6,16 @@ import { motion, useInView } from 'framer-motion'
 const steps = [
   {
     number: '01',
-    title: 'Learn the format',
-    tag: 'Before you speak',
+    title: 'Set up your session',
+    tag: 'Getting started',
     description:
-      "Most candidates fail not because they don't know the answer — but because they don't know how to structure it. Every question in Intervise is paired with a briefing card that shows you exactly which format to use.",
+      'Your dashboard shows how many sessions you have left this month and your recent performance. From there, pick a difficulty, grant mic access, and you\'re in.',
     details: [
-      'Choose from 8 proven frameworks: STAR, PACE, SOAR, CAR, PREP, and more',
-      'Each format has a structured breakdown of what to say in each section',
-      'You see the briefing card before the timer starts — never cold-called',
+      'Free plan: 2 sessions/month on Easy questions — Student and Pro unlock more sessions, categories, and difficulty levels',
+      'A briefing card walks you through the answer format before the timer starts — you\'re never cold-called',
+      'Questions are matched to your plan and the difficulty you selected',
     ],
-    formats: ['STAR', 'PACE'],
+    formats: [],
   },
   {
     number: '02',
