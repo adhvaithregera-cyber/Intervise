@@ -104,12 +104,12 @@ export function HeroSection({ sessionHref }: { sessionHref: string }) {
           transition={{ duration: 0.7, delay: 0.75 }}
           className="flex flex-col items-center gap-3 sm:flex-row"
         >
-          <Link
+          <a
             href="#app-preview"
             className="inline-flex w-full items-center justify-center rounded-xl bg-[#F9C125] px-8 py-3.5 text-base font-bold text-[#080d1a] shadow-lg shadow-[#F9C125]/15 hover:bg-[#F9C125]/90 transition-colors sm:w-auto"
           >
             See how it works
-          </Link>
+          </a>
           <Link
             href={sessionHref}
             className="inline-flex w-full items-center justify-center rounded-xl border border-white/15 px-8 py-3.5 text-base font-semibold text-white/80 hover:border-white/30 hover:text-white transition-colors sm:w-auto"
