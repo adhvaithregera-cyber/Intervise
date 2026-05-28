@@ -61,7 +61,8 @@ function getWpmLabel(wpm: number | null, difficulty = 'medium'): string {
   const slack = Math.round((hi - lo) * 0.25)
   if (wpm >= lo && wpm <= hi) return 'Ideal'
   if ((wpm >= lo - slack && wpm < lo) || (wpm > hi && wpm <= hi + slack)) return 'Slightly off'
-  if ((wpm >= lo - slack * 2 && wpm < lo - slack) || (wpm > hi + slack && wpm <= hi + slack * 2)) return 'Too slow/fast'
+  if (wpm >= lo - slack * 2 && wpm < lo - slack) return 'Too slow'
+  if (wpm > hi + slack && wpm <= hi + slack * 2) return 'Too fast'
   return 'Significantly off'
 }
 

@@ -190,11 +190,10 @@ function computeDeliveryScores(
     (wpm >= ranges.slightlyOff[1][0] && wpm <= ranges.slightlyOff[1][1])
   ) {
     wpmScore = 7; wpmLabel = 'Slightly off'
-  } else if (
-    (wpm >= ranges.tooFarOff[0][0] && wpm <= ranges.tooFarOff[0][1]) ||
-    (wpm >= ranges.tooFarOff[1][0] && wpm <= ranges.tooFarOff[1][1])
-  ) {
-    wpmScore = 4; wpmLabel = 'Too fast/slow'
+  } else if (wpm >= ranges.tooFarOff[0][0] && wpm <= ranges.tooFarOff[0][1]) {
+    wpmScore = 4; wpmLabel = 'Too slow'
+  } else if (wpm >= ranges.tooFarOff[1][0] && wpm <= ranges.tooFarOff[1][1]) {
+    wpmScore = 4; wpmLabel = 'Too fast'
   } else if (
     (wpm >= ranges.significantlyOff[0][0] && wpm <= ranges.significantlyOff[0][1]) ||
     (wpm >= ranges.significantlyOff[1][0] && wpm <= ranges.significantlyOff[1][1])
