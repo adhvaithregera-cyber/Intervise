@@ -3,7 +3,7 @@ import Link from 'next/link'
 export default function NotFound() {
   return (
     <div
-      className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4"
+      className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6"
       style={{ backgroundColor: '#080d1a' }}
     >
       {/* Dot grid */}
@@ -15,86 +15,134 @@ export default function NotFound() {
         }}
       />
 
-      {/* Ambient glow */}
+      {/* Ghost 404 — editorial typographic background */}
       <div
-        className="pointer-events-none absolute inset-0 z-0"
-        style={{
-          background: 'radial-gradient(ellipse 70% 50% at 50% 40%, rgba(249,193,37,0.06) 0%, transparent 70%)',
-        }}
-      />
-
-      {/* Large decorative 404 */}
-      <div
-        className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center select-none"
+        className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center select-none overflow-hidden"
         aria-hidden="true"
       >
         <span
-          className="font-black text-[clamp(160px,30vw,320px)] leading-none tracking-tighter"
-          style={{ color: 'rgba(249,193,37,0.04)' }}
+          style={{
+            fontSize: 'clamp(180px, 28vw, 280px)',
+            fontWeight: 700,
+            letterSpacing: '-0.06em',
+            lineHeight: 0.85,
+            color: 'rgba(249,193,37,0.055)',
+            fontFamily: 'inherit',
+          }}
         >
           404
         </span>
       </div>
 
-      {/* Card */}
-      <div
-        className="relative z-10 w-full max-w-lg text-center"
-      >
-        {/* HTTP status badge */}
-        <div className="mb-6 flex items-center justify-center gap-2">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/30">HTTP</span>
-          <span className="text-white/15">·</span>
-          <span
-            className="rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em]"
-            style={{ background: 'rgba(249,193,37,0.10)', color: '#F9C125' }}
-          >
-            404
-          </span>
-          <span className="text-white/15">·</span>
-          <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/30">Not Found</span>
-        </div>
+      {/* Content */}
+      <div className="relative z-10 w-full max-w-xl">
 
-        {/* Headline */}
-        <h1 className="mb-3 text-5xl font-black tracking-tight text-white sm:text-6xl">
-          Off topic.
-        </h1>
-
-        {/* Subheading */}
+        {/* "Off topic" — section label */}
         <p
-          className="mb-5 text-xl font-bold sm:text-2xl"
-          style={{ color: '#F9C125' }}
+          style={{
+            fontSize: '11px',
+            fontWeight: 600,
+            letterSpacing: '0.22em',
+            textTransform: 'uppercase',
+            color: 'rgba(255,255,255,0.40)',
+            marginBottom: '18px',
+          }}
         >
-          Good answer. Wrong question.
+          Off topic
         </p>
 
-        {/* Divider */}
+        {/* Gold divider */}
         <div
-          className="mx-auto mb-6 h-px w-16"
-          style={{ background: 'rgba(249,193,37,0.25)' }}
+          style={{
+            height: '1px',
+            width: '100%',
+            background: 'rgba(249,193,37,0.25)',
+            marginBottom: '32px',
+          }}
         />
 
-        {/* Body copy */}
-        <p className="mb-10 text-sm leading-relaxed text-white/50 sm:text-base">
-          This page isn&apos;t in any Intervise module. The timer isn&apos;t running yet
-          — point us at a real question and we&apos;ll grade what comes next.
+        {/* Main headline */}
+        <h1
+          style={{
+            fontSize: 'clamp(32px, 6vw, 44px)',
+            fontWeight: 700,
+            letterSpacing: '-0.02em',
+            lineHeight: 1.1,
+            color: '#ffffff',
+            marginBottom: '4px',
+          }}
+        >
+          Good answer.
+        </h1>
+        <h1
+          style={{
+            fontSize: 'clamp(32px, 6vw, 44px)',
+            fontWeight: 700,
+            letterSpacing: '-0.02em',
+            lineHeight: 1.1,
+            color: '#ffffff',
+            marginBottom: '32px',
+          }}
+        >
+          Wrong question.
+        </h1>
+
+        {/* Body */}
+        <p
+          style={{
+            fontSize: '14px',
+            fontWeight: 400,
+            lineHeight: '1.7',
+            color: 'rgba(255,255,255,0.55)',
+            marginBottom: '40px',
+            maxWidth: '420px',
+          }}
+        >
+          This page isn&apos;t in any Intervise module. The timer isn&apos;t
+          running yet — point us at a real question and we&apos;ll grade what
+          comes next.
         </p>
 
         {/* CTAs */}
-        <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+        <div className="flex flex-wrap gap-3">
           <Link
             href="/#app-preview"
-            className="inline-flex w-full items-center justify-center rounded-xl border border-white/15 px-7 py-3 text-sm font-semibold text-white/70 transition-colors hover:border-white/30 hover:text-white sm:w-auto"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '10px 24px',
+              borderRadius: '10px',
+              border: '1px solid rgba(255,255,255,0.15)',
+              fontSize: '13px',
+              fontWeight: 600,
+              color: 'rgba(255,255,255,0.70)',
+              textDecoration: 'none',
+              transition: 'border-color 0.2s, color 0.2s',
+            }}
           >
             Learn how it works
           </Link>
           <Link
             href="/session/setup"
-            className="inline-flex w-full items-center justify-center rounded-xl px-7 py-3 text-sm font-bold text-[#080d1a] shadow-lg shadow-[#F9C125]/15 transition-all hover:brightness-110 sm:w-auto"
-            style={{ backgroundColor: '#F9C125' }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '10px 24px',
+              borderRadius: '10px',
+              backgroundColor: '#F9C125',
+              fontSize: '13px',
+              fontWeight: 700,
+              color: 'rgb(26,18,6)',
+              textDecoration: 'none',
+              boxShadow: '0 4px 20px rgba(249,193,37,0.20)',
+            }}
           >
             Start a mock interview
           </Link>
         </div>
+
       </div>
     </div>
   )
