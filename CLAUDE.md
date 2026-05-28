@@ -78,6 +78,5 @@ Tables: `profiles`, `questions`, `sessions`, `answers`, `question_history`
 - Glassmorphic design: `rgba(8,13,26,0.75)` bg, `blur(20px)`, gold border `rgba(249,193,37,0.18)`
 
 ## Upcoming milestones
-- M6: Progress charts page (dedicated `/progress` route, Pro)
 - M7: Pro dashboard cards (weakness summary + weekly AI plan)
 - M9: Resume-based question gen (JD+CV, Pro)
