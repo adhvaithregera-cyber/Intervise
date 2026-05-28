@@ -629,9 +629,9 @@ export async function generateAnswerFeedback(params: {
 
   try {
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-2.0-flash-001',
       systemInstruction: SYSTEM_PROMPT,
-      generationConfig: { temperature: 0, maxOutputTokens: 4096, thinkingConfig: { thinkingBudget: 0 } },
+      generationConfig: { temperature: 0, maxOutputTokens: 4096 },
     })
 
     const result = await model.generateContent(buildUserPrompt({
