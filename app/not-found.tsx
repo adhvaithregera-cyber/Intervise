@@ -24,7 +24,7 @@ export default function NotFound() {
         }}
       />
 
-      <div className="relative z-10 flex flex-col items-center text-center">
+      <div className="relative z-10 flex w-full flex-col items-center text-center">
 
         {/* Giant 404 — editorial typographic centerpiece */}
         <div className="relative mb-6 select-none">
