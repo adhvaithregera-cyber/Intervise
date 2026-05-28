@@ -9,7 +9,7 @@ Desktop-first AI interview coaching web app. Users learn 8 structured answer for
 - AssemblyAI — post-answer audio transcription
 - Google Gemini API (`gemini-2.0-flash`) — AI feedback + question generation
 - Razorpay — payments (scaffolded, inactive)
-- Vercel — hosting (`intervise-ashen.vercel.app`)
+- Vercel — hosting (`intervise.in`)
 - Vitest + @testing-library/react — unit tests
 
 ## Key env vars (.env.local)
