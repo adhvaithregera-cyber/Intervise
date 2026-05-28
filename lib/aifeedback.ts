@@ -629,7 +629,7 @@ export async function generateAnswerFeedback(params: {
 
   try {
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash-lite',
+      model: 'gemini-2.5-flash',
       systemInstruction: SYSTEM_PROMPT,
       generationConfig: { temperature: 0, maxOutputTokens: 2048 },
     })
