@@ -105,7 +105,7 @@ export default async function BriefingPage({
           <div className="flex items-start gap-4 p-5" style={CARD_STYLE}>
             <BarChart2 className="mt-0.5 h-5 w-5 shrink-0 text-[#F9C125]" />
             <p className="text-sm text-white/80">
-              After each answer, you&apos;ll see your filler word count and speaking pace instantly.
+              When your session ends, your report shows your filler word count and speaking pace for every answer.
             </p>
           </div>
         </div>
