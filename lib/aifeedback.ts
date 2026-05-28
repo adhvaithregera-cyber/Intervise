@@ -524,7 +524,9 @@ function parseAndValidate(
   }
 ): AiFeedback | null {
   try {
-    const parsed = JSON.parse(raw) as Record<string, unknown>
+    // Sanitize unescaped newlines/tabs inside JSON strings (model artifact)
+    const sanitized = raw.replace(/[\r\n\t]/g, ' ')
+    const parsed = JSON.parse(sanitized) as Record<string, unknown>
 
     if (
       typeof parsed.component_scores !== 'object' || parsed.component_scores === null ||
@@ -629,7 +631,7 @@ export async function generateAnswerFeedback(params: {
 
   try {
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash-001',
+      model: 'gemini-2.5-flash',
       systemInstruction: SYSTEM_PROMPT,
       generationConfig: { temperature: 0, maxOutputTokens: 4096 },
     })
