@@ -105,7 +105,7 @@ export function HeroSection({ sessionHref }: { sessionHref: string }) {
           className="flex flex-col items-center gap-3 sm:flex-row"
         >
           <Link
-            href="#how-it-works"
+            href="#app-preview"
             className="inline-flex w-full items-center justify-center rounded-xl bg-[#F9C125] px-8 py-3.5 text-base font-bold text-[#080d1a] shadow-lg shadow-[#F9C125]/15 hover:bg-[#F9C125]/90 transition-colors sm:w-auto"
           >
             See how it works
