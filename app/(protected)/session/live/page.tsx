@@ -417,16 +417,10 @@ export default function LiveSessionPage() {
         {phase === 'transcribing' && (
           <div style={glassCard} className="p-10 text-center">
             <div className="generating-loader-wrapper">
-              <div className="generating-loader-text">
-                {'Generating transcript'.split('').map((char, i) => (
-                  <span key={i} className="generating-loader-letter">
-                    {char === ' ' ? '\u00A0' : char}
-                  </span>
-                ))}
-              </div>
+              <p className="text-white text-base font-semibold tracking-wide">Generating transcript</p>
               <div className="generating-loader-bar" />
             </div>
-            <p className="text-white/40 text-xs mt-6">Analysing all your answers...</p>
+            <p className="text-white/40 text-xs mt-4">Analysing all your answers...</p>
           </div>
         )}
       </div>
