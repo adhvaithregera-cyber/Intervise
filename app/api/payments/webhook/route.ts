@@ -90,7 +90,11 @@ export async function POST(request: NextRequest) {
         .select('id, tier')
         .single()
       if (error) console.error('[webhook] charged update error:', error.message)
-      if (!error && count === 0) console.error('[webhook] charged: no profile matched subscription_id', subscriptionId)
+      if (!error && count === 0) {
+        console.error('[webhook] charged: no profile matched subscription_id', subscriptionId)
+        await posthog.shutdown()
+        return NextResponse.json({ error: 'Profile not found' }, { status: 500 })
+      }
       if (profile?.id) {
         posthog.capture({ distinctId: profile.id, event: 'subscription_charged', properties: { tier: profile.tier } })
       }
