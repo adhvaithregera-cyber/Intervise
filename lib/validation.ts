@@ -147,7 +147,7 @@ export const transcribeFormSchema = z.object({
 export const transcribeTextSchema = z.object({
   session_id: z.string().uuid('session_id must be a valid UUID'),
   question_id: z.number().int().positive('question_id must be a positive integer'),
-  answer_index: z.number().int().positive('answer_index must be a positive integer'),
+  answer_index: z.number().int().min(1).max(10),
   duration_seconds: z.number().int().positive('duration_seconds must be a positive integer greater than 0'),
   transcript: z.string().min(1, 'transcript must not be empty').max(3000),
 })
