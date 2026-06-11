@@ -39,10 +39,9 @@ export async function middleware(request: NextRequest) {
 
   const isPublicPath   = pathname === '/' || pathname === '/login' || pathname === '/signup'
   const isAuthCallback = pathname.startsWith('/auth/')
-  const isApiPath      = pathname.startsWith('/api/')
 
-  // Allow auth callbacks and API routes through
-  if (isAuthCallback || isApiPath) return supabaseResponse
+  // Allow auth callbacks through
+  if (isAuthCallback) return supabaseResponse
 
   // Redirect unauthenticated users away from protected routes
   if (!user && !isPublicPath) {
@@ -82,6 +81,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|api/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
