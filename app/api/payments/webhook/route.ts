@@ -5,10 +5,18 @@ import {
   planIdToTier,
 } from '@/lib/razorpay'
 import { getPostHogClient } from '@/lib/posthog-server'
+import { checkRateLimit, RATE_LIMITS } from '@/lib/ratelimit'
 
 // Razorpay requires the raw body for HMAC verification.
 // Do NOT call request.json() before request.text().
 export async function POST(request: NextRequest) {
+  // ── Coarse IP-level rate limit — guards against flood of bad-sig requests ──
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
+  const rl = checkRateLimit(`webhook:${ip}`, RATE_LIMITS.webhook)
+  if (!rl.allowed) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
   const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET
   if (!webhookSecret) {
     console.error('[webhook] RAZORPAY_WEBHOOK_SECRET is not set — rejecting request')

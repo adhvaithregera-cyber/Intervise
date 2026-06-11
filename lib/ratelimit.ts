@@ -73,4 +73,6 @@ export const RATE_LIMITS = {
   profile:       { maxRequests: 40, windowMs: 10 * 60 * 1000 },  // 40 / 10 min
   /** Subscription creation — payment-sensitive, strict cap */
   createSubscription: { maxRequests: 3, windowMs: 60 * 60 * 1000 }, // 3 per hour
+  /** Razorpay webhook — coarse IP-level guard against flood of bad-sig requests */
+  webhook: { maxRequests: 60, windowMs: 60 * 1000 }, // 60 per minute per IP
 } as const satisfies Record<string, RateLimitConfig>
