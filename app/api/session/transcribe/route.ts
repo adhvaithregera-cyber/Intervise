@@ -43,8 +43,8 @@ async function handleAudioPath(
   supabase: SupabaseClient<Database>,
 ) {
   const { data: profile } = await supabase.from('profiles').select('tier').eq('id', userId).single()
-  if (!profile) {
-    return NextResponse.json({ error: 'Profile not found' }, { status: 403 })
+  if (!profile || profile.tier === 'free') {
+    return NextResponse.json({ error: 'Audio transcription requires a paid plan' }, { status: 403 })
   }
 
   let formData: FormData
