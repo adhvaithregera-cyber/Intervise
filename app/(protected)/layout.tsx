@@ -1,4 +1,9 @@
+import type { Metadata } from 'next'
 import { Navbar } from '@/components/layout/navbar'
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+}
 import { createClient } from '@/lib/supabase/server'
 import { PostHogIdentify } from '@/components/posthog-identify'
 

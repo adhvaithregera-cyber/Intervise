@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /session/
+Disallow: /profile
+Disallow: /onboarding
+Disallow: /upgrade
+Disallow: /api/
+
+Sitemap: https://intervise.in/sitemap.xml

@@ -1,4 +1,11 @@
+import type { Metadata } from 'next'
 import { Card } from '@/components/ui/card'
+
+export const metadata: Metadata = {
+  title: 'Terms of Service',
+  description: 'The terms and conditions for using Intervise.',
+  alternates: { canonical: 'https://intervise.in/terms' },
+}
 
 export default function TermsPage() {
   return (

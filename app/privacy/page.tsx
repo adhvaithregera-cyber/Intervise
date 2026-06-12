@@ -1,4 +1,11 @@
+import type { Metadata } from 'next'
 import { Card } from '@/components/ui/card'
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy',
+  description: 'How Intervise collects, stores, and protects your data.',
+  alternates: { canonical: 'https://intervise.in/privacy' },
+}
 
 export default function PrivacyPage() {
   return (

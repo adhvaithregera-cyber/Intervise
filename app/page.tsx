@@ -1,4 +1,11 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+  title: 'Intervise – AI Interview Coaching',
+  description: 'Practice interviews with structured answer formats. Get AI feedback on your speaking pace, filler words, and answer structure. Prepare smarter for your next job interview.',
+  alternates: { canonical: 'https://intervise.in' },
+}
 import { Navbar } from '@/components/layout/navbar'
 import PricingSection from '@/components/ui/pricing-section'
 import { InterviewComparison } from '@/components/ui/interview-comparison'
