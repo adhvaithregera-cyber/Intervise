@@ -201,20 +201,6 @@ export function ProfileForm({
             </div>
 
             <div>
-              <label className={labelClass}>Age</label>
-              <input
-                type="number"
-                min={1}
-                max={120}
-                placeholder="e.g. 22"
-                value={age}
-                onChange={(e) => setAge(e.target.value)}
-                className={inputClass}
-                style={inputStyle}
-              />
-            </div>
-
-            <div>
               <label className={labelClass}>Password</label>
               {!showPasswordForm ? (
                 <div className="flex items-center gap-3">
@@ -281,6 +267,20 @@ export function ProfileForm({
             Interview Preferences
           </h2>
           <div className="space-y-4">
+            <div>
+              <label className={labelClass}>Age</label>
+              <input
+                type="number"
+                min={16}
+                max={100}
+                placeholder="e.g. 22"
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
+                className={inputClass}
+                style={inputStyle}
+              />
+            </div>
+
             <div>
               <label className={labelClass}>Desired job / role</label>
               <input

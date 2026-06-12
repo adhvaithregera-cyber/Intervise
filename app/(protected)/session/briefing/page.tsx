@@ -76,7 +76,9 @@ export default async function BriefingPage({
         >
           <Badge variant="brand">{formatLabel}</Badge>
           <h2 className="text-lg font-semibold text-white">Your answer format</h2>
-          <p className="text-sm italic text-[#F9C125]/80">{firstQuestion.answer_format}</p>
+          <p className="text-sm italic text-[#F9C125]/80">
+            {firstQuestion.answer_format.replace(/\u0393\u00e5\u00c6/g, '\u2192')}
+          </p>
           <p className="text-sm text-white/80">
             Use this structure to organise your answer. Each of your {questions.length} questions will guide you through it.
           </p>
