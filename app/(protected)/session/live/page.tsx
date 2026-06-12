@@ -142,10 +142,14 @@ export default function LiveSessionPage() {
 
   function startRecording() {
     if (!micStreamRef.current) return
+    // Safari only supports audio/mp4 — must be checked explicitly.
+    // webm/ogg are Chrome/Firefox; mp4 is Safari on macOS/iOS.
     const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
       ? 'audio/webm;codecs=opus'
       : MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')
       ? 'audio/ogg;codecs=opus'
+      : MediaRecorder.isTypeSupported('audio/mp4')
+      ? 'audio/mp4'
       : undefined
     mimeTypeRef.current = mimeType
 
@@ -155,7 +159,10 @@ export default function LiveSessionPage() {
       if (e.data.size > 0) chunksRef.current.push(e.data)
     }
     recorder.onstop = () => {
-      const blob = new Blob(chunksRef.current, { type: mimeTypeRef.current ?? 'audio/webm' })
+      // Use the recorder's actual mimeType — never assume webm as fallback.
+      // recorder.mimeType reflects what the browser actually recorded.
+      const actualType = recorder.mimeType || mimeTypeRef.current || 'audio/mp4'
+      const blob = new Blob(chunksRef.current, { type: actualType })
       const elapsed = Math.round((Date.now() - answerStartTimeRef.current) / 1000)
       storedAnswersRef.current.push({
         blob,
@@ -225,7 +232,8 @@ export default function LiveSessionPage() {
     for (const answer of storedAnswersRef.current) {
       try {
         const formData = new FormData()
-        formData.append('audio', answer.blob, 'answer.webm')
+        const ext = answer.blob.type.includes('mp4') ? 'mp4' : answer.blob.type.includes('ogg') ? 'ogg' : 'webm'
+        formData.append('audio', answer.blob, `answer.${ext}`)
         formData.append('session_id', sessionId)
         formData.append('question_id', String(answer.questionId))
         formData.append('answer_index', String(answer.index))
