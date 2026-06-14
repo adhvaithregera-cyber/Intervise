@@ -15,6 +15,22 @@ const GRADE_COLOR: Record<string, string> = {
   F: 'text-red-400',
 }
 
+const GRADE_BG: Record<string, string> = {
+  A: 'rgba(74,222,128,0.15)',
+  B: 'rgba(249,193,37,0.15)',
+  C: 'rgba(251,146,60,0.12)',
+  D: 'rgba(249,115,22,0.12)',
+  F: 'rgba(239,68,68,0.15)',
+}
+
+const GRADE_BORDER: Record<string, string> = {
+  A: 'rgba(74,222,128,0.45)',
+  B: 'rgba(249,193,37,0.40)',
+  C: 'rgba(251,146,60,0.40)',
+  D: 'rgba(249,115,22,0.40)',
+  F: 'rgba(239,68,68,0.50)',
+}
+
 const GRADE_STARS: Record<string, number> = {
   A: 5, B: 4, C: 3, D: 2, F: 1,
 }
@@ -177,7 +193,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
             <div className="col-span-2 sm:col-span-2 flex items-center gap-4 p-4 sm:p-5" style={INNER_CARD}>
               <div
                 className={cn('flex-shrink-0 flex items-center justify-center w-20 h-20 rounded-2xl text-5xl font-black', gradeColor)}
-                style={{ background: 'rgba(249,193,37,0.08)', border: '1.5px solid rgba(249,193,37,0.25)' }}
+                style={{ background: GRADE_BG[grade] ?? 'rgba(255,255,255,0.05)', border: `2px solid ${GRADE_BORDER[grade] ?? 'rgba(255,255,255,0.15)'}` }}
               >
                 {grade}
               </div>
@@ -390,34 +406,25 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
                     </div>
 
                     {fb ? (
-                      <div className="space-y-3">
+                      <div className="space-y-4">
                         {/* Where they excelled */}
                         {excelledComponents.length > 0 && (
-                          <div className="flex items-start gap-2">
-                            <span className="mt-0.5 text-green-400 text-xs font-bold shrink-0">✓</span>
-                            <p className="text-xs text-white/65 leading-relaxed">
-                              <span className="text-green-400 font-semibold">Strong: </span>
-                              {excelledComponents.join(', ')}
-                            </p>
+                          <div className="space-y-1">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-green-400">✓ Strong</p>
+                            <p className="text-sm text-white/75 leading-relaxed">{excelledComponents.join(', ')}</p>
                           </div>
                         )}
 
                         {/* Biggest gap */}
-                        <div className="flex items-start gap-2">
-                          <span className="mt-0.5 text-amber-400 text-xs font-bold shrink-0">↑</span>
-                          <p className="text-xs text-white/65 leading-relaxed">
-                            <span className="text-amber-400 font-semibold">Improve: </span>
-                            {fb.biggest_gap}
-                          </p>
+                        <div className="space-y-1">
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-amber-400">↑ Improve</p>
+                          <p className="text-sm text-white/75 leading-relaxed">{fb.biggest_gap}</p>
                         </div>
 
                         {/* Coaching tip */}
-                        <div className="flex items-start gap-2">
-                          <span className="mt-0.5 text-[#F9C125] text-xs font-bold shrink-0">→</span>
-                          <p className="text-xs text-white/65 leading-relaxed">
-                            <span className="text-[#F9C125] font-semibold">Try this: </span>
-                            {fb.coaching_tip}
-                          </p>
+                        <div className="space-y-1">
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-[#F9C125]">→ Try this</p>
+                          <p className="text-sm text-white/75 leading-relaxed">{fb.coaching_tip}</p>
                         </div>
 
                         {/* Full details — collapsible */}

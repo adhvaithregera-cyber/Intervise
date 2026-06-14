@@ -48,9 +48,9 @@ export default async function BriefingPage({
   const formatLabel = firstQuestion.answer_format.split(' ')[0]
 
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-0">
+    <div className="max-w-2xl mx-auto px-4 sm:px-0 flex items-center min-h-[calc(100dvh-8rem)]">
       <div
-        className="rounded-2xl p-6 sm:p-8 space-y-8"
+        className="w-full rounded-2xl p-5 sm:p-6 space-y-4"
         style={{
           backgroundColor: 'rgba(8,13,26,0.75)',
           backdropFilter: 'blur(20px)',
@@ -61,8 +61,8 @@ export default async function BriefingPage({
       {/* Page header */}
       <FadeIn delay={0}>
         <div>
-          <h1 className="text-2xl font-bold text-white">Get ready for your session</h1>
-          <p className="mt-1 text-sm text-white/55 font-medium">
+          <h1 className="text-xl font-bold text-white">Get ready for your session</h1>
+          <p className="mt-0.5 text-sm text-white/55 font-medium">
             {questions.length} questions · ~{Math.ceil(questions.length * 1.5)} minutes
           </p>
         </div>
@@ -71,15 +71,15 @@ export default async function BriefingPage({
       {/* Format briefing card */}
       <FadeIn delay={0.08}>
         <div
-          className="space-y-3 p-6"
+          className="space-y-2 p-4"
           style={{ ...CARD_STYLE, borderLeft: '3px solid #F9C125' }}
         >
           <Badge variant="brand">{formatLabel}</Badge>
-          <h2 className="text-lg font-semibold text-white">Your answer format</h2>
+          <h2 className="text-sm font-semibold text-white">Your answer format</h2>
           <p className="text-sm italic text-[#F9C125]/80">
             {firstQuestion.answer_format.replace(/\u0393\u00e5\u00c6/g, '\u2192')}
           </p>
-          <p className="text-sm text-white/80">
+          <p className="text-sm text-white/70">
             Use this structure to organise your answer. Each of your {questions.length} questions will guide you through it.
           </p>
         </div>
@@ -87,26 +87,26 @@ export default async function BriefingPage({
 
       {/* What to expect */}
       <FadeIn delay={0.16}>
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-white">What to expect</h2>
+        <div className="space-y-2">
+          <h2 className="text-sm font-semibold text-white">What to expect</h2>
 
-          <div className="flex items-start gap-4 p-5" style={CARD_STYLE}>
-            <Clock className="mt-0.5 h-5 w-5 shrink-0 text-[#F9C125]" />
-            <p className="text-sm text-white/80">
+          <div className="flex items-start gap-3 p-3.5" style={CARD_STYLE}>
+            <Clock className="mt-0.5 h-4 w-4 shrink-0 text-[#F9C125]" />
+            <p className="text-sm text-white/70">
               You&apos;ll have 5 seconds to read each question before recording starts automatically.
             </p>
           </div>
 
-          <div className="flex items-start gap-4 p-5" style={CARD_STYLE}>
-            <Mic className="mt-0.5 h-5 w-5 shrink-0 text-[#F9C125]" />
-            <p className="text-sm text-white/80">
+          <div className="flex items-start gap-3 p-3.5" style={CARD_STYLE}>
+            <Mic className="mt-0.5 h-4 w-4 shrink-0 text-[#F9C125]" />
+            <p className="text-sm text-white/70">
               Recording stops when the timer runs out. You can also press &apos;Done&apos; at any time to stop early.
             </p>
           </div>
 
-          <div className="flex items-start gap-4 p-5" style={CARD_STYLE}>
-            <BarChart2 className="mt-0.5 h-5 w-5 shrink-0 text-[#F9C125]" />
-            <p className="text-sm text-white/80">
+          <div className="flex items-start gap-3 p-3.5" style={CARD_STYLE}>
+            <BarChart2 className="mt-0.5 h-4 w-4 shrink-0 text-[#F9C125]" />
+            <p className="text-sm text-white/70">
               When your session ends, your report shows your filler word count and speaking pace for every answer.
             </p>
           </div>
@@ -117,7 +117,7 @@ export default async function BriefingPage({
       <FadeIn delay={0.24}>
         <div>
           <Link href={`/session/live?session_id=${sessionId}&q=${questionIds}&tier=${tier}`} className="block w-full sm:w-auto sm:inline-block">
-            <button className="w-full sm:w-auto bg-[#F9C125] text-[#080d1a] font-bold rounded-xl px-8 py-3.5 text-base shadow-lg shadow-[#F9C125]/25 hover:brightness-110 transition-all">
+            <button className="w-full sm:w-auto bg-[#F9C125] text-[#080d1a] font-bold rounded-xl px-8 py-3 text-base shadow-lg shadow-[#F9C125]/25 hover:brightness-110 transition-all">
               Start Interview
             </button>
           </Link>

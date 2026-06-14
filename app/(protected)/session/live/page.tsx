@@ -264,19 +264,19 @@ export default function LiveSessionPage() {
   const timerPct = q ? (answerTimeLeft / q.time_limit_seconds) * 100 : 100
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
+    <div className="flex min-h-[calc(100dvh-4rem)] items-center justify-center px-4 py-4">
       <div className="w-full max-w-2xl">
 
         {/* Loading */}
         {phase === 'loading' && (
-          <div style={glassCard} className="p-10 text-center">
+          <div style={glassCard} className="p-8 text-center">
             <p className="text-white/70 text-lg">Loading your session...</p>
           </div>
         )}
 
         {/* Error */}
         {phase === 'error' && (
-          <div style={glassCard} className="p-10 text-center">
+          <div style={glassCard} className="p-8 text-center">
             <p className="text-white text-lg mb-6">{errorMessage}</p>
             <button
               onClick={() => router.push('/session/setup')}
@@ -289,25 +289,25 @@ export default function LiveSessionPage() {
 
         {/* Prep countdown */}
         {phase === 'prep' && (
-          <div style={glassCard} className="p-10 text-center">
-            <p className="text-[#F9C125]/70 text-xs uppercase tracking-[0.2em] mb-2 font-semibold">
+          <div style={glassCard} className="p-6 sm:p-8 text-center">
+            <p className="text-[#F9C125]/70 text-xs uppercase tracking-[0.2em] mb-1.5 font-semibold">
               Question {currentIndex + 1} of {questions.length}
             </p>
             {q && (
-              <p className="text-xs text-white/50 mb-6 font-medium">
+              <p className="text-xs text-white/50 mb-4 font-medium">
                 {q.answer_format.split(' ')[0]} · {q.category_name}
               </p>
             )}
-            <h2 className="text-2xl font-bold text-white mb-10 leading-snug">
+            <h2 className="text-xl font-bold text-white mb-6 leading-snug">
               {q?.question_text}
             </h2>
             <div
-              className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full text-5xl font-black text-[#F9C125]"
+              className="mx-auto mb-3 flex h-20 w-20 items-center justify-center rounded-full text-4xl font-black text-[#F9C125]"
               style={{ border: '3px solid rgba(249,193,37,0.4)', background: 'rgba(249,193,37,0.08)' }}
             >
               {prepCount}
             </div>
-            <p className="text-white/50 text-sm mb-6">Recording starts automatically...</p>
+            <p className="text-white/50 text-sm mb-4">Recording starts automatically...</p>
             <div className="flex items-center justify-center gap-3">
               <button
                 onClick={skipPrep}
@@ -327,16 +327,16 @@ export default function LiveSessionPage() {
 
         {/* Recording */}
         {phase === 'recording' && (
-          <div style={glassCard} className="p-10 text-center">
-            <p className="text-[#F9C125]/70 text-xs uppercase tracking-[0.2em] mb-2 font-semibold">
+          <div style={glassCard} className="p-6 sm:p-8 text-center">
+            <p className="text-[#F9C125]/70 text-xs uppercase tracking-[0.2em] mb-1.5 font-semibold">
               Question {currentIndex + 1} of {questions.length}
             </p>
             {q && (
-              <p className="text-xs text-white/50 mb-6 font-medium">
+              <p className="text-xs text-white/50 mb-4 font-medium">
                 {q.answer_format.split(' ')[0]} · {q.category_name}
               </p>
             )}
-            <h2 className="text-2xl font-bold text-white mb-8 leading-snug">
+            <h2 className="text-xl font-bold text-white mb-5 leading-snug">
               {q?.question_text}
             </h2>
 
@@ -350,9 +350,9 @@ export default function LiveSessionPage() {
                 }}
               />
             </div>
-            <p className="text-white/50 text-xs mb-8">{answerTimeLeft}s remaining</p>
+            <p className="text-white/50 text-xs mb-5">{answerTimeLeft}s remaining</p>
 
-            <div className="flex items-center justify-center gap-3 mb-8">
+            <div className="flex items-center justify-center gap-3 mb-5">
               <div className="w-2.5 h-2.5 rounded-full bg-red-400 animate-pulse" />
               <span className="text-white/80 font-semibold text-sm">Recording</span>
             </div>
@@ -376,20 +376,20 @@ export default function LiveSessionPage() {
 
         {/* Between questions */}
         {phase === 'between' && (
-          <div style={glassCard} className="p-10 text-center">
+          <div style={glassCard} className="p-6 sm:p-8 text-center">
             <div
-              className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full"
+              className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full"
               style={{ background: 'rgba(249,193,37,0.15)', border: '2px solid rgba(249,193,37,0.4)' }}
             >
-              <svg className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="#F9C125" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg className="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="#F9C125" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             </div>
             <p className="text-[#F9C125]/60 text-xs uppercase tracking-widest mb-1 font-semibold">
               Answer {currentIndex + 1} of {questions.length}
             </p>
-            <p className="text-white text-xl font-bold mb-2">Answer recorded</p>
-            <p className="text-white/50 text-sm mb-8">
+            <p className="text-white text-xl font-bold mb-1.5">Answer recorded</p>
+            <p className="text-white/50 text-sm mb-6">
               {isLastQuestion ? 'Your results will be ready shortly.' : 'Get ready for the next question.'}
             </p>
 
@@ -397,7 +397,7 @@ export default function LiveSessionPage() {
               {isLastQuestion ? (
                 <button
                   onClick={finishAndProcess}
-                  className="rounded-xl bg-[#F9C125] px-10 py-3.5 text-base font-bold text-[#080d1a] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20"
+                  className="rounded-xl bg-[#F9C125] px-10 py-3 text-base font-bold text-[#080d1a] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20"
                 >
                   See My Results
                 </button>
@@ -405,13 +405,13 @@ export default function LiveSessionPage() {
                 <>
                   <button
                     onClick={goNext}
-                    className="rounded-xl bg-[#F9C125] px-10 py-3.5 text-base font-bold text-[#080d1a] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20"
+                    className="rounded-xl bg-[#F9C125] px-10 py-3 text-base font-bold text-[#080d1a] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20"
                   >
                     Next Question
                   </button>
                   <button
                     onClick={endSession}
-                    className="rounded-xl border border-white/20 px-6 py-3.5 text-sm font-semibold text-white/60 hover:bg-white/5 hover:text-white/80 transition-all"
+                    className="rounded-xl border border-white/20 px-6 py-3 text-sm font-semibold text-white/60 hover:bg-white/5 hover:text-white/80 transition-all"
                   >
                     End Session
                   </button>
@@ -423,7 +423,7 @@ export default function LiveSessionPage() {
 
         {/* Transcribing */}
         {phase === 'transcribing' && (
-          <div style={glassCard} className="p-10 text-center">
+          <div style={glassCard} className="p-8 text-center">
             <div className="generating-loader-wrapper">
               <p className="text-white text-base font-semibold tracking-wide">Generating transcript</p>
               <div className="generating-loader-bar" />
