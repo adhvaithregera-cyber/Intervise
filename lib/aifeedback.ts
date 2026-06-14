@@ -629,41 +629,54 @@ export async function generateAnswerFeedback(params: {
     ? { score: 10, max: 10, issues: [], overall: 'No grammar issues detected.' }
     : undefined
 
-  try {
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-2.5-flash',
-      systemInstruction: SYSTEM_PROMPT,
-      generationConfig: { temperature: 0, maxOutputTokens: 4096 },
-    })
+  const prompt = buildUserPrompt({
+    questionText,
+    categoryId,
+    categoryName: category.name,
+    format:       category.format,
+    rubric,
+    transcript,
+    deliveryTotal: deliveryScores.filler_words.score + deliveryScores.wpm.score + deliveryScores.duration.score,
+    preFiredCaps,
+    skipGrammar: grammarIsClean,
+  })
 
-    const result = await model.generateContent(buildUserPrompt({
-      questionText,
-      categoryId,
-      categoryName: category.name,
-      format:       category.format,
-      rubric,
-      transcript,
-      deliveryTotal: deliveryScores.filler_words.score + deliveryScores.wpm.score + deliveryScores.duration.score,
-      preFiredCaps,
-      skipGrammar: grammarIsClean,
-    }))
-
-    const text = result.response.text().trim()
-    const json = text.startsWith('```') ? text.replace(/^```[a-z]*\n?/i, '').replace(/```$/, '').trim() : text
-
-    const feedback = parseAndValidate(json, deliveryScores, difficulty, {
-      automatic_caps_applied: preFiredCaps.length > 0 ? preFiredCaps : undefined,
-      grammar_feedback:       preGrammarFeedback,
-    })
-
-    if (!feedback) return null
-
-    // Step 4: Override coaching tip with deterministic template if high-confidence
-    const templateTip = selectCoachingTemplate(categoryId, feedback.component_scores)
-    return templateTip ? { ...feedback, coaching_tip: templateTip } : feedback
-
-  } catch (err) {
-    console.error('[aifeedback] Gemini call failed:', err)
-    return null
+  const parseOverrides = {
+    automatic_caps_applied: preFiredCaps.length > 0 ? preFiredCaps : undefined,
+    grammar_feedback:       preGrammarFeedback,
   }
+
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const model = genAI.getGenerativeModel({
+        model: 'gemini-2.5-flash',
+        systemInstruction: SYSTEM_PROMPT,
+        generationConfig: { temperature: 0, maxOutputTokens: 16384 },
+      })
+
+      const result = await model.generateContent(prompt)
+      const text = result.response.text().trim()
+      const json = text.startsWith('```') ? text.replace(/^```[a-z]*\n?/i, '').replace(/```$/, '').trim() : text
+
+      const feedback = parseAndValidate(json, deliveryScores, difficulty, parseOverrides)
+      if (!feedback) {
+        if (attempt === 0) continue
+        return null
+      }
+
+      // Step 4: Override coaching tip with deterministic template if high-confidence
+      const templateTip = selectCoachingTemplate(categoryId, feedback.component_scores)
+      return templateTip ? { ...feedback, coaching_tip: templateTip } : feedback
+
+    } catch (err) {
+      console.error(`[aifeedback] Gemini call failed (attempt ${attempt + 1}):`, err)
+      if (attempt === 0) {
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        continue
+      }
+      return null
+    }
+  }
+
+  return null
 }

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '@/types/database'
 
-export const maxDuration = 60
+export const maxDuration = 120
 
 import { createClient } from '@/lib/supabase/server'
 import { transcribeAudio, isTranscriptionError } from '@/lib/assemblyai'
