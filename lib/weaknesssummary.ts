@@ -38,7 +38,7 @@ Write directly to the candidate ("you", "your"). Be blunt, not encouraging. No b
 
   const model = genAI.getGenerativeModel({
     model: 'gemini-2.5-flash',
-    generationConfig: { temperature: 0.3, maxOutputTokens: 512 },
+    generationConfig: { temperature: 0.3, maxOutputTokens: 8192 },
   })
 
   const result = await model.generateContent(prompt)
