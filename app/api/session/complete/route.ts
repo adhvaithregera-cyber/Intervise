@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { checkRateLimit, RATE_LIMITS } from '@/lib/ratelimit'
 import { sessionCompleteSchema } from '@/lib/validation'
+import { generateWeaknessSummary } from '@/lib/weaknesssummary'
 import type { Answer, AiFeedback } from '@/types/database'
 
 const UNANSWERED_PENALTY = 6 // points deducted per unanswered/failed question
@@ -131,5 +133,70 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Failed to complete session' }, { status: 500 })
   }
 
+  // ── Auto-update weakness summary for Pro users (fire-and-forget) ───────
+  refreshWeaknessSummary(user.id).catch(() => {})
+
   return NextResponse.json({ grade, sessionId: session_id })
+}
+
+async function refreshWeaknessSummary(userId: string) {
+  const service = createServiceClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  )
+
+  const { data: profile } = await service
+    .from('profiles')
+    .select('tier')
+    .eq('id', userId)
+    .single()
+
+  if (!profile || profile.tier !== 'pro') return
+
+  const { data: sessions } = await service
+    .from('sessions')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('status', 'complete')
+    .order('completed_at', { ascending: false })
+    .limit(10)
+
+  if (!sessions || sessions.length < 2) return
+
+  const { data: answers } = await service
+    .from('answers')
+    .select('question_id, ai_feedback')
+    .in('session_id', sessions.map(s => s.id))
+    .eq('transcription_failed', false)
+    .not('ai_feedback', 'is', null)
+
+  if (!answers || answers.length === 0) return
+
+  const questionIds = [...new Set(answers.map(a => a.question_id))]
+  const { data: questions } = await service
+    .from('questions')
+    .select('id, question_text, category_name')
+    .in('id', questionIds)
+
+  const questionMap = Object.fromEntries((questions ?? []).map(q => [q.id, q]))
+  const inputs = answers
+    .filter(a => questionMap[a.question_id])
+    .map(a => ({
+      question_text: questionMap[a.question_id].question_text,
+      category_name: questionMap[a.question_id].category_name,
+      ai_feedback: a.ai_feedback as AiFeedback,
+    }))
+
+  if (inputs.length === 0) return
+
+  const summary = await generateWeaknessSummary(inputs)
+
+  await service
+    .from('profiles')
+    .update({
+      weakness_summary: summary,
+      weakness_summary_at: new Date().toISOString(),
+      weakness_summary_session_count: sessions.length,
+    })
+    .eq('id', userId)
 }

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { RefreshCw } from 'lucide-react'
 
 interface Props {
   initialSummary: string | null
@@ -14,29 +13,16 @@ export function WeaknessSummaryCard({ initialSummary, initialSummaryAt }: Props)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const generate = async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const res = await fetch('/api/dashboard/weakness-summary', { method: 'POST' })
-      if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data.error ?? 'Failed to generate summary')
-      }
-      const data = await res.json()
-      setSummary(data.summary)
-      setSummaryAt(new Date().toISOString())
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Something went wrong')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // Auto-generate on first load if no cached summary
+  // Auto-generate on first load if no cached summary exists
   useEffect(() => {
     if (!initialSummary) {
-      generate()
+      setLoading(true)
+      setError(null)
+      fetch('/api/dashboard/weakness-summary', { method: 'POST' })
+        .then(res => res.ok ? res.json() : res.json().then(d => Promise.reject(d.error ?? 'Failed')))
+        .then(data => { setSummary(data.summary); setSummaryAt(new Date().toISOString()) })
+        .catch(e => setError(typeof e === 'string' ? e : 'Something went wrong'))
+        .finally(() => setLoading(false))
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -56,21 +42,9 @@ export function WeaknessSummaryCard({ initialSummary, initialSummaryAt }: Props)
         borderRadius: '1rem',
       }}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-1">Pro</p>
-          <h2 className="text-xl font-semibold text-white">Your Biggest Weakness</h2>
-        </div>
-        {summary && (
-          <button
-            onClick={generate}
-            disabled={loading}
-            className="shrink-0 rounded-lg p-2 text-white/25 transition-all hover:text-white/50 disabled:opacity-40"
-            title="Refresh analysis"
-          >
-            <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
-          </button>
-        )}
+      <div>
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-1">Pro</p>
+        <h2 className="text-xl font-semibold text-white">Your Biggest Weakness</h2>
       </div>
 
       {error && (
@@ -82,7 +56,6 @@ export function WeaknessSummaryCard({ initialSummary, initialSummaryAt }: Props)
           <div className="h-3 rounded-full bg-white/10 w-full" />
           <div className="h-3 rounded-full bg-white/10 w-5/6" />
           <div className="h-3 rounded-full bg-white/10 w-4/5" />
-          <div className="h-3 rounded-full bg-white/10 w-3/4" />
         </div>
       )}
 
@@ -95,12 +68,12 @@ export function WeaknessSummaryCard({ initialSummary, initialSummaryAt }: Props)
             borderLeft: '3px solid rgba(249,193,37,0.6)',
           }}
         >
-          <p className="text-sm text-white/80 leading-relaxed">{summary}</p>
+          <p className="text-sm text-white/80 leading-relaxed break-words">{summary}</p>
         </div>
       )}
 
       {formattedDate && !loading && (
-        <p className="text-[11px] text-white/25">Last analysed {formattedDate}</p>
+        <p className="text-[11px] text-white/25">Based on sessions up to {formattedDate}</p>
       )}
     </div>
   )

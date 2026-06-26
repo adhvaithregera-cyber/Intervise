@@ -282,7 +282,7 @@ export default function LiveSessionPage() {
   const timerPct = q ? (answerTimeLeft / q.time_limit_seconds) * 100 : 100
 
   return (
-    <div className="flex min-h-[calc(100dvh-4rem)] items-center justify-center px-4 py-4">
+    <div className="-mx-6 -my-8 flex h-[calc(100dvh-4rem)] items-center justify-center overflow-hidden px-4">
       <div className="w-full max-w-2xl">
 
         {/* Loading */}

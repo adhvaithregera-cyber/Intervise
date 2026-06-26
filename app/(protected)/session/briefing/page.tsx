@@ -48,9 +48,9 @@ export default async function BriefingPage({
   const formatLabel = firstQuestion.answer_format.split(' ')[0]
 
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-0 flex items-center min-h-[calc(100dvh-8rem)]">
+    <div className="-mx-6 -my-8 flex h-[calc(100dvh-4rem)] items-center justify-center overflow-hidden px-4">
       <div
-        className="w-full rounded-2xl p-5 sm:p-6 space-y-4"
+        className="w-full max-w-2xl rounded-2xl p-5 sm:p-6 space-y-4"
         style={{
           backgroundColor: 'rgba(8,13,26,0.75)',
           backdropFilter: 'blur(20px)',

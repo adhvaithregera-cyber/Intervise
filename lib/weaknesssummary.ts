@@ -29,12 +29,12 @@ export async function generateWeaknessSummary(answers: AnswerInput[]): Promise<s
 
 ${answerSummaries}
 
-Write a concise weakness summary (3–4 sentences max) for the candidate. Focus on:
-1. The most recurring structural or delivery weakness across their answers
-2. A specific pattern you observed (e.g. "your STAR results are consistently vague")
-3. One concrete thing to practise next
+Write a weakness summary for the candidate in exactly 3 sentences:
+1. The most recurring structural weakness across their answers (name the component and pattern specifically)
+2. A concrete example of what this looks like in their answers
+3. One specific thing to practise before the next session
 
-Write directly to the candidate ("you", "your"). Be honest but encouraging. Do not use bullet points — write in flowing prose. Do not exceed 80 words.`
+Write directly to the candidate ("you", "your"). Be blunt, not encouraging. No bullet points — flowing prose only. Always complete every sentence before stopping.`
 
   const model = genAI.getGenerativeModel({
     model: 'gemini-2.5-flash',

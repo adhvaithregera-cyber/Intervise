@@ -10,10 +10,10 @@ import type { Difficulty } from '@/types/database'
 type PermState = 'idle' | 'granted' | 'denied' | 'requesting'
 
 const ALL_DIFFICULTY_OPTIONS: { value: Difficulty; title: string; desc: string }[] = [
-  { value: 'easy',   title: 'Easy',   desc: 'Common openers and strength/weakness questions' },
-  { value: 'medium', title: 'Medium', desc: 'Behavioural, motivation, and situational questions' },
-  { value: 'mixed',  title: 'Mixed',  desc: 'Random selection across all categories' },
-  { value: 'hard',   title: 'Hard',   desc: 'Curveball, pressure, and advanced situational questions' },
+  { value: 'easy',   title: 'Easy',   desc: 'Common openers, strengths & weaknesses' },
+  { value: 'medium', title: 'Medium', desc: 'Behavioural, motivation & situational' },
+  { value: 'mixed',  title: 'Mixed',  desc: 'Random mix across all categories' },
+  { value: 'hard',   title: 'Hard',   desc: 'Curveball, pressure & advanced questions' },
 ]
 
 const TIER_ALLOWED_DIFFICULTIES: Record<string, Difficulty[]> = {
@@ -50,12 +50,10 @@ const CARD_LOCKED_STYLE = {
 export function SetupClient({ tier }: { tier: string }) {
   const router = useRouter()
   const allowedDifficulties = TIER_ALLOWED_DIFFICULTIES[tier] ?? TIER_ALLOWED_DIFFICULTIES.free
-  const cameraAllowed = false // Coming soon — not yet available on any tier
 
   const [difficulty, setDifficulty] = useState<Difficulty | null>(null)
   const [micPerm, setMicPerm] = useState<PermState>('idle')
 
-  // Auto-detect previously granted permissions on mount
   useEffect(() => {
     if (typeof navigator === 'undefined' || !navigator.permissions) return
     navigator.permissions.query({ name: 'microphone' as PermissionName }).then(r => {
@@ -82,9 +80,10 @@ export function SetupClient({ tier }: { tier: string }) {
   const canStart = difficulty !== null && micPerm === 'granted'
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8 sm:py-12">
+    // Negate layout's px-6 py-8, lock to viewport height minus navbar
+    <div className="-mx-6 -my-8 flex h-[calc(100dvh-4rem)] items-center justify-center overflow-hidden px-4">
       <div
-        className="rounded-2xl p-6 sm:p-8"
+        className="w-full max-w-2xl rounded-2xl p-6 sm:p-8"
         style={{
           backgroundColor: 'rgba(8,13,26,0.75)',
           backdropFilter: 'blur(20px)',
@@ -92,112 +91,100 @@ export function SetupClient({ tier }: { tier: string }) {
           border: '1px solid rgba(249,193,37,0.18)',
         }}
       >
-      {/* Page header */}
-      <FadeIn delay={0}>
-        <h1 className="mb-2 text-3xl font-bold text-white">Set up your session</h1>
-        <p className="mb-10 text-white/70 font-medium">
-          Choose your difficulty and grant the permissions we need to get started.
-        </p>
-      </FadeIn>
+        {/* Header */}
+        <FadeIn delay={0}>
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold text-white">Set up your session</h1>
+            <p className="mt-1 text-sm text-white/60">Choose difficulty and grant microphone access to begin.</p>
+          </div>
+        </FadeIn>
 
-      {/* Section 1: Difficulty selector */}
-      <FadeIn delay={0.08}>
-        <section className="mb-10">
-          <h2 className="mb-4 text-lg font-semibold text-white">Difficulty</h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
-            {ALL_DIFFICULTY_OPTIONS.map(({ value, title, desc }) => {
-              const locked = !allowedDifficulties.includes(value)
-              const selected = difficulty === value
-              return (
-                <div
-                  key={value}
-                  onClick={() => !locked && setDifficulty(value)}
-                  className={locked ? 'cursor-not-allowed transition-all p-5' : 'cursor-pointer transition-all p-5'}
-                  style={locked ? CARD_LOCKED_STYLE : selected ? CARD_SELECTED_STYLE : CARD_STYLE}
-                >
-                  <div className="flex items-center justify-between mb-1">
-                    <p className="font-semibold text-[#F9C125]">{title}</p>
-                    {locked && <Lock className="h-3.5 w-3.5 text-white/40 shrink-0" />}
+        {/* Difficulty */}
+        <FadeIn delay={0.08}>
+          <div className="mb-6">
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-widest text-white/50">Difficulty</h2>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {ALL_DIFFICULTY_OPTIONS.map(({ value, title, desc }) => {
+                const locked = !allowedDifficulties.includes(value)
+                const selected = difficulty === value
+                return (
+                  <div
+                    key={value}
+                    onClick={() => !locked && setDifficulty(value)}
+                    className={`${locked ? 'cursor-not-allowed' : 'cursor-pointer'} transition-all p-4`}
+                    style={locked ? CARD_LOCKED_STYLE : selected ? CARD_SELECTED_STYLE : CARD_STYLE}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="font-semibold text-[#F9C125] text-sm">{title}</p>
+                      {locked && <Lock className="h-3 w-3 text-white/40 shrink-0" />}
+                    </div>
+                    <p className="text-xs text-white/55 leading-snug">{desc}</p>
+                    {locked && (
+                      <p className="mt-1.5 text-[10px] font-semibold text-[#F9C125]/50 uppercase tracking-wider">
+                        {value === 'hard' || value === 'mixed' ? 'Pro only' : 'Upgrade'}
+                      </p>
+                    )}
                   </div>
-                  <p className="text-xs text-white/65 break-words">{desc}</p>
-                  {locked && (
-                    <p className="mt-2 text-[10px] font-semibold text-[#F9C125]/60 uppercase tracking-wider">
-                      {value === 'hard' || value === 'mixed' ? 'Pro only' : 'Upgrade to unlock'}
-                    </p>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-        </section>
-      </FadeIn>
-
-      {/* Section 2: Microphone */}
-      <FadeIn delay={0.16}>
-        <section className="mb-8">
-          <div className="mb-1 flex items-center gap-2">
-            <h2 className="text-lg font-semibold text-white">Microphone</h2>
-            <span className="text-xs font-semibold uppercase tracking-wider text-red-400">Required</span>
-          </div>
-          <p className="mb-4 text-sm text-white/70">
-            Required to record your answers. Audio is transcribed by AssemblyAI and never stored as a raw file.
-          </p>
-
-          {micPerm === 'granted' ? (
-            <div className="flex items-center gap-2 text-green-300">
-              <CheckCircle2 className="h-5 w-5 shrink-0" />
-              <span className="text-sm font-medium">Microphone access granted</span>
+                )
+              })}
             </div>
-          ) : micPerm === 'requesting' ? (
-            <button disabled className="border border-white/20 rounded-xl px-4 py-2 text-sm text-white/40 cursor-not-allowed">
-              Requesting...
-            </button>
-          ) : (
-            <>
-              <button
-                onClick={requestMic}
-                className="border border-white/40 rounded-xl px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors"
-              >
-                Grant Microphone Access
-              </button>
-              {micPerm === 'denied' && (
-                <div className="mt-3 flex items-start gap-2 text-red-300">
-                  <XCircle className="mt-0.5 h-4 w-4 shrink-0" />
-                  <p className="text-sm">Permission denied. Please allow microphone access in your browser settings.</p>
-                </div>
-              )}
-            </>
-          )}
-        </section>
-      </FadeIn>
+          </div>
+        </FadeIn>
 
-      {/* Section 3: Camera — Student+ only */}
-      <FadeIn delay={0.24}>
-        <section className="mb-6">
-          <div className="mb-1 flex items-center gap-2">
-            <h2 className="text-lg font-semibold text-white">Camera</h2>
+        {/* Microphone */}
+        <FadeIn delay={0.16}>
+          <div className="mb-6">
+            <div className="mb-2 flex items-center gap-2">
+              <h2 className="text-sm font-semibold uppercase tracking-widest text-white/50">Microphone</h2>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-red-400">Required</span>
+            </div>
+
+            {micPerm === 'granted' ? (
+              <div className="flex items-center gap-2 text-green-300">
+                <CheckCircle2 className="h-4 w-4 shrink-0" />
+                <span className="text-sm font-medium">Access granted</span>
+              </div>
+            ) : micPerm === 'requesting' ? (
+              <button disabled className="rounded-xl border border-white/20 px-4 py-2 text-sm text-white/40 cursor-not-allowed">
+                Requesting...
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={requestMic}
+                  className="rounded-xl border border-white/40 px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors cursor-pointer"
+                >
+                  Grant Microphone Access
+                </button>
+                {micPerm === 'denied' && (
+                  <div className="mt-2 flex items-start gap-2 text-red-300">
+                    <XCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                    <p className="text-xs">Permission denied. Allow microphone access in your browser settings.</p>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </FadeIn>
+
+        {/* Camera — coming soon, minimal */}
+        <FadeIn delay={0.22}>
+          <div className="mb-7 flex items-center gap-2">
+            <h2 className="text-sm font-semibold uppercase tracking-widest text-white/30">Camera</h2>
             <Badge variant="amber">Coming Soon</Badge>
           </div>
-          <p className="mb-4 text-sm text-white/70">
-            Real-time body language and expression analysis is coming soon. All facial processing will happen in your browser — no video will ever be sent to our servers.
-          </p>
-          <div className="flex items-center gap-2">
-            <Lock className="h-4 w-4 text-white/40" />
-            <span className="text-sm text-white/40">Not yet available — stay tuned</span>
-          </div>
-        </section>
-      </FadeIn>
+        </FadeIn>
 
-      {/* Start button */}
-      <FadeIn delay={0.32}>
-        <button
-          disabled={!canStart}
-          onClick={handleStart}
-          className="w-full rounded-xl bg-[#F9C125] py-3.5 text-base font-bold text-[#080d1a] shadow-lg shadow-[#F9C125]/25 transition-all hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
-        >
-          Start Session
-        </button>
-      </FadeIn>
+        {/* Start */}
+        <FadeIn delay={0.28}>
+          <button
+            disabled={!canStart}
+            onClick={handleStart}
+            className="w-full rounded-xl bg-[#F9C125] py-3.5 text-base font-bold text-[#080d1a] shadow-lg shadow-[#F9C125]/25 transition-all hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none cursor-pointer"
+          >
+            Start Session
+          </button>
+        </FadeIn>
       </div>
     </div>
   )
