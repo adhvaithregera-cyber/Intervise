@@ -434,57 +434,53 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
                             Full breakdown
                           </summary>
                           <div className="mt-3 space-y-3">
-                            {/* Ideal answer */}
-                            {fb.ideal_answer_opening && (
-                              <div>
-                                <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-1.5">Ideal Answer</p>
-                                <p className="text-xs text-white/60 italic mb-2">&ldquo;{fb.ideal_answer_opening}&rdquo;</p>
-                                {fb.ideal_answer_pointers?.length > 0 && (
-                                  <ul className="space-y-1">
-                                    {fb.ideal_answer_pointers.map((point: string, i: number) => (
-                                      <li key={i} className="flex items-start gap-2">
-                                        <span className="mt-1 h-1 w-1 rounded-full bg-[#F9C125]/40 shrink-0" />
-                                        <span className="text-xs text-white/45 leading-relaxed">{point}</span>
-                                      </li>
-                                    ))}
-                                  </ul>
-                                )}
-                              </div>
-                            )}
-                            {/* Grammar */}
-                            {fb.grammar_feedback && (
-                              <div>
-                                <div className="flex items-center justify-between mb-1">
-                                  <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50">Grammar</p>
-                                  <span className="text-xs font-bold text-white/60">{fb.grammar_feedback.score}/{fb.grammar_feedback.max}</span>
-                                </div>
-                                <div className="h-0.5 w-full rounded-full bg-white/10 mb-1.5">
-                                  <div className="h-0.5 rounded-full bg-[#F9C125]/60" style={{ width: `${Math.round((fb.grammar_feedback.score / fb.grammar_feedback.max) * 100)}%` }} />
-                                </div>
-                                <p className="text-xs text-white/40">
-                                  {fb.grammar_feedback.issues?.length > 0 ? fb.grammar_feedback.issues[0] : fb.grammar_feedback.overall}
-                                </p>
-                              </div>
-                            )}
-                            {/* Component scores */}
-                            <div className="grid grid-cols-2 gap-2">
-                              {Object.entries(fb.component_scores as Record<string, { score: number; max: number; feedback: string }>).map(([key, item]) => {
+                            {/* Component scores — worst first, feedback shown for gaps only */}
+                            {(() => {
+                              const entries = Object.entries(fb.component_scores as Record<string, { score: number; max: number; feedback: string }>)
+                                .sort(([, a], [, b]) => {
+                                  const pctA = a.max > 0 ? a.score / a.max : 1
+                                  const pctB = b.max > 0 ? b.score / b.max : 1
+                                  return pctA - pctB
+                                })
+                              return entries.map(([key, item]) => {
                                 const pct = item.max > 0 ? Math.round((item.score / item.max) * 100) : 0
+                                const isGap = pct < 60
                                 const label = COMPONENT_LABELS[key] ?? key
+                                const barColor = pct >= 70 ? 'bg-green-400/70' : pct >= 45 ? 'bg-amber-400/80' : 'bg-red-400/80'
+                                const labelColor = pct >= 70 ? 'text-white/40' : pct >= 45 ? 'text-amber-400/80' : 'text-red-400/80'
                                 return (
-                                  <div key={key} className="p-3" style={INNER_CARD}>
+                                  <div key={key}>
                                     <div className="flex items-center justify-between mb-1">
-                                      <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50">{label}</p>
-                                      <span className="text-xs font-bold text-white/60">{item.score}/{item.max}</span>
+                                      <p className={cn('text-[10px] font-bold uppercase tracking-widest', labelColor)}>{label}</p>
+                                      <span className="text-xs font-bold text-white/50">{item.score}/{item.max}</span>
                                     </div>
-                                    <div className="h-0.5 w-full rounded-full bg-white/10 mb-1.5">
-                                      <div className="h-0.5 rounded-full bg-[#F9C125]/60" style={{ width: `${pct}%` }} />
+                                    <div className="h-1 w-full rounded-full bg-white/10 mb-1.5">
+                                      <div className={cn('h-1 rounded-full', barColor)} style={{ width: `${pct}%` }} />
                                     </div>
-                                    <p className="text-xs text-white/40 leading-relaxed">{item.feedback}</p>
+                                    {isGap && item.feedback && (
+                                      <p className="text-xs text-white/55 leading-snug">{item.feedback}</p>
+                                    )}
                                   </div>
                                 )
-                              })}
-                            </div>
+                              })
+                            })()}
+                            {/* Grammar — only show if there are issues */}
+                            {fb.grammar_feedback && fb.grammar_feedback.issues?.length > 0 && (
+                              <div className="pt-2 border-t border-white/8">
+                                <div className="flex items-center justify-between mb-1">
+                                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#F9C125]/80">Grammar</p>
+                                  <span className="text-xs font-bold text-white/50">{fb.grammar_feedback.score}/{fb.grammar_feedback.max}</span>
+                                </div>
+                                <p className="text-xs text-white/55">{fb.grammar_feedback.issues[0]}</p>
+                              </div>
+                            )}
+                            {/* Ideal answer — opening line only */}
+                            {fb.ideal_answer_opening && (
+                              <div className="pt-2 border-t border-white/8">
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-[#F9C125]/80 mb-1">Ideal Opening</p>
+                                <p className="text-xs text-white/50 italic">&ldquo;{fb.ideal_answer_opening}&rdquo;</p>
+                              </div>
+                            )}
                           </div>
                         </details>
                       </div>

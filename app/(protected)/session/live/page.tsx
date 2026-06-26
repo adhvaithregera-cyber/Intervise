@@ -43,6 +43,9 @@ export default function LiveSessionPage() {
   const [answerTimeLeft, setAnswerTimeLeft] = useState(0)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [cameraStream, setCameraStream] = useState<MediaStream | null>(null)
+  const [transcribeProgress, setTranscribeProgress] = useState({ current: 0, total: 0 })
+  const [estimatedSecondsLeft, setEstimatedSecondsLeft] = useState(0)
+  const estimateTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const prepTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const answerTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -225,11 +228,24 @@ export default function LiveSessionPage() {
   }
 
   async function finishAndProcess() {
+    const answers = storedAnswersRef.current
+    const total = answers.length
+    const SECS_PER_ANSWER = 18
+    const initialEstimate = total * SECS_PER_ANSWER
+
+    setTranscribeProgress({ current: 0, total })
+    setEstimatedSecondsLeft(initialEstimate)
     setPhase('transcribing')
+
+    estimateTimerRef.current = setInterval(() => {
+      setEstimatedSecondsLeft(prev => (prev > 0 ? prev - 1 : 0))
+    }, 1000)
+
     const params = new URLSearchParams(window.location.search)
     const sessionId = params.get('session_id')!
 
-    for (const answer of storedAnswersRef.current) {
+    for (let i = 0; i < answers.length; i++) {
+      const answer = answers[i]
       try {
         const formData = new FormData()
         const ext = answer.blob.type.includes('mp4') ? 'mp4' : answer.blob.type.includes('ogg') ? 'ogg' : 'webm'
@@ -242,6 +258,7 @@ export default function LiveSessionPage() {
       } catch {
         // continue even if one answer fails
       }
+      setTranscribeProgress({ current: i + 1, total })
     }
 
     try {
@@ -255,6 +272,7 @@ export default function LiveSessionPage() {
         answers_recorded: storedAnswersRef.current.length,
       })
     } finally {
+      if (estimateTimerRef.current) clearInterval(estimateTimerRef.current)
       router.push('/session/report/' + sessionId)
     }
   }
@@ -425,10 +443,19 @@ export default function LiveSessionPage() {
         {phase === 'transcribing' && (
           <div style={glassCard} className="p-8 text-center">
             <div className="generating-loader-wrapper">
-              <p className="text-white text-base font-semibold tracking-wide">Generating transcript</p>
+              <p className="text-white text-base font-semibold tracking-wide">Analysing your answers</p>
               <div className="generating-loader-bar" />
             </div>
-            <p className="text-white/40 text-xs mt-4">Analysing all your answers...</p>
+            <p className="text-white/60 text-sm mt-5">
+              {transcribeProgress.total > 0
+                ? `Answer ${Math.min(transcribeProgress.current + 1, transcribeProgress.total)} of ${transcribeProgress.total}`
+                : 'Preparing…'}
+            </p>
+            <p className="text-white/35 text-xs mt-2">
+              {estimatedSecondsLeft > 0
+                ? `About ${estimatedSecondsLeft}s remaining`
+                : 'Almost done…'}
+            </p>
           </div>
         )}
       </div>

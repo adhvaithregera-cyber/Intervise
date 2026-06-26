@@ -487,21 +487,15 @@ Transcript:
 SCORING INSTRUCTIONS:
 1. Score each content component 0 to its max using the rubric.
 2. Apply all automatic caps if triggered — list each that fired.
-3. For each component below maximum: quote the exact phrase from the transcript, explain what was wrong, give one concrete replacement sentence.
-4. Ideal answer pointers: 3–4 bullet points showing exactly what a strong answer to THIS question would include. Be specific to the question, not generic advice.${grammarInstruction}
+3. For each component: one sentence only — state exactly what was missing or wrong (quote one word or phrase from the transcript if it helps). No explanations, no replacements.
+4. Ideal answer opening: one sentence showing how a strong answer to THIS specific question would open. Be specific, not generic.${grammarInstruction}
 
 Return ONLY this JSON (no other text):
 {
   "component_scores": ${JSON.stringify(exampleComponents, null, 2)},
   "automatic_caps_applied": [],
   "biggest_gap": "Your [component] section [specific issue from transcript].",
-  "ideal_answer_opening": "First sentence of what a strong answer would look like",
-  "ideal_answer_pointers": [
-    "Open with: [specific opening for this question]",
-    "Include: [key point specific to this question]",
-    "Quantify: [what metric or detail to include]",
-    "Close with: [how to land the answer]"
-  ]${grammarJsonBlock},
+  "ideal_answer_opening": "First sentence of what a strong answer would look like"${grammarJsonBlock},
   "coaching_tip": "One specific thing to practise before the next session"
 }`
 }
