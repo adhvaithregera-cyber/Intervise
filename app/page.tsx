@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Intervise – AI Interview Coaching',
@@ -14,6 +13,7 @@ import { AppPreview } from '@/components/ui/app-preview'
 import { ComparisonSection } from '@/components/ui/comparison-section'
 import { FinalCta } from '@/components/ui/final-cta'
 import { HeroSection } from '@/components/ui/hero-section'
+import { MinimalFooter } from '@/components/ui/minimal-footer'
 import { createClient } from '@/lib/supabase/server'
 
 export default async function LandingPage() {
@@ -52,17 +52,8 @@ export default async function LandingPage() {
       {/* ── FINAL CTA ── */}
       <FinalCta showSignup={showTryFree} />
 
-      {/* Footer */}
-      <footer className="border-t border-white/10" style={{ backgroundColor: '#080d1a' }}>
-        <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 px-4 py-6 text-center text-sm text-white/40 sm:flex-row sm:justify-between sm:px-6 sm:text-left">
-          <span>© 2026 Intervise</span>
-          <div className="flex items-center gap-4">
-            <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <span>·</span>
-            <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
-          </div>
-        </div>
-      </footer>
+      {/* ── FOOTER ── */}
+      <MinimalFooter />
     </div>
   )
 }
