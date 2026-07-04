@@ -1,6 +1,6 @@
 import {
     Lightbulb,
-    Instagram,
+    Heart,
 } from 'lucide-react';
 
 export function MinimalFooter() {
@@ -54,7 +54,7 @@ export function MinimalFooter() {
 
     const socialLinks = [
         {
-            icon: <Instagram className="size-4" />,
+            icon: <Heart className="size-4" />,
             link: 'https://www.instagram.com/intervisehq/',
             label: 'Instagram',
         },
