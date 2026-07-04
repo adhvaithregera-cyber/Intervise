@@ -14,18 +14,17 @@ const TIER_LABELS: Record<string, string> = { free: 'Free', student: 'Student', 
 const TIER_SESSION_LIMITS: Record<string, number> = { free: 2, student: 12, pro: 30 }
 
 const CARD_STYLE = {
-  backgroundColor: 'rgba(255,255,255,0.05)',
-  backdropFilter: 'blur(24px) saturate(180%)',
-  WebkitBackdropFilter: 'blur(24px) saturate(180%)',
-  border: '1px solid rgba(255,255,255,0.10)',
-  borderRadius: '1.25rem',
-  boxShadow: '0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.08)',
+  backgroundColor: 'rgba(8,13,26,0.75)',
+  backdropFilter: 'blur(16px)',
+  WebkitBackdropFilter: 'blur(16px)',
+  border: '1px solid rgba(249,193,37,0.20)',
+  borderRadius: '1rem',
 }
 
 const INNER_CARD = {
   backgroundColor: 'rgba(255,255,255,0.04)',
-  border: '1px solid rgba(255,255,255,0.08)',
-  borderRadius: '0.875rem',
+  border: '1px solid rgba(249,193,37,0.12)',
+  borderRadius: '0.75rem',
 }
 
 export default async function DashboardPage({
@@ -196,7 +195,7 @@ export default async function DashboardPage({
           <h1 className="text-2xl font-bold text-white">
             {profile.full_name ? `Hey, ${profile.full_name.split(' ')[0]}` : 'Dashboard'}
           </h1>
-          <p className="mt-1 text-sm font-medium" style={{ color: 'rgba(255,255,255,0.45)' }}>
+          <p className="mt-1 text-sm font-medium" style={{ color: 'rgba(8,13,26,0.75)' }}>
             {TIER_LABELS[profile.tier] ?? profile.tier} plan
           </p>
         </div>
@@ -224,13 +223,9 @@ export default async function DashboardPage({
           ) : (
             <Link
               href="/session/setup"
-              className="w-full flex items-center justify-center rounded-2xl text-lg sm:text-xl font-bold text-[#F9C125] hover:brightness-110 transition-all py-5 sm:py-0 min-h-[64px] sm:min-h-[80px]"
+              className="w-full flex items-center justify-center rounded-2xl bg-[#F9C125] text-lg sm:text-xl font-bold text-[#080d1a] hover:brightness-110 transition-all py-5 sm:py-0 min-h-[64px] sm:min-h-[80px]"
               style={{
-                backgroundColor: 'rgba(249,193,37,0.12)',
-                backdropFilter: 'blur(16px)',
-                WebkitBackdropFilter: 'blur(16px)',
-                border: '1px solid rgba(249,193,37,0.40)',
-                boxShadow: '0 0 32px rgba(249,193,37,0.18), inset 0 1px 0 rgba(249,193,37,0.15)',
+                boxShadow: '0 0 40px rgba(249,193,37,0.35), 0 8px 32px rgba(249,193,37,0.25)',
               }}
             >
               Start Practice Session →
@@ -244,12 +239,12 @@ export default async function DashboardPage({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Sessions this month */}
           <div className="p-4" style={CARD_STYLE}>
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/40 mb-2">Sessions this month</p>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-2">Sessions this month</p>
             <div className="flex items-baseline gap-1.5 mb-2">
               <span className="text-3xl font-bold text-white">{profile.sessions_used_this_month}</span>
               <span className="text-sm text-white/50">/ {sessionsLimit} used</span>
             </div>
-            <div className="h-1.5 w-full rounded-full mb-1.5" style={{ backgroundColor: 'rgba(255,255,255,0.08)' }}>
+            <div className="h-1.5 w-full rounded-full mb-1.5" style={{ backgroundColor: 'rgba(249,193,37,0.15)' }}>
               <div
                 className="h-1.5 rounded-full transition-all"
                 style={{ width: `${pct}%`, backgroundColor: '#F9C125' }}
