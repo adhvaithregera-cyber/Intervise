@@ -77,6 +77,13 @@ Tables: `profiles`, `questions`, `sessions`, `answers`, `question_history`
 - `cn()` from `@/lib/utils` for className merging
 - Glassmorphic design: `rgba(8,13,26,0.75)` bg, `blur(20px)`, gold border `rgba(249,193,37,0.18)`
 
+## Footer component (`components/ui/minimal-footer.tsx`)
+**TODO — Social links to be added:**
+- Currently only Instagram: `https://www.instagram.com/intervisehq/`
+- All footer links (About, Blog, Help Center, Support, etc.) are placeholders (`#`)
+- When you have Twitter, LinkedIn, GitHub, Facebook handles, update the component
+- **Reminder:** Ask Claude to update social links when you have the handles
+
 ## Upcoming milestones
 - M7: Pro dashboard cards (weakness summary + weekly AI plan)
 - M9: Resume-based question gen (JD+CV, Pro)
