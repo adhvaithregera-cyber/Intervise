@@ -1,0 +1,223 @@
+INTERVISE SECURITY AUDIT — EXECUTIVE SUMMARY
+Generated: 2026-07-04
+Full Report: SECURITY_AUDIT.md (803 lines)
+
+================================================================================
+CRITICAL FINDINGS (Immediate Action Required)
+================================================================================
+
+1. LIVE API KEYS EXPOSED IN GIT (.env.local)
+   Impact: Complete account takeover possible
+   - Supabase service role key (database admin access)
+   - AssemblyAI API key ($25+/month quota theft per attacker)
+   - Razorpay live keys (payment processing, subscription manipulation)
+   - Database password (direct Postgres access)
+
+   Action: ROTATE ALL KEYS within 30 minutes
+   - Supabase: regenerate service role + anon key + DB password
+   - AssemblyAI: generate new key at dashboard
+   - Razorpay: regenerate API keys + webhook secret
+   - Vercel: update production environment variables
+   - Local: update .env.local with new keys
+
+2. RAZORPAY WEBHOOK SECRET WEAK ("intervise_wh_2026")
+   Impact: Attacker can forge payment notifications
+   - Downgrade users to free tier
+   - Upgrade unpaid users to pro tier
+   - Trigger subscription lifecycle events
+
+   Action: Generate cryptographically strong secret (openssl rand -hex 32)
+   - Update Razorpay Dashboard webhooks
+   - Rotate RAZORPAY_WEBHOOK_SECRET in .env + Vercel
+
+3. RATE LIMITING BROKEN ON SERVERLESS (Vercel)
+   Impact: Rate limits reset on cold starts (function redeployment)
+   - Attacker can spam expensive operations:
+     - 25 transcribe requests/hour → $25/month in AssemblyAI costs
+     - Unlimited Gemini API calls → $75+/day cost escalation
+     - Bypass payment limits
+
+   Action: Replace in-memory limiter with Upstash Redis
+   - npm install @upstash/ratelimit @upstash/redis
+   - Update lib/ratelimit.ts to use Redis
+   - Add UPSTASH_REDIS_REST_URL + TOKEN to .env
+   - Deploy immediately
+
+================================================================================
+HIGH SEVERITY FINDINGS (Fix This Week)
+================================================================================
+
+4. TIER EXPIRY NOT CHECKED (Revenue Leakage)
+   Problem: Subscription expires but user keeps access forever
+   - .tier field is checked, but .tier_expires_at ignored
+   - Free users can stay pro indefinitely if Razorpay webhook fails
+   Estimate: $50-200/month leaked per failed subscriber
+
+   Fix: Add tier expiry validation in:
+   - app/api/session/transcribe/route.ts (line 45-48)
+   - lib/session.ts (line 71-72)
+   - Create getEffectiveTier() helper function
+
+5. GEMINI API USAGE NOT MONITORED
+   Problem: No cost tracking or rate limiting
+   - Can explode to $100+/day if abused
+   - No quota alerts configured
+   Estimated cost if abused: $75/day (1000 feedback calls × max tokens)
+
+   Fix: Add per-user daily limit (50 feedback/day = ~$3)
+   - Add output token logging
+   - Enable Google Cloud billing alerts @ $10/day
+
+6. SESSION QUOTA NEVER RESETS MONTHLY
+   Problem: sessions_used_this_month counter never resets
+   - Free users (2/month) permanently blocked after month 1
+   - No users can create new sessions after exceeding quota
+
+   Fix: Add Postgres cron job or app-level reset
+   - CREATE EXTENSION pg_cron
+   - Add trigger to reset on month boundary OR
+   - Add reset check in /api/session/start route
+
+7. QUESTION DIFFICULTY ACCESS PARTIALLY VALIDATED
+   Problem: Hard/Mixed difficulty access not fully enforced
+   - Free user could potentially request Hard questions
+   - Tier restrictions defined but not comprehensively validated
+
+   Fix: Add explicit difficulty validation in transcribe route
+
+8. SESSION QUOTA MISSING FOREIGN KEY CONSTRAINT
+   Problem: Question deletion orphans answers
+   - If question deleted, related answers lose question data
+   - Report generation fails with 500 error
+
+   Fix: Add ON DELETE RESTRICT to answers.question_id FK
+
+================================================================================
+MEDIUM SEVERITY (Fix This Sprint)
+================================================================================
+
+9-12. Middleware tier gating, rate limit precision, error logging,
+      audit logging, HTTPS headers - see full report
+
+================================================================================
+STRENGTHS (Well Implemented)
+================================================================================
+
+✓ RLS policies comprehensive and well-hardened
+✓ Database triggers prevent tier/quota tampering
+✓ Answer immutability enforced (UPDATE denied)
+✓ Input validation strict (Zod schemas + .strict())
+✓ Webhook signature verification uses timing-safe comparison
+✓ Session creation atomic (SELECT FOR UPDATE prevents race conditions)
+✓ All protected routes verify user ownership server-side
+
+================================================================================
+DEPLOYMENT CHECKLIST (Priority Order)
+================================================================================
+
+PHASE 1 (TODAY — 30 MINUTES)
+- [ ] Rotate Supabase API keys (service role, anon, DB password)
+- [ ] Rotate AssemblyAI key
+- [ ] Rotate Razorpay API keys + webhook secret
+- [ ] Generate new Razorpay webhook secret (32 random hex chars)
+- [ ] Update .env.local with all new keys
+- [ ] Deploy keys to Vercel environment
+- [ ] Remove .env.local from git history (git-filter-branch or secret scanner)
+- [ ] Verify git contains no credentials
+- [ ] Audit Razorpay logs for unauthorized subscriptions
+- [ ] Audit AssemblyAI logs for unusual transcription usage
+- [ ] Audit Supabase auth logs for unauthorized access
+
+PHASE 2 (THIS WEEK)
+- [ ] Install and configure Upstash Redis
+- [ ] Update lib/ratelimit.ts to use Redis
+- [ ] Deploy rate limiter fix to production
+- [ ] Add tier expiry checks to transcribe/start routes
+- [ ] Test tier expiry workflow (subscription expires → user blocked)
+- [ ] Add monthly quota reset (trigger or app-level)
+- [ ] Test quota reset on month boundary
+
+PHASE 3 (THIS SPRINT)
+- [ ] Add Gemini API usage monitoring + logging
+- [ ] Add per-user daily feedback limit (50/day)
+- [ ] Enable Google Cloud billing alerts
+- [ ] Add difficulty validation in transcribe route
+- [ ] Add FK constraint with ON DELETE RESTRICT
+- [ ] Add Strict-Transport-Security + CSP headers
+- [ ] Review middleware tier gating logic
+
+PHASE 4 (NEXT SPRINT)
+- [ ] Implement audit logging to Supabase table
+- [ ] Improve error logging (structured format)
+- [ ] Add daily security health check script
+
+================================================================================
+ESTIMATED REMEDIATION TIME
+================================================================================
+
+CRITICAL fixes:    2-3 hours
+HIGH fixes:        4-5 hours
+MEDIUM fixes:      2-3 hours
+LOW improvements:  2-3 hours
+
+TOTAL: ~12-14 hours of engineering work across 2-3 weeks
+
+================================================================================
+KEY CONTACTS & ESCALATION
+================================================================================
+
+1. Razorpay Support: Need key rotation confirmation
+2. Google Cloud: Billing alert configuration
+3. Supabase Support: Schema audit for FK constraints
+4. Vercel: Environment variable update confirmation
+
+================================================================================
+TESTING RECOMMENDATIONS
+================================================================================
+
+After deploying fixes:
+
+1. Subscription Flow Test
+   - Subscribe → receive subscription.activated webhook
+   - Verify tier='student', tier_expires_at set to +31 days
+   - Wait for expiry date → tier should revert to 'free'
+   - Attempt transcribe → should fail with 403
+
+2. Rate Limit Test
+   - Deploy 5 function instances (simulate Vercel scaling)
+   - Send requests to each → all should be rate-limited consistently
+   - Verify Redis backend is working
+
+3. Quota Reset Test
+   - Create Free account
+   - Use 2 sessions (quota exhausted)
+   - Wait for month boundary
+   - Verify sessions_used_this_month resets to 0
+   - Verify user can create new session
+
+4. Question Access Test
+   - Create Free user
+   - Try to request Medium/Hard question → should fail with 403
+   - Upgrade to Student
+   - Try to request Hard question → should fail (Student can't do Hard)
+   - Upgrade to Pro
+   - Try to request Hard/Mixed → should succeed
+
+================================================================================
+COMPLIANCE NOTES
+================================================================================
+
+If regulated (GDPR, data protection):
+- Document all credential rotations in audit log
+- Notify users if any breach detected during investigation
+- Add Data Processing Agreement (DPA) requirements to deployment
+
+For PCI compliance (payment processing):
+- Webhook secret rotation confirmed
+- Key rotation audit trail documented
+- Rate limiting controls implemented
+- Access controls verified and hardened
+
+================================================================================
+NEXT AUDIT DATE: 2026-10-04 (Quarterly)
+================================================================================
