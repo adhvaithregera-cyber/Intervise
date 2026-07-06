@@ -623,13 +623,19 @@ export async function generateAnswerFeedback(params: {
     ? { score: 10, max: 10, issues: [], overall: 'No grammar issues detected.' }
     : undefined
 
+  // Cap transcript at 2000 words — sufficient for structure scoring, prevents prompt overflow
+  const transcriptWords = transcript.split(/\s+/)
+  const cappedTranscript = transcriptWords.length > 2000
+    ? transcriptWords.slice(0, 2000).join(' ') + ' [transcript truncated for length]'
+    : transcript
+
   const prompt = buildUserPrompt({
     questionText,
     categoryId,
     categoryName: category.name,
     format:       category.format,
     rubric,
-    transcript,
+    transcript:   cappedTranscript,
     deliveryTotal: deliveryScores.filler_words.score + deliveryScores.wpm.score + deliveryScores.duration.score,
     preFiredCaps,
     skipGrammar: grammarIsClean,
