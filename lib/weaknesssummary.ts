@@ -42,6 +42,11 @@ Write directly to the candidate ("you", "your"). Be blunt, not encouraging. No b
   })
 
   const result = await model.generateContent(prompt)
+  const candidate = result.response.candidates?.[0]
+  const finishReason = candidate?.finishReason
+  if (finishReason && finishReason !== 'STOP') {
+    throw new Error(`Gemini response incomplete (finishReason: ${finishReason})`)
+  }
   const text = result.response.text().trim()
   if (!text) throw new Error('Empty response from Gemini')
   return text

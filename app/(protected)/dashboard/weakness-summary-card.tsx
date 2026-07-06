@@ -42,9 +42,27 @@ export function WeaknessSummaryCard({ initialSummary, initialSummaryAt }: Props)
         borderRadius: '1rem',
       }}
     >
-      <div>
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-1">Pro</p>
-        <h2 className="text-xl font-semibold text-white">Your Biggest Weakness</h2>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-1">Pro</p>
+          <h2 className="text-xl font-semibold text-white">Your Biggest Weakness</h2>
+        </div>
+        <button
+          onClick={() => {
+            setLoading(true)
+            setError(null)
+            fetch('/api/dashboard/weakness-summary', { method: 'POST' })
+              .then(res => res.ok ? res.json() : res.json().then(d => Promise.reject(d.error ?? 'Failed')))
+              .then(data => { setSummary(data.summary); setSummaryAt(new Date().toISOString()) })
+              .catch(e => setError(typeof e === 'string' ? e : 'Something went wrong'))
+              .finally(() => setLoading(false))
+          }}
+          disabled={loading}
+          className="shrink-0 text-[11px] text-white/30 hover:text-white/60 disabled:opacity-40 transition-colors cursor-pointer"
+          title="Regenerate"
+        >
+          ↻ Regenerate
+        </button>
       </div>
 
       {error && (
