@@ -2,7 +2,11 @@
 
 import { Heart } from 'lucide-react';
 
-export function MinimalFooter() {
+interface MinimalFooterProps {
+  onPrivacyOpen?: () => void
+}
+
+export function MinimalFooter({ onPrivacyOpen }: MinimalFooterProps = {}) {
     const year = new Date().getFullYear();
 
     const footerLinks = [
