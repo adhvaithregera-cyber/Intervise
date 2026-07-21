@@ -1,5 +1,6 @@
 'use client'
 
+import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useRef, useState } from 'react'
 import type HCaptchaType from '@hcaptcha/react-hcaptcha'
@@ -59,7 +60,12 @@ export default function LoginPage() {
   const inputClass = "w-full rounded-xl border border-white/15 bg-white/5 px-3 py-2.5 text-sm text-white placeholder-white/30 focus:border-[#F9C125] focus:outline-none focus:ring-2 focus:ring-[#F9C125]/15"
 
   return (
-    <div className="rounded-2xl border border-[rgba(249,193,37,0.18)] bg-[rgba(8,13,26,0.85)] backdrop-blur-xl p-5 sm:p-8 shadow-2xl">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+      className="rounded-2xl border border-[rgba(249,193,37,0.18)] bg-[rgba(8,13,26,0.85)] backdrop-blur-xl p-5 sm:p-8 shadow-2xl"
+    >
       <div className="mb-8 text-center">
         <Link href="/" className="text-lg font-bold tracking-widest text-[#F9C125]">INTERVISE</Link>
         <p className="mt-4 text-2xl font-bold text-white">Welcome back</p>
@@ -117,6 +123,6 @@ export default function LoginPage() {
         Don&apos;t have an account?{' '}
         <Link href="/signup" className="font-semibold text-[#F9C125] hover:text-[#F9C125]/80">Sign up free</Link>
       </p>
-    </div>
+    </motion.div>
   )
 }

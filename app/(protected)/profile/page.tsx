@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
+import { FadeIn } from '@/components/ui/fade-in'
 import { ProfileForm } from './profile-form'
 
 export default async function ProfilePage() {
@@ -17,21 +18,25 @@ export default async function ProfilePage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
-      <h1 className="mb-8 text-2xl font-bold text-white">Profile</h1>
-      <ProfileForm
-        fullName={profile.full_name}
-        email={user.email ?? ''}
-        initialAge={profile.age ?? null}
-        initialRoleType={profile.role_type}
-        initialInterviewDate={profile.interview_date}
-        initialBiggestWeakness={profile.biggest_weakness}
-        tier={profile.tier ?? 'free'}
-        sessionsUsed={profile.sessions_used_this_month}
-        sessionsLimit={profile.sessions_limit}
-        subscriptionStatus={profile.subscription_status ?? null}
-        tierExpiresAt={profile.tier_expires_at ?? null}
-        hasActiveSubscription={!!profile.razorpay_subscription_id && profile.subscription_status === 'active'}
-      />
+      <FadeIn delay={0}>
+        <h1 className="mb-8 text-2xl font-bold text-white">Profile</h1>
+      </FadeIn>
+      <FadeIn delay={0.08}>
+        <ProfileForm
+          fullName={profile.full_name}
+          email={user.email ?? ''}
+          initialAge={profile.age ?? null}
+          initialRoleType={profile.role_type}
+          initialInterviewDate={profile.interview_date}
+          initialBiggestWeakness={profile.biggest_weakness}
+          tier={profile.tier ?? 'free'}
+          sessionsUsed={profile.sessions_used_this_month}
+          sessionsLimit={profile.sessions_limit}
+          subscriptionStatus={profile.subscription_status ?? null}
+          tierExpiresAt={profile.tier_expires_at ?? null}
+          hasActiveSubscription={!!profile.razorpay_subscription_id && profile.subscription_status === 'active'}
+        />
+      </FadeIn>
     </div>
   )
 }

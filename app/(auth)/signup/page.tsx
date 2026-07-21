@@ -1,5 +1,6 @@
 'use client'
 
+import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useRef, useState } from 'react'
 import posthog from 'posthog-js'
@@ -63,7 +64,12 @@ export default function SignupPage() {
 
   if (confirmed) {
     return (
-      <div className="rounded-2xl border border-[rgba(249,193,37,0.18)] bg-[rgba(8,13,26,0.85)] backdrop-blur-xl p-5 sm:p-8 shadow-2xl text-center">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className="rounded-2xl border border-[rgba(249,193,37,0.18)] bg-[rgba(8,13,26,0.85)] backdrop-blur-xl p-5 sm:p-8 shadow-2xl text-center"
+      >
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-white/10">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F9C125" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="2" y="4" width="20" height="16" rx="2" />
@@ -78,12 +84,17 @@ export default function SignupPage() {
           Already confirmed?{' '}
           <Link href="/login" className="font-semibold text-[#F9C125] hover:text-[#F9C125]/80">Log in</Link>
         </p>
-      </div>
+      </motion.div>
     )
   }
 
   return (
-    <div className="rounded-2xl border border-[rgba(249,193,37,0.18)] bg-[rgba(8,13,26,0.85)] backdrop-blur-xl p-5 sm:p-8 shadow-2xl">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+      className="rounded-2xl border border-[rgba(249,193,37,0.18)] bg-[rgba(8,13,26,0.85)] backdrop-blur-xl p-5 sm:p-8 shadow-2xl"
+    >
       <div className="mb-8 text-center">
         <Link href="/" className="text-lg font-bold tracking-widest text-[#F9C125]">INTERVISE</Link>
         <p className="mt-4 text-2xl font-bold text-white">Create your account</p>
@@ -141,6 +152,6 @@ export default function SignupPage() {
         Already have an account?{' '}
         <Link href="/login" className="font-semibold text-[#F9C125] hover:text-[#F9C125]/80">Log in</Link>
       </p>
-    </div>
+    </motion.div>
   )
 }
