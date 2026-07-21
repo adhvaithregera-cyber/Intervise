@@ -7,14 +7,14 @@ import { ElegantShape } from '@/components/ui/shape-landing-hero'
 export function HeroSection({ sessionHref }: { sessionHref: string }) {
   return (
     <section
-      className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center overflow-hidden px-4 pb-32 sm:px-6"
+      className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center overflow-hidden px-4 sm:px-6"
       style={{ backgroundColor: '#080d1a' }}
     >
-      {/* Ambient gold glow */}
+      {/* Ambient gold glow — larger, more luminous */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
-          background: 'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(249,193,37,0.07) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse 90% 70% at 50% 40%, rgba(249,193,37,0.10) 0%, transparent 70%)',
         }}
       />
 
@@ -38,95 +38,101 @@ export function HeroSection({ sessionHref }: { sessionHref: string }) {
       </div>
 
       {/* Hero content */}
-      <div className="relative z-10 flex flex-col items-center text-center pt-24 sm:pt-32">
-        {/* Badge */}
-        <motion.span
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.2 }}
-          className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#F9C125]/20 bg-[#F9C125]/[0.06] px-4 py-1.5 text-xs font-semibold text-white/80"
-        >
-          <span className="h-1.5 w-1.5 rounded-full bg-[#F9C125]" />
-          AI-powered interview coaching
-        </motion.span>
+      <div className="relative z-10 flex flex-col items-center text-center pt-24 sm:pt-32 pb-32 gap-0">
 
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.35, ease: [0.25, 0.4, 0.25, 1] }}
-          className="mb-5 max-w-3xl text-4xl font-extrabold leading-tight tracking-tight sm:text-6xl lg:text-7xl"
-        >
-          <span className="bg-gradient-to-b from-white to-white/80 bg-clip-text text-transparent">
-            Your next interview
-          </span>
-          <br />
-          <span className="bg-gradient-to-r from-[#F9C125] via-amber-200 to-[#F9C125]/80 bg-clip-text text-transparent">
-            is won before it starts.
-          </span>
-        </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.55 }}
-          className="mb-10 max-w-[500px] text-base leading-relaxed text-white/50 sm:text-lg"
-        >
-          Experience the pressure of a real interview and find out exactly where your answers fall short.
-        </motion.p>
-
-        {/* Stat cards */}
+        {/* Badge — delay 0 */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.65 }}
-          className="mb-10 flex flex-wrap justify-center gap-3"
+          transition={{ duration: 0.5 }}
+        >
+          <span className="inline-flex items-center gap-2 rounded-full border border-[#F9C125]/20 bg-[#F9C125]/[0.08] px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-[#F9C125]">
+            AI Interview Coach
+          </span>
+        </motion.div>
+
+        {/* Headline — delay 0.1 */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
+          className="mt-8"
+        >
+          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tight text-white leading-none">
+            Ace your next<br />
+            <span className="bg-gradient-to-r from-[#F9C125] to-amber-300 bg-clip-text text-transparent">
+              interview
+            </span>
+          </h1>
+        </motion.div>
+
+        {/* Sub-headline — delay 0.2 */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
+        >
+          <p className="mt-6 max-w-xl text-lg sm:text-xl text-white/60 leading-relaxed">
+            Practice with AI coaching. Get instant feedback on structure, pace, and clarity.
+          </p>
+        </motion.div>
+
+        {/* CTA buttons — delay 0.3 */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3, ease: 'easeOut' }}
+          className="mt-8 flex flex-col items-center gap-3 sm:flex-row"
+        >
+          {/* Primary CTA */}
+          <Link href={sessionHref}>
+            <button className="relative overflow-hidden rounded-xl bg-[#F9C125] px-8 py-4 text-base font-bold text-[#080d1a] shadow-lg shadow-[#F9C125]/25 transition-all hover:brightness-110 group">
+              <span className="relative z-10">Start for free</span>
+              <span className="absolute inset-0 -skew-x-[15deg] translate-x-[-100%] group-hover:translate-x-[250%] transition-transform duration-700 ease-in-out bg-white/20" />
+            </button>
+          </Link>
+          {/* Secondary */}
+          <a href="#how-it-works" className="rounded-xl border border-white/20 px-8 py-4 text-base font-semibold text-white/80 hover:bg-white/5 transition-colors">
+            See how it works
+          </a>
+        </motion.div>
+
+        {/* Trust pills — delay 0.35 */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.35, ease: 'easeOut' }}
+        >
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-6">
+            {['No card needed', '2 free sessions', 'Works in your browser'].map(t => (
+              <span key={t} className="flex items-center gap-1.5 text-sm text-white/50">
+                <span className="text-[#F9C125]">✓</span> {t}
+              </span>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Stat cards — delay 0.5 */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.5, ease: 'easeOut' }}
+          className="mt-12 flex flex-wrap justify-center gap-4"
         >
           {[
             { value: '8', label: 'Answer formats' },
             { value: 'A–F', label: 'Instant grade' },
             { value: 'WPM', label: 'Speed tracked' },
           ].map((s) => (
-            <div
+            <motion.div
               key={s.label}
-              className="flex flex-col items-center rounded-2xl border border-[#F9C125]/[0.12] px-7 py-3.5"
-              style={{ background: 'rgba(249,193,37,0.04)' }}
+              className="glass-card flex flex-col items-center p-5 min-w-[140px]"
+              whileHover={{ scale: 1.03 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
             >
-              <span className="text-xl font-black text-white">{s.value}</span>
-              <span className="text-[11px] text-white/45">{s.label}</span>
-            </div>
-          ))}
-        </motion.div>
-
-        {/* CTAs */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.75 }}
-          className="flex flex-col items-center gap-3 sm:flex-row"
-        >
-          <a
-            href="#app-preview"
-            className="inline-flex w-full items-center justify-center rounded-xl bg-[#F9C125] px-8 py-3.5 text-base font-bold text-[#080d1a] shadow-lg shadow-[#F9C125]/15 hover:bg-[#F9C125]/90 transition-colors sm:w-auto"
-          >
-            See how it works
-          </a>
-          <Link
-            href={sessionHref}
-            className="inline-flex w-full items-center justify-center rounded-xl border border-white/15 px-8 py-3.5 text-base font-semibold text-white/80 hover:border-white/30 hover:text-white transition-colors sm:w-auto"
-          >
-            Start Session
-          </Link>
-        </motion.div>
-
-        {/* Trust pills */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.9 }}
-          className="mt-6 flex flex-wrap items-center justify-center gap-4"
-        >
-          {['No card needed', '2 free sessions', 'Cancel anytime', 'No download — works in your browser'].map((t) => (
-            <span key={t} className="text-xs text-white/35">{t}</span>
+              <span className="text-2xl font-bold text-[#F9C125]">{s.value}</span>
+              <span className="text-xs text-white/55 mt-1 text-center">{s.label}</span>
+            </motion.div>
           ))}
         </motion.div>
       </div>
