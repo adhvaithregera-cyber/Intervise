@@ -11,23 +11,27 @@ export function FinalCta({ showSignup }: { showSignup: boolean }) {
   return (
     <section
       className="relative overflow-hidden px-4 py-20 text-center sm:px-6 sm:py-28"
-      style={{ backgroundColor: '#080d1a' }}
+      style={{ backgroundColor: '#F9C125' }}
     >
-      {/* Dot grid only — no vignette to avoid gradient banding */}
+      {/* Subtle radial light burst for depth */}
       <div
         className="pointer-events-none absolute inset-0 z-0"
-        style={{
-          backgroundImage: 'radial-gradient(rgba(255,255,255,0.07) 1.5px, transparent 1.5px)',
-          backgroundSize: '26px 26px',
-        }}
+        style={{ background: 'radial-gradient(ellipse 70% 80% at 50% 50%, rgba(255,255,255,0.15) 0%, transparent 60%)' }}
       />
 
-      <div ref={ref} className="relative z-10">
+      <motion.div
+        ref={ref}
+        className="relative z-10"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+      >
         <motion.h2
           initial={{ opacity: 0, y: 20, filter: 'blur(6px)' }}
           animate={inView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
           transition={{ duration: 0.5 }}
-          className="mb-4 text-3xl font-extrabold text-white sm:text-4xl"
+          className="mb-4 text-4xl font-bold text-[#080d1a] sm:text-5xl"
         >
           Your interview is closer than you think.
         </motion.h2>
@@ -35,7 +39,7 @@ export function FinalCta({ showSignup }: { showSignup: boolean }) {
           initial={{ opacity: 0, y: 14 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.4, delay: 0.1 }}
-          className="mb-8 text-white/70"
+          className="mb-8 text-[#080d1a]/70"
         >
           Start practising today — free, no card required.
         </motion.p>
@@ -45,15 +49,14 @@ export function FinalCta({ showSignup }: { showSignup: boolean }) {
             animate={inView ? { opacity: 1, scale: 1 } : {}}
             transition={{ duration: 0.4, delay: 0.2, ease: 'backOut' }}
           >
-            <Link
-              href="/signup"
-              className="inline-flex items-center rounded-xl bg-[#F9C125] px-10 py-4 text-base font-bold text-[#080d1a] shadow-lg shadow-black/30 hover:bg-[#F9C125]/90 transition-colors"
-            >
-              Start FREE →
+            <Link href="/signup">
+              <button className="rounded-xl bg-[#080d1a] px-8 py-4 text-base font-bold text-[#F9C125] hover:bg-[#0d1629] transition-colors shadow-lg shadow-[#080d1a]/30">
+                Start for free →
+              </button>
             </Link>
           </motion.div>
         )}
-      </div>
+      </motion.div>
     </section>
   )
 }
