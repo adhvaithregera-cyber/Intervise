@@ -46,12 +46,7 @@ export async function Navbar({ prefetched }: NavbarProps = {}) {
 
   return (
     <nav
-      className="sticky top-0 z-50 border-b"
-      style={{
-        backgroundColor: '#080d1a',
-        borderColor: 'rgba(249,193,37,0.15)',
-        boxShadow: '0 1px 0 rgba(249,193,37,0.08), 0 4px 24px rgba(0,0,0,0.35)',
-      }}
+      className="sticky top-0 z-50 bg-[#080d1a]/80 backdrop-blur-2xl border-b border-white/[0.06] shadow-[0_1px_0_rgba(249,193,37,0.08)]"
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center px-4 sm:px-6">
 
