@@ -223,7 +223,7 @@ export default async function DashboardPage({
           ) : (
             <Link
               href="/session/setup"
-              className="w-full flex items-center justify-center rounded-2xl bg-[#F9C125] text-lg sm:text-xl font-bold text-[#080d1a] hover:brightness-110 transition-all py-5 sm:py-0 min-h-[64px] sm:min-h-[80px]"
+              className="w-full block rounded-2xl bg-[#F9C125] py-5 sm:py-0 min-h-[64px] sm:min-h-[80px] text-center flex items-center justify-center text-lg sm:text-xl font-bold text-[#080d1a] hover:brightness-110 transition-all"
               style={{
                 boxShadow: '0 0 40px rgba(249,193,37,0.35), 0 8px 32px rgba(249,193,37,0.25)',
               }}
@@ -341,10 +341,8 @@ export default async function DashboardPage({
                   </div>
                   <p className="font-bold text-white mb-1">Unlock Progress Charts</p>
                   <p className="text-sm text-white/60 mb-4">Track filler words, pace, and category performance over time</p>
-                  <Link href="/#pricing">
-                    <button className="rounded-xl bg-[#F9C125] px-5 py-2.5 text-sm font-bold text-[#080d1a] hover:brightness-110 transition-all">
-                      Upgrade to Student →
-                    </button>
+                  <Link href="/#pricing" className="rounded-xl bg-[#F9C125] px-5 py-2.5 text-sm font-bold text-[#080d1a] hover:brightness-110 transition-all inline-block">
+                    Upgrade to Student →
                   </Link>
                 </div>
               </div>

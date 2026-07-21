@@ -172,16 +172,12 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
               </p>
             </div>
             <div className="flex gap-3 flex-wrap sm:flex-nowrap">
-              <Link href="/session/setup" className="flex-1 sm:flex-none">
-                <button className="w-full sm:w-auto rounded-xl bg-[#F9C125] px-5 py-2.5 text-sm font-bold text-[#080d1a] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20">
-                  New Session
-                </button>
+              <Link href="/session/setup" className="flex-1 sm:flex-none rounded-xl bg-[#F9C125] px-5 py-2.5 text-sm font-bold text-[#080d1a] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20 inline-flex items-center justify-center w-full sm:w-auto">
+                New Session
               </Link>
               <ShareScorecard sessionId={sessionId} />
-              <Link href="/dashboard" className="flex-1 sm:flex-none">
-                <button className="w-full sm:w-auto rounded-xl border border-white/20 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white/70 hover:bg-white/10 transition-colors">
-                  Dashboard
-                </button>
+              <Link href="/dashboard" className="flex-1 sm:flex-none rounded-xl border border-white/20 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white/70 hover:bg-white/10 transition-colors inline-flex items-center justify-center w-full sm:w-auto">
+                Dashboard
               </Link>
             </div>
           </div>
@@ -362,10 +358,8 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
                   </div>
                   <p className="font-bold text-white mb-1">Unlock AI Feedback</p>
                   <p className="text-sm text-white/60 mb-4">Score, key strengths &amp; one actionable coaching tip per answer</p>
-                  <Link href="/#pricing">
-                    <button className="rounded-xl bg-[#F9C125] px-5 py-2.5 text-sm font-bold text-[#080d1a] hover:brightness-110 transition-all">
-                      Upgrade to Student →
-                    </button>
+                  <Link href="/#pricing" className="rounded-xl bg-[#F9C125] px-5 py-2.5 text-sm font-bold text-[#080d1a] hover:brightness-110 transition-all inline-block">
+                    Upgrade to Student →
                   </Link>
                 </div>
               </div>
@@ -531,10 +525,8 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
                     </div>
                     <p className="font-bold text-white mb-1">Unlock Progress Tracking</p>
                     <p className="text-sm text-white/60 mb-4">WPM trends, filler patterns &amp; weakness analysis</p>
-                    <Link href="/#pricing">
-                      <button className="rounded-xl bg-[#F9C125] px-5 py-2.5 text-sm font-bold text-[#080d1a] hover:brightness-110 transition-all">
-                        Upgrade to Pro →
-                      </button>
+                    <Link href="/#pricing" className="rounded-xl bg-[#F9C125] px-5 py-2.5 text-sm font-bold text-[#080d1a] hover:brightness-110 transition-all inline-block">
+                      Upgrade to Pro →
                     </Link>
                   </div>
                 </div>

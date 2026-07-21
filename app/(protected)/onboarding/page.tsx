@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 
 const TOTAL_STEPS = 7
@@ -108,7 +109,8 @@ export default function OnboardingPage() {
       <div className="w-full max-w-xl">
 
         {/* Progress bar */}
-        <div className="mb-6">
+        <div className="relative mb-6">
+          <div className="absolute -inset-4 rounded-2xl" style={{ background: 'radial-gradient(ellipse 100% 200% at 50% 50%, rgba(249,193,37,0.04) 0%, transparent 70%)' }} />
           <div className="mb-2 flex justify-between text-xs text-white/50">
             <span>Step {step} of {TOTAL_STEPS}</span>
             <span>{progressPct}%</span>
@@ -125,7 +127,12 @@ export default function OnboardingPage() {
 
           {/* Step 1: Full name + Age */}
           {step === 1 && (
-            <div>
+            <motion.div
+              key={step}
+              initial={{ opacity: 0, x: 12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+            >
               <h2 className="mb-1 text-2xl font-bold text-white">Let&apos;s start with you</h2>
               <p className="mb-8 text-sm text-white/55">Your name and age help us personalise your experience.</p>
               <div className="space-y-6">
@@ -161,12 +168,17 @@ export default function OnboardingPage() {
               >
                 Continue
               </button>
-            </div>
+            </motion.div>
           )}
 
           {/* Step 2: Role */}
           {step === 2 && (
-            <div>
+            <motion.div
+              key={step}
+              initial={{ opacity: 0, x: 12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+            >
               <h2 className="mb-1 text-2xl font-bold text-white">What role are you targeting?</h2>
               <p className="mb-8 text-sm text-white/55">We&apos;ll tailor your question bank to your field.</p>
               <div className="grid grid-cols-2 gap-3">
@@ -184,12 +196,17 @@ export default function OnboardingPage() {
                 <button onClick={() => setStep(1)} className="rounded-xl border border-white/20 px-5 py-3 text-sm font-medium text-white/70 hover:bg-white/10 transition-colors">Back</button>
                 <button disabled={!resolvedRole} onClick={() => setStep(3)} className="flex-1 rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#080d1a] disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all">Continue</button>
               </div>
-            </div>
+            </motion.div>
           )}
 
           {/* Step 3: Interview date */}
           {step === 3 && (
-            <div>
+            <motion.div
+              key={step}
+              initial={{ opacity: 0, x: 12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+            >
               <h2 className="mb-1 text-2xl font-bold text-white">When is your interview?</h2>
               <p className="mb-8 text-sm text-white/55">Helps us track how much time you have to prepare.</p>
               <button onClick={() => { setJustPracticing(!justPracticing); setInterviewDate('') }} className={optionClass(justPracticing)}>
@@ -211,12 +228,17 @@ export default function OnboardingPage() {
                 <button onClick={() => setStep(2)} className="rounded-xl border border-white/20 px-5 py-3 text-sm font-medium text-white/70 hover:bg-white/10 transition-colors">Back</button>
                 <button onClick={() => setStep(4)} className="flex-1 rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#080d1a] hover:brightness-110 transition-all">Continue</button>
               </div>
-            </div>
+            </motion.div>
           )}
 
           {/* Step 4: Biggest weakness */}
           {step === 4 && (
-            <div>
+            <motion.div
+              key={step}
+              initial={{ opacity: 0, x: 12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+            >
               <h2 className="mb-1 text-2xl font-bold text-white">Your biggest interview weakness?</h2>
               <p className="mb-8 text-sm text-white/55">Honest answers help us focus your drills where it matters most.</p>
               <div className="space-y-3">
@@ -232,12 +254,17 @@ export default function OnboardingPage() {
                 <button onClick={() => setStep(3)} className="rounded-xl border border-white/20 px-5 py-3 text-sm font-medium text-white/70 hover:bg-white/10 transition-colors">Back</button>
                 <button disabled={!resolvedWeakness} onClick={() => setStep(5)} className="flex-1 rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#080d1a] disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all">Continue</button>
               </div>
-            </div>
+            </motion.div>
           )}
 
           {/* Step 5: Experience level */}
           {step === 5 && (
-            <div>
+            <motion.div
+              key={step}
+              initial={{ opacity: 0, x: 12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+            >
               <h2 className="mb-1 text-2xl font-bold text-white">How much experience do you have?</h2>
               <p className="mb-8 text-sm text-white/55">We&apos;ll calibrate question difficulty to your level.</p>
               <div className="space-y-3">
@@ -253,12 +280,17 @@ export default function OnboardingPage() {
                 <button onClick={() => setStep(4)} className="rounded-xl border border-white/20 px-5 py-3 text-sm font-medium text-white/70 hover:bg-white/10 transition-colors">Back</button>
                 <button disabled={!resolvedExperience} onClick={() => setStep(6)} className="flex-1 rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#080d1a] disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all">Continue</button>
               </div>
-            </div>
+            </motion.div>
           )}
 
           {/* Step 6: Interview type */}
           {step === 6 && (
-            <div>
+            <motion.div
+              key={step}
+              initial={{ opacity: 0, x: 12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+            >
               <h2 className="mb-1 text-2xl font-bold text-white">What type of interviews are you preparing for?</h2>
               <p className="mb-8 text-sm text-white/55">This shapes which question formats we prioritise.</p>
               <div className="space-y-3">
@@ -274,12 +306,17 @@ export default function OnboardingPage() {
                 <button onClick={() => setStep(5)} className="rounded-xl border border-white/20 px-5 py-3 text-sm font-medium text-white/70 hover:bg-white/10 transition-colors">Back</button>
                 <button disabled={!resolvedInterviewType} onClick={() => setStep(7)} className="flex-1 rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#080d1a] disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all">Continue</button>
               </div>
-            </div>
+            </motion.div>
           )}
 
           {/* Step 7: Practice frequency */}
           {step === 7 && (
-            <div>
+            <motion.div
+              key={step}
+              initial={{ opacity: 0, x: 12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+            >
               <h2 className="mb-1 text-2xl font-bold text-white">How often do you plan to practise?</h2>
               <p className="mb-8 text-sm text-white/55">No pressure — just helps us set expectations.</p>
               <div className="space-y-3">
@@ -298,7 +335,7 @@ export default function OnboardingPage() {
                   {submitting ? 'Saving…' : 'Go to dashboard'}
                 </button>
               </div>
-            </div>
+            </motion.div>
           )}
 
         </div>
