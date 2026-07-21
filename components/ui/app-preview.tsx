@@ -109,6 +109,7 @@ function ScreenshotFrame({
         fill
         className="object-cover object-top"
         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+        style={{ boxShadow: '0 0 40px rgba(249,193,37,0.12)' }}
       />
     </motion.div>
   )
@@ -155,7 +156,11 @@ export function AppPreview() {
             transition={{ duration: 0.45, delay: 0.08 }}
             className="text-3xl font-bold text-white sm:text-4xl"
           >
-            From zero to feedback in under 20 minutes
+            From zero to{' '}
+            <span className="bg-gradient-to-r from-[#F9C125] to-amber-300 bg-clip-text text-transparent">
+              feedback
+            </span>{' '}
+            in under 20 minutes
           </motion.h2>
           <p className="mt-2 text-xs text-white/30">No app to install. Just a browser and a microphone.</p>
         </div>
@@ -165,9 +170,10 @@ export function AppPreview() {
           {WORKFLOW_STEPS.map((step, i) => (
             <motion.div
               key={step.label}
-              initial={{ opacity: 0, y: 12 }}
-              animate={headingInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.45, delay: 0.12 + i * 0.08, ease: 'easeOut' }}
+              initial={{ opacity: 0, y: 32 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: i * 0.08, ease: 'easeOut' }}
               className={step.label === 'Briefing' ? 'hidden lg:flex flex-col gap-3' : 'flex flex-col gap-3'}
             >
               <ScreenshotFrame src={step.src} alt={step.alt} delay={0.15 + i * 0.08} />
@@ -220,11 +226,7 @@ export function AppPreview() {
               initial={{ opacity: 0, y: 16 }}
               animate={dividerInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.45, delay: 0.18 + i * 0.1, ease: 'easeOut' }}
-              className="flex flex-col gap-4 rounded-2xl p-5"
-              style={{
-                background: 'rgba(255,255,255,0.04)',
-                border: `1px solid ${feature.borderColor}`,
-              }}
+              className="glass-card flex flex-col gap-4 rounded-2xl p-5"
             >
               {/* Screenshot */}
               <div
@@ -240,6 +242,7 @@ export function AppPreview() {
                   fill
                   className="object-cover object-top"
                   sizes="(max-width: 640px) 90vw, 30vw"
+                  style={{ boxShadow: '0 0 40px rgba(249,193,37,0.12)' }}
                 />
               </div>
 

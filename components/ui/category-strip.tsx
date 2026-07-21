@@ -17,13 +17,9 @@ const items = [...categories, ...categories]
 function Pill({ num, label }: { num: string; label: string }) {
   return (
     <span
-      className="inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2"
-      style={{
-        background: 'rgba(255,255,255,0.06)',
-        border: '1px solid rgba(249,193,37,0.22)',
-      }}
+      className="glass-card inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2"
     >
-      <span className="text-[11px] font-bold text-[#F9C125]">Cat {num}</span>
+      <span className="text-[11px] font-bold text-[#F9C125]/80">Cat {num}</span>
       <span className="h-3 w-px bg-white/20" />
       <span className="text-[13px] font-semibold text-white/85">{label}</span>
     </span>
