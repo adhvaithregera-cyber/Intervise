@@ -6,7 +6,8 @@ import posthog from 'posthog-js'
 
 type LivePhase =
   | 'loading'
-  | 'need_mic'   // iOS Safari: getUserMedia requires a direct user gesture per page
+  | 'need_mic'          // iOS Safari: getUserMedia requires a direct user gesture per page
+  | 'need_mic_blocked'  // Permission denied even after user gesture — blocked in OS/browser settings
   | 'prep'
   | 'recording'
   | 'between'
@@ -238,8 +239,7 @@ export default function LiveSessionPage() {
       micStreamRef.current = stream
       setPhase('prep')
     } catch {
-      setPhase('error')
-      setErrorMessage('Microphone access was denied. Please allow microphone access in your browser settings and try again.')
+      setPhase('need_mic_blocked')
     }
   }
 
@@ -327,6 +327,38 @@ export default function LiveSessionPage() {
             >
               Enable Microphone
             </button>
+          </div>
+        )}
+
+        {/* Mic blocked in OS/browser settings */}
+        {phase === 'need_mic_blocked' && (
+          <div style={glassCard} className="p-8 text-center">
+            <div
+              className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full"
+              style={{ background: 'rgba(239,68,68,0.12)', border: '2px solid rgba(239,68,68,0.4)' }}
+            >
+              <Mic className="h-7 w-7 text-red-400" />
+            </div>
+            <p className="text-white text-lg font-bold mb-2">Microphone blocked</p>
+            <p className="text-white/60 text-sm mb-1">Your browser has blocked microphone access for this site.</p>
+            <p className="text-white/40 text-xs mb-6">
+              <strong className="text-white/60">On iPhone:</strong> Settings → Privacy &amp; Security → Microphone → enable Safari.
+              Then return here and reload the page.
+            </p>
+            <div className="flex flex-col gap-3 items-center">
+              <button
+                onClick={() => window.location.reload()}
+                className="rounded-xl bg-[#F9C125] px-8 py-3 text-sm font-bold text-[#080d1a] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/25"
+              >
+                Reload Page
+              </button>
+              <button
+                onClick={requestMicPermission}
+                className="rounded-xl border border-white/20 px-6 py-2.5 text-sm font-semibold text-white/60 hover:bg-white/5 transition-all"
+              >
+                Try Again
+              </button>
+            </div>
           </div>
         )}
 
