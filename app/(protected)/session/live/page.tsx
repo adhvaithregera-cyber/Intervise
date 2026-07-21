@@ -45,6 +45,7 @@ export default function LiveSessionPage() {
   const [prepCount, setPrepCount] = useState(5)
   const [answerTimeLeft, setAnswerTimeLeft] = useState(0)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [micErrorName, setMicErrorName] = useState<string | null>(null)
   const [cameraStream, setCameraStream] = useState<MediaStream | null>(null)
   const [transcribeProgress, setTranscribeProgress] = useState({ current: 0, total: 0 })
   const [estimatedSecondsLeft, setEstimatedSecondsLeft] = useState(0)
@@ -238,7 +239,10 @@ export default function LiveSessionPage() {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       micStreamRef.current = stream
       setPhase('prep')
-    } catch {
+    } catch (err) {
+      const name = (err as DOMException)?.name ?? 'Unknown'
+      console.error('[mic] getUserMedia failed:', name, err)
+      setMicErrorName(name)
       setPhase('need_mic_blocked')
     }
   }
@@ -339,13 +343,32 @@ export default function LiveSessionPage() {
             >
               <Mic className="h-7 w-7 text-red-400" />
             </div>
-            <p className="text-white text-lg font-bold mb-2">Microphone blocked</p>
-            <p className="text-white/60 text-sm mb-1">Your browser has blocked microphone access for this site.</p>
-            <p className="text-white/40 text-xs mb-6">
-              <strong className="text-white/60">Chrome / Edge:</strong> click the lock icon in the address bar → Microphone → Allow → reload.
-              <br className="mb-1" />
-              <strong className="text-white/60">iPhone Safari:</strong> Settings → Privacy &amp; Security → Microphone → enable Safari → reload.
-            </p>
+            {micErrorName === 'NotReadableError' || micErrorName === 'TrackStartError' ? (
+              <>
+                <p className="text-white text-lg font-bold mb-2">Microphone in use</p>
+                <p className="text-white/60 text-sm mb-4">Another app (Teams, Zoom, Discord, etc.) has exclusive control of your microphone.</p>
+                <p className="text-white/40 text-xs mb-6">Close or mute the other app, then tap Try Again.</p>
+              </>
+            ) : micErrorName === 'NotFoundError' ? (
+              <>
+                <p className="text-white text-lg font-bold mb-2">No microphone found</p>
+                <p className="text-white/60 text-sm mb-4">Make sure a microphone is plugged in and recognised by your device.</p>
+                <p className="text-white/40 text-xs mb-6">Error: {micErrorName}</p>
+              </>
+            ) : (
+              <>
+                <p className="text-white text-lg font-bold mb-2">Microphone blocked</p>
+                <p className="text-white/60 text-sm mb-1">Your browser or OS is blocking microphone access.</p>
+                <p className="text-white/40 text-xs mb-6">
+                  <strong className="text-white/60">Chrome / Edge:</strong> lock icon in address bar → Microphone → Allow → reload.
+                  <br />
+                  <strong className="text-white/60">Windows:</strong> Settings → Privacy &amp; Security → Microphone → allow browser apps.
+                  <br />
+                  <strong className="text-white/60">iPhone:</strong> Settings → Privacy &amp; Security → Microphone → enable Safari.
+                  {micErrorName && <><br /><span className="text-white/25">Error: {micErrorName}</span></>}
+                </p>
+              </>
+            )}
             <div className="flex flex-col gap-3 items-center">
               <button
                 onClick={() => window.location.reload()}
