@@ -110,8 +110,21 @@ export const StatPills = React.memo(function StatPills({ summary }: { summary: P
 export const FillerBarChart = React.memo(function FillerBarChart({ data }: { data: SessionStat[] }) {
   if (data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-32 text-white/30 text-xs">
-        No session data yet
+      <div className="p-5 relative" style={INNER_CARD}>
+        <SectionLabel>Filler words per session</SectionLabel>
+        <div className="relative">
+          <ResponsiveContainer width="100%" height={140}>
+            <BarChart data={[{label:'',fillers:0}]} margin={{ top: 4, right: 4, left: -24, bottom: 16 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
+              <XAxis dataKey="label" tick={{ fill: 'rgba(249,193,37,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} height={56} />
+              <YAxis tick={{ fill: 'rgba(249,193,37,0.3)', fontSize: 12 }} axisLine={false} tickLine={false} domain={[0,10]} ticks={[0,2,4,6,8,10]} />
+              <Bar dataKey="fillers" fill="rgba(249,193,37,0.08)" radius={[4,4,0,0]} maxBarSize={32} />
+            </BarChart>
+          </ResponsiveContainer>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <p className="text-xs text-white/30 text-center">Complete at least 1 session to show data</p>
+          </div>
+        </div>
       </div>
     )
   }
@@ -155,8 +168,22 @@ export const WpmLineChart = React.memo(function WpmLineChart({ data }: { data: S
   const filtered = data.filter((d) => d.wpm !== null)
   if (filtered.length === 0) {
     return (
-      <div className="flex items-center justify-center h-32 text-white/30 text-xs">
-        No WPM data yet
+      <div className="p-5 relative" style={INNER_CARD}>
+        <SectionLabel>Speech pace per session (wpm)</SectionLabel>
+        <div className="relative">
+          <ResponsiveContainer width="100%" height={140}>
+            <LineChart data={[{label:'',wpm:null}]} margin={{ top: 4, right: 4, left: -24, bottom: 16 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
+              <ReferenceArea y1={110} y2={160} fill="rgba(34,197,94,0.06)" stroke="rgba(34,197,94,0.12)" label={{ value: 'Ideal range', position: 'insideTopRight', fill: 'rgba(34,197,94,0.3)', fontSize: 10 }} />
+              <XAxis dataKey="label" tick={{ fill: 'rgba(249,193,37,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} height={56} />
+              <YAxis tick={{ fill: 'rgba(249,193,37,0.3)', fontSize: 12 }} axisLine={false} tickLine={false} domain={[80,180]} ticks={[80,110,130,160,180]} />
+              <Line type="monotone" dataKey="wpm" stroke="rgba(249,193,37,0.15)" strokeWidth={2} dot={false} />
+            </LineChart>
+          </ResponsiveContainer>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <p className="text-xs text-white/30 text-center">Complete at least 1 session to show data</p>
+          </div>
+        </div>
       </div>
     )
   }
@@ -212,8 +239,22 @@ export const WpmLineChart = React.memo(function WpmLineChart({ data }: { data: S
 export const CategoryChart = React.memo(function CategoryChart({ data }: { data: CategoryStat[] }) {
   if (data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-24 text-white/30 text-xs">
-        No category data yet
+      <div className="p-5" style={INNER_CARD}>
+        <SectionLabel>Avg filler words by question category</SectionLabel>
+        <div className="space-y-2.5 mt-1">
+          {['Opening & Strengths', 'Behavioural', 'Motivation', 'Situational'].map((cat) => (
+            <div key={cat}>
+              <div className="flex justify-between mb-1">
+                <span className="text-sm text-white/25 truncate max-w-[70%]">{cat}</span>
+                <span className="text-sm font-semibold text-white/20">—</span>
+              </div>
+              <div className="h-1.5 rounded-full" style={{ background: 'rgba(255,255,255,0.05)' }}>
+                <div className="h-1.5 rounded-full w-0" style={{ background: 'rgba(249,193,37,0.2)' }} />
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs text-white/25 text-center mt-4">Complete at least 1 session to show data</p>
       </div>
     )
   }
@@ -254,7 +295,26 @@ export const CategoryChart = React.memo(function CategoryChart({ data }: { data:
 
 export const GradeTrendChart = React.memo(function GradeTrendChart({ data }: { data: SessionStat[] }) {
   const graded = data.filter(d => d.grade !== null && GRADE_VALUES[d.grade!] !== undefined)
-  if (graded.length === 0) return null
+  if (graded.length === 0) {
+    return (
+      <div className="p-5 relative" style={INNER_CARD}>
+        <SectionLabel>Overall grade trend</SectionLabel>
+        <div className="relative">
+          <ResponsiveContainer width="100%" height={140}>
+            <LineChart data={[{label:'',value:null}]} margin={{ top: 4, right: 4, left: -24, bottom: 16 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
+              <XAxis dataKey="label" tick={{ fill: 'rgba(249,193,37,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} height={56} />
+              <YAxis tick={{ fill: 'rgba(249,193,37,0.3)', fontSize: 11 }} axisLine={false} tickLine={false} domain={[0,12]} ticks={[2,4,6,8,10]} tickFormatter={(v: number) => GRADE_LABELS[v] ?? ''} />
+              <Line type="monotone" dataKey="value" stroke="rgba(249,193,37,0.15)" strokeWidth={2} dot={false} />
+            </LineChart>
+          </ResponsiveContainer>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <p className="text-xs text-white/30 text-center">Complete at least 1 session to show data</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   const chartData = graded.map(s => ({
     label: s.label,

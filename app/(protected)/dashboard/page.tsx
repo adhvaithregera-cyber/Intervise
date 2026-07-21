@@ -191,36 +191,40 @@ export default async function DashboardPage({
 
       {/* ── Row 1: Header + CTA ── */}
       <FadeIn delay={0}>
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-white">
-              {profile.full_name ? `Hey, ${profile.full_name.split(' ')[0]} 👋` : 'Dashboard'}
-            </h1>
-            <p className="mt-0.5 text-sm font-medium text-[#F9C125]/60">
-              {TIER_LABELS[profile.tier] ?? profile.tier} plan
-            </p>
-          </div>
-          <div className="flex flex-col gap-2 sm:items-end">
-            {pageError === 'quota_exceeded' && (
-              <div className="rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-2 text-sm text-red-300">
-                You&apos;ve used all your sessions this month. Upgrade to continue.
-              </div>
-            )}
-            {exhausted ? (
-              <div className="flex items-center gap-3 rounded-2xl px-6 py-3" style={{ backgroundColor: 'rgba(8,13,26,0.4)', border: '1px solid rgba(249,193,37,0.15)' }}>
-                <span className="text-sm font-semibold text-white/30">No sessions left —</span>
-                <Link href="/#pricing" className="text-sm font-bold text-[#F9C125]/60 underline hover:opacity-70 transition-opacity">Upgrade →</Link>
-              </div>
-            ) : (
-              <Link
-                href="/session/setup"
-                className="inline-flex items-center justify-center rounded-2xl bg-[#F9C125] px-8 py-3 text-base font-bold text-[#080d1a] hover:brightness-110 transition-all"
-                style={{ boxShadow: '0 0 32px rgba(249,193,37,0.30)' }}
-              >
-                Start Practice Session →
-              </Link>
-            )}
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold text-white">
+            {profile.full_name ? `Hey, ${profile.full_name.split(' ')[0]}` : 'Dashboard'}
+          </h1>
+          <p className="mt-0.5 text-sm font-medium text-[#F9C125]/60">
+            {TIER_LABELS[profile.tier] ?? profile.tier} plan
+          </p>
+        </div>
+      </FadeIn>
+
+      <FadeIn delay={0.04}>
+        <div className="flex flex-col gap-2">
+          {pageError === 'quota_exceeded' && (
+            <div className="rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-300">
+              You&apos;ve used all your sessions this month. Upgrade your plan to continue.
+            </div>
+          )}
+          {exhausted ? (
+            <div
+              className="w-full flex items-center justify-center gap-3 rounded-2xl py-4 min-h-[64px]"
+              style={{ backgroundColor: 'rgba(8,13,26,0.4)', border: '1px solid rgba(249,193,37,0.15)' }}
+            >
+              <span className="text-base font-semibold text-white/30">No sessions left this month —</span>
+              <Link href="/#pricing" className="text-base font-bold text-[#F9C125]/60 underline hover:opacity-70 transition-opacity">Upgrade →</Link>
+            </div>
+          ) : (
+            <Link
+              href="/session/setup"
+              className="w-full flex items-center justify-center rounded-2xl bg-[#F9C125] text-lg font-bold text-[#080d1a] hover:brightness-110 transition-all py-4 min-h-[64px]"
+              style={{ boxShadow: '0 0 40px rgba(249,193,37,0.35), 0 8px 32px rgba(249,193,37,0.25)' }}
+            >
+              Start Practice Session →
+            </Link>
+          )}
         </div>
       </FadeIn>
 
@@ -265,6 +269,29 @@ export default async function DashboardPage({
             initialRoleType={profile.role_type}
             initialInterviewDate={profile.interview_date}
           />
+
+          {/* Best grade this month */}
+          <div className="p-5" style={CARD_STYLE}>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-3">Best Grade</p>
+            <div className="flex items-baseline gap-2">
+              <span className="text-4xl font-bold text-white">
+                {(recentSessions ?? []).map(s => s.overall_grade).filter(Boolean).sort((a, b) => {
+                  const o = ['A','B','C','D','F']
+                  return o.indexOf(a as string) - o.indexOf(b as string)
+                })[0] ?? '—'}
+              </span>
+              <span className="text-sm text-white/40">STAR rating</span>
+            </div>
+            <p className="text-xs text-white/30 mt-2">Across recent sessions</p>
+          </div>
+
+          {/* Quick tip */}
+          <div className="p-5" style={CARD_STYLE}>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-3">Quick Tip</p>
+            <p className="text-sm text-white/70 leading-relaxed">
+              Use the <span className="text-[#F9C125] font-semibold">STAR format</span> — Situation, Task, Action, Result — to keep answers concise and structured.
+            </p>
+          </div>
         </FadeIn>
       </div>
 
