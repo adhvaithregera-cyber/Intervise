@@ -342,8 +342,9 @@ export default function LiveSessionPage() {
             <p className="text-white text-lg font-bold mb-2">Microphone blocked</p>
             <p className="text-white/60 text-sm mb-1">Your browser has blocked microphone access for this site.</p>
             <p className="text-white/40 text-xs mb-6">
-              <strong className="text-white/60">On iPhone:</strong> Settings → Privacy &amp; Security → Microphone → enable Safari.
-              Then return here and reload the page.
+              <strong className="text-white/60">Chrome / Edge:</strong> click the lock icon in the address bar → Microphone → Allow → reload.
+              <br className="mb-1" />
+              <strong className="text-white/60">iPhone Safari:</strong> Settings → Privacy &amp; Security → Microphone → enable Safari → reload.
             </p>
             <div className="flex flex-col gap-3 items-center">
               <button
