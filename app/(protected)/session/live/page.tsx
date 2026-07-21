@@ -1,10 +1,12 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { Mic } from 'lucide-react'
 import posthog from 'posthog-js'
 
 type LivePhase =
   | 'loading'
+  | 'need_mic'   // iOS Safari: getUserMedia requires a direct user gesture per page
   | 'prep'
   | 'recording'
   | 'between'
@@ -89,8 +91,10 @@ export default function LiveSessionPage() {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
         micStreamRef.current = stream
       } catch {
-        setPhase('error')
-        setErrorMessage('Microphone access is required to record answers.')
+        // iOS Safari requires getUserMedia to be triggered by a direct user gesture.
+        // Calling it automatically in useEffect after page navigation will fail.
+        // Show a tap-to-enable screen instead of redirecting (which causes a loop).
+        setPhase('need_mic')
         return
       }
 
@@ -227,6 +231,18 @@ export default function LiveSessionPage() {
     }
   }
 
+  async function requestMicPermission() {
+    // Called from a button click — satisfies iOS Safari's user-gesture requirement.
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      micStreamRef.current = stream
+      setPhase('prep')
+    } catch {
+      setPhase('error')
+      setErrorMessage('Microphone access was denied. Please allow microphone access in your browser settings and try again.')
+    }
+  }
+
   async function finishAndProcess() {
     const answers = storedAnswersRef.current
     const total = answers.length
@@ -289,6 +305,28 @@ export default function LiveSessionPage() {
         {phase === 'loading' && (
           <div style={glassCard} className="p-8 text-center">
             <p className="text-white/70 text-lg">Loading your session...</p>
+          </div>
+        )}
+
+        {/* Need mic — tap to enable (iOS Safari requires user gesture) */}
+        {phase === 'need_mic' && (
+          <div style={glassCard} className="p-8 text-center">
+            <div
+              className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full"
+              style={{ background: 'rgba(249,193,37,0.12)', border: '2px solid rgba(249,193,37,0.4)' }}
+            >
+              <Mic className="h-7 w-7 text-[#F9C125]" />
+            </div>
+            <p className="text-white text-lg font-bold mb-2">Microphone access needed</p>
+            <p className="text-white/60 text-sm mb-6">
+              Tap the button below to enable your microphone and start the session.
+            </p>
+            <button
+              onClick={requestMicPermission}
+              className="rounded-xl bg-[#F9C125] px-8 py-3 text-sm font-bold text-[#080d1a] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/25"
+            >
+              Enable Microphone
+            </button>
           </div>
         )}
 

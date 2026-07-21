@@ -42,10 +42,8 @@ async function handleAudioPath(
   userId: string,
   supabase: SupabaseClient<Database>,
 ) {
-  const { data: profile } = await supabase.from('profiles').select('tier').eq('id', userId).single()
-  if (!profile || profile.tier === 'free') {
-    return NextResponse.json({ error: 'Audio transcription requires a paid plan' }, { status: 403 })
-  }
+  // All tiers get transcription + AI feedback.
+  // Free users see AI feedback behind a CSS blur overlay (enforced in the report UI).
 
   let formData: FormData
   try {
