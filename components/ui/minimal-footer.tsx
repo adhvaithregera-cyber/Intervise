@@ -41,7 +41,7 @@ export function MinimalFooter({ onPrivacyOpen }: MinimalFooterProps = {}) {
     ];
 
     return (
-        <footer className="relative mt-24 w-full border-t border-white/10">
+        <footer className="relative mt-24 w-full border-t border-white/10" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
             <div className="mx-auto max-w-6xl px-6 py-16 sm:px-8">
                 {/* Top section: About + Social */}
                 <div className="grid grid-cols-1 gap-12 md:grid-cols-3 md:gap-16">
@@ -105,12 +105,12 @@ export function MinimalFooter({ onPrivacyOpen }: MinimalFooterProps = {}) {
                         © {year} Intervise. All rights reserved.
                     </p>
                     <div className="flex gap-6">
-                        <a
-                            href="#privacy"
+                        <button
+                            onClick={onPrivacyOpen}
                             className="text-sm text-white/50 transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F9C125] focus-visible:rounded px-1"
                         >
                             Privacy
-                        </a>
+                        </button>
                         <a
                             href="#terms"
                             className="text-sm text-white/50 transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F9C125] focus-visible:rounded px-1"
