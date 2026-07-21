@@ -1,9 +1,11 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 
 export function PrivacyModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const panelRef = useRef<HTMLDivElement>(null)
+
   useEffect(() => {
     if (!open) return
     const handleKey = (e: KeyboardEvent) => {
@@ -12,6 +14,12 @@ export function PrivacyModal({ open, onClose }: { open: boolean; onClose: () => 
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
   }, [open, onClose])
+
+  useEffect(() => {
+    if (open) {
+      panelRef.current?.focus()
+    }
+  }, [open])
 
   return (
     <AnimatePresence>
@@ -27,7 +35,12 @@ export function PrivacyModal({ open, onClose }: { open: boolean; onClose: () => 
         >
           <motion.div
             key="privacy-panel"
-            className="relative max-w-2xl w-full max-h-[85vh] overflow-y-auto rounded-2xl border border-white/10 bg-[#080d1a]/95 backdrop-blur-2xl shadow-2xl"
+            ref={panelRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="privacy-modal-title"
+            tabIndex={-1}
+            className="relative max-w-2xl w-full max-h-[85vh] overflow-y-auto rounded-2xl border border-white/10 bg-[#080d1a]/95 backdrop-blur-2xl shadow-2xl outline-none"
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 40 }}
@@ -36,7 +49,7 @@ export function PrivacyModal({ open, onClose }: { open: boolean; onClose: () => 
           >
             {/* Header */}
             <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b border-white/10 bg-[#080d1a]/95 backdrop-blur-2xl">
-              <h2 className="text-xl font-bold text-white">Privacy Policy</h2>
+              <h2 id="privacy-modal-title" className="text-xl font-bold text-white">Privacy Policy</h2>
               <button
                 onClick={onClose}
                 aria-label="Close privacy policy"

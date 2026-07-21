@@ -85,11 +85,9 @@ export function HeroSection({ sessionHref }: { sessionHref: string }) {
           className="mt-8 flex flex-col items-center gap-3 sm:flex-row"
         >
           {/* Primary CTA */}
-          <Link href={sessionHref}>
-            <button className="relative overflow-hidden rounded-xl bg-[#F9C125] px-8 py-4 text-base font-bold text-[#080d1a] shadow-lg shadow-[#F9C125]/25 transition-all hover:brightness-110 group">
-              <span className="relative z-10">Start for free</span>
-              <span className="absolute inset-0 -skew-x-[15deg] translate-x-[-100%] group-hover:translate-x-[250%] transition-transform duration-700 ease-in-out bg-white/20" />
-            </button>
+          <Link href={sessionHref} className="relative overflow-hidden rounded-xl bg-[#F9C125] px-8 py-4 text-base font-bold text-[#080d1a] shadow-lg shadow-[#F9C125]/25 transition-all hover:brightness-110 group">
+            <span className="relative z-10">Start for free</span>
+            <span className="absolute inset-0 -skew-x-[15deg] translate-x-[-100%] group-hover:translate-x-[250%] transition-transform duration-700 ease-in-out bg-white/20" />
           </Link>
           {/* Secondary */}
           <a href="#how-it-works" className="rounded-xl border border-white/20 px-8 py-4 text-base font-semibold text-white/80 hover:bg-white/5 transition-colors">

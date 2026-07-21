@@ -49,10 +49,8 @@ export function FinalCta({ showSignup }: { showSignup: boolean }) {
             animate={inView ? { opacity: 1, scale: 1 } : {}}
             transition={{ duration: 0.4, delay: 0.2, ease: 'backOut' }}
           >
-            <Link href="/signup">
-              <button className="rounded-xl bg-[#080d1a] px-8 py-4 text-base font-bold text-[#F9C125] hover:bg-[#0d1629] transition-colors shadow-lg shadow-[#080d1a]/30">
-                Start for free →
-              </button>
+            <Link href="/signup" className="rounded-xl bg-[#080d1a] px-8 py-4 text-base font-bold text-[#F9C125] hover:bg-[#0d1629] transition-colors shadow-lg shadow-[#080d1a]/30">
+              Start for free →
             </Link>
           </motion.div>
         )}
