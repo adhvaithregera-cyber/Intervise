@@ -85,10 +85,7 @@ function PricingSwitch({ onSwitch }: { onSwitch: (value: string) => void }) {
   }
   return (
     <div className="flex justify-center">
-      <div
-        className="relative flex w-fit rounded-full p-1"
-        style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(249,193,37,0.25)' }}
-      >
+      <div className="glass-card inline-flex p-1 gap-1 rounded-2xl">
         {['Monthly', 'Quarterly (3 months)'].map((label, i) => {
           const val = String(i)
           const active = selected === val
@@ -97,19 +94,13 @@ function PricingSwitch({ onSwitch }: { onSwitch: (value: string) => void }) {
               key={label}
               onClick={() => handle(val)}
               className={cn(
-                'relative z-10 h-10 rounded-full px-6 text-sm font-semibold transition-colors',
-                active ? 'text-[#080d1a]' : 'text-white/60 hover:text-white'
+                'relative z-10 transition-all',
+                active
+                  ? 'rounded-xl bg-[#F9C125] text-[#080d1a] font-semibold px-4 py-1.5 text-sm'
+                  : 'rounded-xl text-white/60 px-4 py-1.5 text-sm hover:text-white/80 transition-colors'
               )}
             >
-              {active && (
-                <motion.span
-                  layoutId="switch"
-                  className="absolute inset-0 rounded-full"
-                  style={{ backgroundColor: '#F9C125' }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                />
-              )}
-              <span className="relative flex items-center gap-2">
+              <span className="flex items-center gap-2">
                 {label}
                 {i === 1 && (
                   <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-white/70">
@@ -193,7 +184,13 @@ export default function PricingSection({ userTier }: { userTier?: string | null 
           </div>
         )}
         {/* Heading */}
-        <div className="mb-10 text-center">
+        <motion.div
+          className="mb-10 text-center"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
           <FadeUp delay={0}>
             <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/40">Pricing</p>
           </FadeUp>
@@ -207,7 +204,7 @@ export default function PricingSection({ userTier }: { userTier?: string | null 
               One week of Intervise practice beats months of hoping for the best.
             </p>
           </FadeUp>
-        </div>
+        </motion.div>
 
         {/* Toggle */}
         <FadeUp delay={0.3} className="mb-12">
@@ -215,22 +212,20 @@ export default function PricingSection({ userTier }: { userTier?: string | null 
         </FadeUp>
 
         {/* Cards */}
-        <div className="grid gap-5 md:grid-cols-3 md:items-stretch">
+        <div className="relative">
+          <div
+            className="pointer-events-none absolute inset-0 -z-10"
+            style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(249,193,37,0.05) 0%, transparent 70%)' }}
+          />
+          <div className="grid gap-5 md:grid-cols-3 md:items-stretch">
           {plans.map((plan, index) => (
             <FadeUp key={plan.name} delay={0.15 * index + 0.4}>
               <div
-                className="flex h-full flex-col rounded-2xl p-7 transition-all duration-300"
+                className="glass-card flex h-full flex-col rounded-2xl p-7 transition-all duration-300"
                 style={
                   plan.popular
-                    ? {
-                        backgroundColor: 'rgba(249,193,37,0.08)',
-                        border: '1px solid rgba(249,193,37,0.45)',
-                        boxShadow: '0 0 60px 8px rgba(249,193,37,0.18)',
-                      }
-                    : {
-                        backgroundColor: 'rgba(255,255,255,0.04)',
-                        border: '1px solid rgba(255,255,255,0.09)',
-                      }
+                    ? { border: '1px solid rgba(249,193,37,0.40)', boxShadow: '0 0 32px rgba(249,193,37,0.10)' }
+                    : undefined
                 }
               >
                 {/* Badge row */}
@@ -366,6 +361,7 @@ export default function PricingSection({ userTier }: { userTier?: string | null 
               </div>
             </FadeUp>
           ))}
+          </div>
         </div>
       </div>
 
