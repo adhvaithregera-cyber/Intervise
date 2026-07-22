@@ -1,7 +1,7 @@
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import OpenAI from 'openai'
 import type { AiFeedback, AiFeedbackComponentScore } from '@/types/database'
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! })
 
 // ── Category metadata ─────────────────────────────────────────────────────────
 
@@ -648,17 +648,20 @@ export async function generateAnswerFeedback(params: {
 
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const model = genAI.getGenerativeModel({
-        model: 'gemini-2.5-flash',
-        systemInstruction: SYSTEM_PROMPT,
-        generationConfig: { temperature: 0, maxOutputTokens: 16384 },
+      const response = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'user',   content: prompt },
+        ],
+        temperature: 0,
+        max_tokens: 4096,
+        response_format: { type: 'json_object' },
       })
 
-      const result = await model.generateContent(prompt)
-      const text = result.response.text().trim()
-      const json = text.startsWith('```') ? text.replace(/^```[a-z]*\n?/i, '').replace(/```$/, '').trim() : text
+      const text = response.choices[0].message.content?.trim() ?? ''
 
-      const feedback = parseAndValidate(json, deliveryScores, difficulty, parseOverrides)
+      const feedback = parseAndValidate(text, deliveryScores, difficulty, parseOverrides)
       if (!feedback) {
         if (attempt === 0) continue
         return null
@@ -669,7 +672,7 @@ export async function generateAnswerFeedback(params: {
       return templateTip ? { ...feedback, coaching_tip: templateTip } : feedback
 
     } catch (err) {
-      console.error(`[aifeedback] Gemini call failed (attempt ${attempt + 1}):`, err)
+      console.error(`[aifeedback] OpenAI call failed (attempt ${attempt + 1}):`, err)
       if (attempt === 0) {
         await new Promise(resolve => setTimeout(resolve, 1000))
         continue
