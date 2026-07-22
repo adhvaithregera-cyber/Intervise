@@ -20,8 +20,8 @@ export function isTranscriptionError(
 }
 
 const BASE_URL = 'https://api.assemblyai.com/v2'
-const POLL_INTERVAL_MS = 1500
-const MAX_POLLS = 25 // 25 × 1500ms ≈ 37.5 seconds (fits within Vercel's function timeout)
+const POLL_INTERVAL_MS = 2000
+const MAX_POLLS = 110 // 110 × 2000ms = 220 seconds — handles recordings up to ~10 min of speech
 
 function authHeaders(): Record<string, string> {
   const key = process.env.ASSEMBLYAI_API_KEY

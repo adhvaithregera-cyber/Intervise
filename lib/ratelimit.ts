@@ -61,8 +61,10 @@ export function checkRateLimit(key: string, config: RateLimitConfig): RateLimitR
 export const RATE_LIMITS = {
   /** Session creation — expensive + quota-sensitive */
   sessionStart:  { maxRequests: 10, windowMs: 60 * 60 * 1000 },   // 10 / hour
-  /** Audio transcription — calls AssemblyAI (costly) */
-  transcribe:    { maxRequests: 25, windowMs: 60 * 60 * 1000 },   // 25 / hour
+  /** Audio transcription — global per-user ceiling (generous; per-session limit is the real guard) */
+  transcribe:    { maxRequests: 100, windowMs: 60 * 60 * 1000 },  // 100 / hour
+  /** Per-session transcription cap — 5 questions + 10 retries buffer; prevents runaway within one session */
+  transcribeSession: { maxRequests: 15, windowMs: 60 * 60 * 1000 }, // 15 / session / hour
   /** Session completion */
   complete:      { maxRequests: 25, windowMs: 60 * 60 * 1000 },   // 25 / hour
   /** Session rename */
@@ -75,4 +77,6 @@ export const RATE_LIMITS = {
   createSubscription: { maxRequests: 3, windowMs: 60 * 60 * 1000 }, // 3 per hour
   /** Razorpay webhook — coarse IP-level guard against flood of bad-sig requests */
   webhook: { maxRequests: 60, windowMs: 60 * 1000 }, // 60 per minute per IP
+  /** Weakness summary — calls Gemini; Pro only but still needs a cap */
+  weaknessSummary: { maxRequests: 5, windowMs: 60 * 60 * 1000 }, // 5 per hour
 } as const satisfies Record<string, RateLimitConfig>

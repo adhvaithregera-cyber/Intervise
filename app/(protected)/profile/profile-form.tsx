@@ -149,10 +149,12 @@ export function ProfileForm({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      {/* Left column: Personal info + Subscription */}
+      <div className="flex flex-col gap-4">
       {/* Personal info */}
       <div style={CARD_STYLE}>
-        <div className="p-6">
+        <div className="p-5">
           <h2 className="mb-4 text-xs font-semibold uppercase tracking-widest text-[#F9C125]">
             Personal Information
           </h2>

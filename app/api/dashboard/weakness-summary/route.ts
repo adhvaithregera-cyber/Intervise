@@ -1,12 +1,21 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { generateWeaknessSummary } from '@/lib/weaknesssummary'
+import { checkRateLimit, RATE_LIMITS } from '@/lib/ratelimit'
 import type { AiFeedback } from '@/types/database'
 
 export async function POST() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+
+  const rl = checkRateLimit(`${user.id}:weakness-summary`, RATE_LIMITS.weaknessSummary)
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please wait before regenerating.' },
+      { status: 429, headers: { 'Retry-After': String(Math.ceil((rl.retryAfterMs ?? 60000) / 1000)) } },
+    )
+  }
 
   // Only Pro users can generate weakness summaries
   const { data: profile } = await supabase.from('profiles').select('tier').eq('id', user.id).single()

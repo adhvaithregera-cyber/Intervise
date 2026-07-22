@@ -17,9 +17,9 @@ export default async function ProfilePage() {
   if (!profile) notFound()
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
+    <div className="mx-auto max-w-5xl px-4 py-4 sm:px-6 sm:py-6">
       <FadeIn delay={0}>
-        <h1 className="mb-8 text-2xl font-bold text-white">Profile</h1>
+        <h1 className="mb-4 text-2xl font-bold text-white">Profile</h1>
       </FadeIn>
       <FadeIn delay={0.08}>
         <ProfileForm

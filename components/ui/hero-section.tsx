@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ElegantShape } from '@/components/ui/shape-landing-hero'
 
-export function HeroSection({ sessionHref }: { sessionHref: string }) {
+export function HeroSection({ sessionHref, hasCompletedSession = false }: { sessionHref: string; hasCompletedSession?: boolean }) {
   return (
     <section
       className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center overflow-hidden px-4 sm:px-6"
@@ -84,15 +84,31 @@ export function HeroSection({ sessionHref }: { sessionHref: string }) {
           transition={{ duration: 0.6, delay: 0.3, ease: 'easeOut' }}
           className="mt-8 flex flex-col items-center gap-3 sm:flex-row"
         >
-          {/* Primary CTA */}
-          <Link href={sessionHref} className="relative overflow-hidden rounded-xl bg-[#F9C125] px-8 py-4 text-base font-bold text-[#080d1a] shadow-lg shadow-[#F9C125]/25 transition-all hover:brightness-110 group">
-            <span className="relative z-10">Start for free</span>
-            <span className="absolute inset-0 -skew-x-[15deg] translate-x-[-100%] group-hover:translate-x-[250%] transition-transform duration-700 ease-in-out bg-white/20" />
-          </Link>
-          {/* Secondary */}
-          <a href="#how-it-works" className="rounded-xl border border-white/20 px-8 py-4 text-base font-semibold text-white/80 hover:bg-white/5 transition-colors">
-            See how it works
-          </a>
+          {hasCompletedSession ? (
+            <>
+              {/* Primary CTA — returning user */}
+              <Link href="/dashboard" className="relative overflow-hidden rounded-xl bg-[#F9C125] px-8 py-4 text-base font-bold text-[#080d1a] shadow-lg shadow-[#F9C125]/25 transition-all hover:brightness-110 group">
+                <span className="relative z-10">Go to Dashboard</span>
+                <span className="absolute inset-0 -skew-x-[15deg] translate-x-[-100%] group-hover:translate-x-[250%] transition-transform duration-700 ease-in-out bg-white/20" />
+              </Link>
+              {/* Secondary */}
+              <Link href={sessionHref} className="rounded-xl border border-white/20 px-8 py-4 text-base font-semibold text-white/80 hover:bg-white/5 transition-colors">
+                Start a session
+              </Link>
+            </>
+          ) : (
+            <>
+              {/* Primary CTA — new user */}
+              <Link href={sessionHref} className="relative overflow-hidden rounded-xl bg-[#F9C125] px-8 py-4 text-base font-bold text-[#080d1a] shadow-lg shadow-[#F9C125]/25 transition-all hover:brightness-110 group">
+                <span className="relative z-10">Start for free</span>
+                <span className="absolute inset-0 -skew-x-[15deg] translate-x-[-100%] group-hover:translate-x-[250%] transition-transform duration-700 ease-in-out bg-white/20" />
+              </Link>
+              {/* Secondary */}
+              <a href="#how-it-works" className="rounded-xl border border-white/20 px-8 py-4 text-base font-semibold text-white/80 hover:bg-white/5 transition-colors">
+                See how it works
+              </a>
+            </>
+          )}
         </motion.div>
 
         {/* Trust pills — delay 0.35 */}

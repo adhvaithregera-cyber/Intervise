@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '@/types/database'
 
-export const maxDuration = 120
+export const maxDuration = 300
 
 import { createClient } from '@/lib/supabase/server'
 import { transcribeAudio, isTranscriptionError } from '@/lib/assemblyai'
@@ -87,6 +87,18 @@ async function handleAudioPath(
   }
 
   const { session_id, question_id, answer_index, duration_seconds, eye_contact_pct } = parsed.data
+
+  // ── Per-session rate limit ────────────────────────────────────────────────
+  // Checked after session_id is known. Guarantees a single in-progress session
+  // can always complete (5 questions + 10 retries buffer) regardless of how many
+  // sessions the user has done this hour.
+  const sessionRl = checkRateLimit(`session:${session_id}:transcribe`, RATE_LIMITS.transcribeSession)
+  if (!sessionRl.allowed) {
+    return NextResponse.json(
+      { error: 'Too many transcription requests for this session.' },
+      { status: 429, headers: { 'Retry-After': String(Math.ceil((sessionRl.retryAfterMs ?? 60000) / 1000)) } },
+    )
+  }
 
   const { data: session } = await supabase
     .from('sessions')

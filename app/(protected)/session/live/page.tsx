@@ -266,17 +266,36 @@ export default function LiveSessionPage() {
 
     for (let i = 0; i < answers.length; i++) {
       const answer = answers[i]
-      try {
-        const formData = new FormData()
-        const ext = answer.blob.type.includes('mp4') ? 'mp4' : answer.blob.type.includes('ogg') ? 'ogg' : 'webm'
-        formData.append('audio', answer.blob, `answer.${ext}`)
-        formData.append('session_id', sessionId)
-        formData.append('question_id', String(answer.questionId))
-        formData.append('answer_index', String(answer.index))
-        formData.append('duration_seconds', String(answer.duration))
-        await fetch('/api/session/transcribe', { method: 'POST', body: formData })
-      } catch {
-        // continue even if one answer fails
+      const ext = answer.blob.type.includes('mp4') ? 'mp4' : answer.blob.type.includes('ogg') ? 'ogg' : 'webm'
+
+      // Retry up to 3 times on transient failures (network errors, 5xx, 429).
+      // 409 = duplicate already stored, treat as success.
+      // 4xx other than 429 = permanent error, no point retrying.
+      let submitted = false
+      for (let attempt = 0; attempt < 3 && !submitted; attempt++) {
+        if (attempt > 0) await new Promise(r => setTimeout(r, attempt * 3000))
+        try {
+          const formData = new FormData()
+          formData.append('audio', answer.blob, `answer.${ext}`)
+          formData.append('session_id', sessionId)
+          formData.append('question_id', String(answer.questionId))
+          formData.append('answer_index', String(answer.index))
+          formData.append('duration_seconds', String(answer.duration))
+          const res = await fetch('/api/session/transcribe', {
+            method: 'POST',
+            body: formData,
+            signal: AbortSignal.timeout(310_000), // slightly above server maxDuration
+          })
+          if (res.ok || res.status === 409) {
+            submitted = true
+          } else if (res.status !== 429 && res.status < 500) {
+            // Permanent client error — no retry
+            break
+          }
+          // 429 or 5xx → retry after delay
+        } catch {
+          // Network error or timeout — retry
+        }
       }
       setTranscribeProgress({ current: i + 1, total })
     }

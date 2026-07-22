@@ -1,32 +1,31 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 export default function CursorGlow() {
-  const [pos, setPos] = useState({ x: -300, y: -300 })
-  const [isTouch, setIsTouch] = useState(true)
+  const glowRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    setIsTouch(window.matchMedia('(pointer: coarse)').matches)
+    if (window.matchMedia('(pointer: coarse)').matches) return
 
-    const handleMouseMove = (e: MouseEvent) => {
-      setPos({ x: e.clientX - 150, y: e.clientY - 150 })
+    const move = (e: MouseEvent) => {
+      if (glowRef.current) {
+        glowRef.current.style.transform = `translate(calc(${e.clientX}px - 50%), calc(${e.clientY}px - 50%))`
+      }
     }
 
-    window.addEventListener('mousemove', handleMouseMove)
-    return () => window.removeEventListener('mousemove', handleMouseMove)
+    window.addEventListener('mousemove', move)
+    return () => window.removeEventListener('mousemove', move)
   }, [])
-
-  if (isTouch) return null
 
   return (
     <div
-      className="pointer-events-none fixed z-[9999] h-[300px] w-[300px]"
+      ref={glowRef}
+      className="pointer-events-none fixed left-0 top-0 z-[9998] h-[320px] w-[320px]"
       style={{
-        transform: `translate(${pos.x}px, ${pos.y}px)`,
-        transition: 'transform 0.08s ease-out',
-        background: 'radial-gradient(circle, rgba(249,193,37,0.15) 0%, rgba(249,193,37,0.05) 40%, transparent 70%)',
         borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(249,193,37,0.14) 0%, rgba(249,193,37,0.04) 45%, transparent 70%)',
+        transition: 'transform 0.10s ease-out',
       }}
     />
   )

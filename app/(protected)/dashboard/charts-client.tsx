@@ -59,7 +59,7 @@ export function ChartsClient({
   categoryStats: CategoryStat[]
   summary: ProgressSummary
 }) {
-  const [range, setRange] = useState<Range>('week')
+  const [range, setRange] = useState<Range>('all')
 
   const filtered = useMemo(() => filterByRange(sessionStats, range), [sessionStats, range])
 

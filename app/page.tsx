@@ -6,24 +6,27 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://intervise.in' },
 }
 import { LandingShell } from '@/components/ui/landing-shell'
+import { Navbar } from '@/components/layout/navbar'
 import { createClient } from '@/lib/supabase/server'
 
 export default async function LandingPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   let tier: string | null = null
+  let hasCompletedSession = false
   if (user) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('tier')
-      .eq('id', user.id)
-      .single()
-    tier = profile?.tier ?? 'free'
+    const [profileResult, sessionResult] = await Promise.all([
+      supabase.from('profiles').select('tier').eq('id', user.id).single(),
+      supabase.from('sessions').select('id', { count: 'exact', head: true }).eq('user_id', user.id).eq('status', 'complete'),
+    ])
+    tier = profileResult.data?.tier ?? 'free'
+    hasCompletedSession = (sessionResult.count ?? 0) > 0
   }
 
   return (
     <div className="min-h-screen text-white">
-      <LandingShell sessionHref={user ? '/session/setup' : '/signup'} userTier={tier} />
+      <Navbar />
+      <LandingShell sessionHref={user ? '/session/setup' : '/signup'} userTier={tier} hasCompletedSession={hasCompletedSession} />
     </div>
   )
 }
