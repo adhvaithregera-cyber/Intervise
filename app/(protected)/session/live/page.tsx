@@ -50,6 +50,9 @@ export default function LiveSessionPage() {
   const [transcribeProgress, setTranscribeProgress] = useState({ current: 0, total: 0 })
   const [estimatedSecondsLeft, setEstimatedSecondsLeft] = useState(0)
   const estimateTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const [waitMsgIndex, setWaitMsgIndex] = useState(0)
+  const waitMsgRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const WAIT_MSGS = ['Analysing your answers…', 'Almost there…', 'Crunching the numbers…', 'Just a moment…', 'Processing your session…', 'Hang tight…']
 
   const prepTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const answerTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -261,6 +264,11 @@ export default function LiveSessionPage() {
       setEstimatedSecondsLeft(prev => (prev > 0 ? prev - 1 : 0))
     }, 1000)
 
+    setWaitMsgIndex(0)
+    waitMsgRef.current = setInterval(() => {
+      setWaitMsgIndex(prev => (prev + 1) % WAIT_MSGS.length)
+    }, 3000)
+
     const params = new URLSearchParams(window.location.search)
     const sessionId = params.get('session_id')!
 
@@ -312,6 +320,7 @@ export default function LiveSessionPage() {
       })
     } finally {
       if (estimateTimerRef.current) clearInterval(estimateTimerRef.current)
+      if (waitMsgRef.current) clearInterval(waitMsgRef.current)
       router.push('/session/report/' + sessionId)
     }
   }
@@ -556,18 +565,13 @@ export default function LiveSessionPage() {
         {phase === 'transcribing' && (
           <div style={glassCard} className="p-8 text-center">
             <div className="generating-loader-wrapper">
-              <p className="text-white text-base font-semibold tracking-wide">Analysing your answers</p>
+              <p className="text-white text-base font-semibold tracking-wide">{WAIT_MSGS[waitMsgIndex]}</p>
               <div className="generating-loader-bar" />
             </div>
             <p className="text-white/60 text-sm mt-5">
               {transcribeProgress.total > 0
                 ? `Answer ${Math.min(transcribeProgress.current + 1, transcribeProgress.total)} of ${transcribeProgress.total}`
                 : 'Preparing…'}
-            </p>
-            <p className="text-white/35 text-xs mt-2">
-              {estimatedSecondsLeft > 0
-                ? `About ${estimatedSecondsLeft}s remaining`
-                : 'Almost done…'}
             </p>
           </div>
         )}
