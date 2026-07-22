@@ -112,19 +112,21 @@ export function HeroSection({ sessionHref, hasCompletedSession = false }: { sess
         </motion.div>
 
         {/* Trust pills — delay 0.35 */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.35, ease: 'easeOut' }}
-        >
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-6">
-            {['No card needed', '2 free sessions', 'Works in your browser'].map(t => (
-              <span key={t} className="flex items-center gap-1.5 text-sm text-white/50">
-                <span className="text-[#F9C125]">✓</span> {t}
-              </span>
-            ))}
-          </div>
-        </motion.div>
+        {!hasCompletedSession && (
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.35, ease: 'easeOut' }}
+          >
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-6">
+              {['No card needed', '2 free sessions', 'Works in your browser'].map(t => (
+                <span key={t} className="flex items-center gap-1.5 text-sm text-white/50">
+                  <span className="text-[#F9C125]">✓</span> {t}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+        )}
 
         {/* Stat cards — delay 0.5 */}
         <motion.div
