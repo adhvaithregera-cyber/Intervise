@@ -24,6 +24,10 @@ const GradeTrendChart = dynamic(
   () => import('./progress-charts').then((m) => ({ default: m.GradeTrendChart })),
   { ssr: false }
 )
+const MetricLineChart = dynamic(
+  () => import('./progress-charts').then((m) => ({ default: m.MetricLineChart })),
+  { ssr: false }
+)
 
 export type { SessionStat, CategoryStat, ProgressSummary }
 
@@ -92,6 +96,11 @@ export function ChartsClient({
         <WpmLineChart data={filtered} />
       </div>
       <CategoryChart data={categoryStats} />
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <MetricLineChart data={filtered} dataKey="fluency" label="Fluency" />
+        <MetricLineChart data={filtered} dataKey="accuracy" label="Accuracy" />
+        <MetricLineChart data={filtered} dataKey="skill" label="Skill" />
+      </div>
       <GradeTrendChart data={filtered} />
     </div>
   )

@@ -3,7 +3,6 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { Badge } from '@/components/ui/badge'
 import { FadeIn } from '@/components/ui/fade-in'
-import { ShareScorecard } from '@/components/session/share-scorecard'
 import { cn } from '@/lib/utils'
 import { Lock } from 'lucide-react'
 import { computeThreeMetrics, computeSessionMetrics } from '@/lib/scorecard'
@@ -139,7 +138,6 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
               <Link href="/session/setup" className="flex-1 sm:flex-none rounded-xl bg-[#F9C125] px-5 py-2.5 text-sm font-bold text-[#080d1a] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20 inline-flex items-center justify-center w-full sm:w-auto">
                 New Session
               </Link>
-              <ShareScorecard sessionId={sessionId} />
               <Link href="/dashboard" className="flex-1 sm:flex-none rounded-xl border border-white/20 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white/70 hover:bg-white/10 transition-colors inline-flex items-center justify-center w-full sm:w-auto">
                 Dashboard
               </Link>

@@ -15,6 +15,9 @@ export type SessionStat = {
   wpm: number | null
   grade: string | null
   yourScore: number | null
+  fluency: number | null
+  accuracy: number | null
+  skill: number | null
 }
 
 export type CategoryStat = {
@@ -174,7 +177,7 @@ export const WpmLineChart = React.memo(function WpmLineChart({ data }: { data: S
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
               <ReferenceArea y1={110} y2={160} fill="rgba(34,197,94,0.06)" stroke="rgba(34,197,94,0.12)" label={{ value: 'Ideal range', position: 'insideTopRight', fill: 'rgba(34,197,94,0.3)', fontSize: 10 }} />
               <XAxis dataKey="label" tick={{ fill: 'rgba(249,193,37,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} height={56} />
-              <YAxis tick={{ fill: 'rgba(249,193,37,0.3)', fontSize: 12 }} axisLine={false} tickLine={false} domain={[80,180]} ticks={[80,110,130,160,180]} />
+              <YAxis tick={{ fill: 'rgba(249,193,37,0.3)', fontSize: 12 }} axisLine={false} tickLine={false} domain={[60,200]} ticks={[60,80,100,120,140,160,180,200]} />
               <Line type="monotone" dataKey="wpm" stroke="rgba(249,193,37,0.15)" strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
@@ -211,8 +214,8 @@ export const WpmLineChart = React.memo(function WpmLineChart({ data }: { data: S
             axisLine={false}
             tickLine={false}
             allowDecimals={false}
-            domain={[80, 180]}
-            ticks={[80, 100, 110, 130, 160, 180]}
+            domain={[60, 200]}
+            ticks={[60, 80, 100, 120, 140, 160, 180, 200]}
           />
           <Tooltip
             contentStyle={TOOLTIP_STYLE}
@@ -289,21 +292,31 @@ export const CategoryChart = React.memo(function CategoryChart({ data }: { data:
   )
 })
 
-// ── Score trend chart ────────────────────────────────────────────────────────
+// ── Generic 0-100 metric line chart ─────────────────────────────────────────
 
-export const GradeTrendChart = React.memo(function GradeTrendChart({ data }: { data: SessionStat[] }) {
-  const scored = data.filter(d => d.yourScore !== null)
-  if (scored.length === 0) {
+const METRIC_TICKS = [0, 20, 40, 60, 80, 100]
+
+export const MetricLineChart = React.memo(function MetricLineChart({
+  data,
+  dataKey,
+  label,
+}: {
+  data: SessionStat[]
+  dataKey: 'fluency' | 'accuracy' | 'skill' | 'yourScore'
+  label: string
+}) {
+  const filtered = data.filter(d => d[dataKey] !== null)
+  if (filtered.length === 0) {
     return (
       <div className="p-5 relative" style={INNER_CARD}>
-        <SectionLabel>Your Score trend</SectionLabel>
+        <SectionLabel>{label} per session</SectionLabel>
         <div className="relative">
           <ResponsiveContainer width="100%" height={140}>
-            <LineChart data={[{label:'',yourScore:null}]} margin={{ top: 4, right: 4, left: -24, bottom: 16 }}>
+            <LineChart data={[{ label: '', [dataKey]: null }]} margin={{ top: 4, right: 4, left: -24, bottom: 16 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
               <XAxis dataKey="label" tick={{ fill: 'rgba(249,193,37,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} height={56} />
-              <YAxis tick={{ fill: 'rgba(249,193,37,0.3)', fontSize: 11 }} axisLine={false} tickLine={false} domain={[0,100]} ticks={[0,25,50,75,100]} />
-              <Line type="monotone" dataKey="yourScore" stroke="rgba(249,193,37,0.15)" strokeWidth={2} dot={false} />
+              <YAxis tick={{ fill: 'rgba(249,193,37,0.3)', fontSize: 11 }} axisLine={false} tickLine={false} domain={[0, 100]} ticks={METRIC_TICKS} />
+              <Line type="monotone" dataKey={dataKey} stroke="rgba(249,193,37,0.15)" strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
           <div className="absolute inset-0 flex items-center justify-center">
@@ -313,19 +326,18 @@ export const GradeTrendChart = React.memo(function GradeTrendChart({ data }: { d
       </div>
     )
   }
-
   return (
     <div className="p-5" style={INNER_CARD}>
-      <SectionLabel>Your Score trend</SectionLabel>
+      <SectionLabel>{label} per session</SectionLabel>
       <ResponsiveContainer width="100%" height={140}>
-        <LineChart data={scored} margin={{ top: 4, right: 4, left: -24, bottom: 16 }}>
+        <LineChart data={filtered} margin={{ top: 4, right: 4, left: -24, bottom: 16 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
           <XAxis
             dataKey="label"
             tick={{ fill: 'rgba(249,193,37,0.75)', fontSize: 10, angle: -35, textAnchor: 'end' }}
             axisLine={false}
             tickLine={false}
-            interval={xInterval(scored.length)}
+            interval={xInterval(filtered.length)}
             height={56}
           />
           <YAxis
@@ -333,15 +345,15 @@ export const GradeTrendChart = React.memo(function GradeTrendChart({ data }: { d
             axisLine={false}
             tickLine={false}
             domain={[0, 100]}
-            ticks={[0, 25, 50, 75, 100]}
+            ticks={METRIC_TICKS}
           />
           <Tooltip
             contentStyle={TOOLTIP_STYLE}
-            formatter={(value: unknown) => [`${value}/100`, 'Your Score']}
+            formatter={(value: unknown) => [`${value}/100`, label]}
           />
           <Line
             type="monotone"
-            dataKey="yourScore"
+            dataKey={dataKey}
             stroke="#F9C125"
             strokeWidth={2}
             dot={{ fill: '#F9C125', r: 3, strokeWidth: 0 }}
@@ -352,4 +364,10 @@ export const GradeTrendChart = React.memo(function GradeTrendChart({ data }: { d
       </ResponsiveContainer>
     </div>
   )
+})
+
+// ── Score trend chart ────────────────────────────────────────────────────────
+
+export const GradeTrendChart = React.memo(function GradeTrendChart({ data }: { data: SessionStat[] }) {
+  return <MetricLineChart data={data} dataKey="yourScore" label="Your Score" />
 })
