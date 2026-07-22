@@ -61,6 +61,7 @@ export const onboardingSchema = z.object({
   experience_level: freeTextField('Experience level'),
   interview_type: freeTextField('Interview type'),
   practice_frequency: freeTextField('Practice frequency'),
+  job_challenge: freeTextField('Job challenge'),
 })
 
 // ─── Profile update ──────────────────────────────────────────────────────────

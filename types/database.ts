@@ -22,6 +22,10 @@ export type Profile = {
   weakness_summary: string | null
   weakness_summary_at: string | null
   weakness_summary_session_count: number | null
+  experience_level: string | null
+  interview_type: string | null
+  practice_frequency: string | null
+  job_challenge: string | null
   created_at: string
 }
 

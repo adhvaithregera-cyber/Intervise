@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 
-const TOTAL_STEPS = 7
+const TOTAL_STEPS = 8
 
 const ROLE_OPTIONS = [
   'Software Engineering', 'Product Management', 'Data Science / ML',
@@ -27,6 +27,16 @@ const INTERVIEW_TYPE_OPTIONS = [
 
 const FREQUENCY_OPTIONS = [
   'Every day', 'A few times a week', 'Once a week', 'Just exploring', 'Other',
+]
+
+const JOB_CHALLENGE_OPTIONS = [
+  'Not getting enough interview calls',
+  'Struggling to answer questions confidently',
+  'Freezing or going blank under pressure',
+  'Answers lack structure or clarity',
+  'Switching industries or roles',
+  'Competing against more experienced candidates',
+  'Other',
 ]
 
 const CARD_STYLE = {
@@ -54,6 +64,8 @@ export default function OnboardingPage() {
   const [interviewTypeOther, setInterviewTypeOther] = useState('')
   const [practiceFrequency, setPracticeFrequency] = useState('')
   const [practiceFrequencyOther, setPracticeFrequencyOther] = useState('')
+  const [jobChallenge, setJobChallenge] = useState('')
+  const [jobChallengeOther, setJobChallengeOther] = useState('')
 
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -65,9 +77,10 @@ export default function OnboardingPage() {
   const resolvedExperience = experienceLevel === 'Other' ? experienceLevelOther.trim() : experienceLevel
   const resolvedInterviewType = interviewType === 'Other' ? interviewTypeOther.trim() : interviewType
   const resolvedFrequency = practiceFrequency === 'Other' ? practiceFrequencyOther.trim() : practiceFrequency
+  const resolvedJobChallenge = jobChallenge === 'Other' ? jobChallengeOther.trim() : jobChallenge
 
   async function handleSubmit() {
-    if (!resolvedFrequency) return
+    if (!resolvedJobChallenge) return
     setError(null)
     setSubmitting(true)
     const res = await fetch('/api/onboarding', {
@@ -82,6 +95,7 @@ export default function OnboardingPage() {
         experience_level: resolvedExperience,
         interview_type: resolvedInterviewType,
         practice_frequency: resolvedFrequency,
+        job_challenge: resolvedJobChallenge,
       }),
     })
     if (!res.ok) {
@@ -328,11 +342,37 @@ export default function OnboardingPage() {
                 <input type="text" placeholder="Describe how often you plan to practise..." value={practiceFrequencyOther}
                   onChange={(e) => setPracticeFrequencyOther(e.target.value)} className={otherInputClass} autoFocus />
               )}
-              {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
               <div className="mt-8 flex gap-3">
                 <button onClick={() => setStep(6)} className="rounded-xl border border-white/20 px-5 py-3 text-sm font-medium text-white/70 hover:bg-white/10 transition-colors">Back</button>
-                <button disabled={!resolvedFrequency || submitting} onClick={handleSubmit} className="flex-1 rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#080d1a] disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all">
-                  {submitting ? 'Saving…' : 'Go to dashboard'}
+                <button disabled={!resolvedFrequency} onClick={() => setStep(8)} className="flex-1 rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#080d1a] disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all">Continue</button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Step 8: Main challenge landing a job */}
+          {step === 8 && (
+            <motion.div
+              key={step}
+              initial={{ opacity: 0, x: 12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+            >
+              <h2 className="mb-1 text-2xl font-bold text-white">What&apos;s your biggest challenge landing a job?</h2>
+              <p className="mb-8 text-sm text-white/55">This helps us understand what to build next — your honest answer makes a real difference.</p>
+              <div className="space-y-3">
+                {JOB_CHALLENGE_OPTIONS.map((c) => (
+                  <button key={c} onClick={() => setJobChallenge(c)} className={optionClass(jobChallenge === c)}>{c}</button>
+                ))}
+              </div>
+              {jobChallenge === 'Other' && (
+                <input type="text" placeholder="Tell us in your own words..." value={jobChallengeOther}
+                  onChange={(e) => setJobChallengeOther(e.target.value)} className={otherInputClass} autoFocus />
+              )}
+              {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
+              <div className="mt-8 flex gap-3">
+                <button onClick={() => setStep(7)} className="rounded-xl border border-white/20 px-5 py-3 text-sm font-medium text-white/70 hover:bg-white/10 transition-colors">Back</button>
+                <button disabled={!resolvedJobChallenge || submitting} onClick={handleSubmit} className="flex-1 rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#080d1a] disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all">
+                  {submitting ? 'Saving…' : 'Go to dashboard →'}
                 </button>
               </div>
             </motion.div>

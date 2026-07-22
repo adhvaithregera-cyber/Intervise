@@ -254,6 +254,34 @@ export default async function DashboardPage({
         </div>
       </FadeIn>
 
+      {/* ── Onboarding pill ── */}
+      {!profile.onboarding_complete && (
+        <FadeIn delay={0.02}>
+          <Link
+            href="/onboarding"
+            className="group flex items-center justify-between gap-4 rounded-2xl px-6 py-5 transition-all hover:brightness-105"
+            style={{
+              background: 'linear-gradient(135deg, rgba(249,193,37,0.18) 0%, rgba(249,193,37,0.08) 100%)',
+              border: '1px solid rgba(249,193,37,0.40)',
+            }}
+          >
+            <div className="flex items-center gap-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl" style={{ background: 'rgba(249,193,37,0.20)' }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="#F9C125" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm font-bold text-[#F9C125]">Set up your profile for personalised interviews</p>
+                <p className="text-xs text-white/55 mt-0.5">Takes 2 minutes · We tailor your questions to your role and goals</p>
+              </div>
+            </div>
+            <span className="shrink-0 text-[#F9C125] font-bold text-sm group-hover:translate-x-1 transition-transform">→</span>
+          </Link>
+        </FadeIn>
+      )}
+
       <FadeIn delay={0.04}>
         <div className="flex flex-col gap-2">
           {pageError === 'quota_exceeded' && (
