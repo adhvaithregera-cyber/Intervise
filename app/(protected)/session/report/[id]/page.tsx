@@ -6,33 +6,13 @@ import { FadeIn } from '@/components/ui/fade-in'
 import { ShareScorecard } from '@/components/session/share-scorecard'
 import { cn } from '@/lib/utils'
 import { Lock } from 'lucide-react'
+import { computeThreeMetrics, computeSessionMetrics } from '@/lib/scorecard'
+import type { AiFeedback } from '@/types/database'
 
-const GRADE_COLOR: Record<string, string> = {
-  A: 'text-green-400',
-  B: 'text-[#F9C125]',
-  C: 'text-amber-400',
-  D: 'text-amber-500',
-  F: 'text-red-400',
-}
-
-const GRADE_BG: Record<string, string> = {
-  A: 'rgba(74,222,128,0.15)',
-  B: 'rgba(249,193,37,0.15)',
-  C: 'rgba(251,146,60,0.12)',
-  D: 'rgba(249,115,22,0.12)',
-  F: 'rgba(239,68,68,0.15)',
-}
-
-const GRADE_BORDER: Record<string, string> = {
-  A: 'rgba(74,222,128,0.45)',
-  B: 'rgba(249,193,37,0.40)',
-  C: 'rgba(251,146,60,0.40)',
-  D: 'rgba(249,115,22,0.40)',
-  F: 'rgba(239,68,68,0.50)',
-}
-
-const GRADE_STARS: Record<string, number> = {
-  A: 5, B: 4, C: 3, D: 2, F: 1,
+function scoreColor(n: number): string {
+  if (n >= 75) return 'text-[#F9C125]'
+  if (n >= 50) return 'text-white'
+  return 'text-red-400'
 }
 
 const PANEL = {
@@ -49,20 +29,6 @@ const INNER_CARD = {
   borderRadius: '0.75rem',
 }
 
-function Stars({ count }: { count: number }) {
-  return (
-    <div className="flex gap-0.5">
-      {[1, 2, 3, 4, 5].map((i) => (
-        <svg key={i} className={cn('h-4 w-4', i <= count ? 'text-[#F9C125]' : 'text-white/20')}
-          viewBox="0 0 24 24" fill={i <= count ? 'currentColor' : 'none'}
-          stroke="currentColor" strokeWidth="1.5">
-          <path strokeLinecap="round" strokeLinejoin="round"
-            d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
-        </svg>
-      ))}
-    </div>
-  )
-}
 
 const WPM_IDEAL: Record<string, [number, number]> = {
   easy:   [130, 170],
@@ -127,9 +93,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
   const isPro = tier === 'pro'
   const questionMap = Object.fromEntries((questions ?? []).map((q) => [q.id, q]))
 
-  const grade = session.overall_grade ?? '—'
-  const gradeColor = GRADE_COLOR[grade] ?? 'text-white/55'
-  const starCount = GRADE_STARS[grade] ?? 0
+  const sessionMetrics = computeSessionMetrics(answers ?? [])
 
   const validWpms = (answers ?? []).map((a) => a.wpm).filter((v): v is number => v !== null)
   const avgWpm = validWpms.length > 0
@@ -182,56 +146,50 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
             </div>
           </div>
 
-          {/* ── Section 2: Grade + Stats ───────────────────────── */}
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8">
+          {/* ── Section 2: Metrics ─────────────────────────────── */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6 sm:mb-8">
 
-            {/* Grade */}
-            <div className="col-span-2 sm:col-span-2 flex items-center gap-4 p-4 sm:p-5" style={INNER_CARD}>
-              <div
-                className={cn('flex-shrink-0 flex items-center justify-center w-20 h-20 rounded-2xl text-5xl font-black', gradeColor)}
-                style={{ background: GRADE_BG[grade] ?? 'rgba(255,255,255,0.05)', border: `2px solid ${GRADE_BORDER[grade] ?? 'rgba(255,255,255,0.15)'}` }}
-              >
-                {grade}
-              </div>
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-widest text-white/35 mb-2">Overall grade</p>
-                <Stars count={starCount} />
-                <p className="text-xs text-white/35 mt-2">{answeredCount} of {(answers ?? []).length} answers analysed</p>
-              </div>
-            </div>
-
-            {/* Avg WPM */}
-            <div className="col-span-1 sm:col-span-1 flex flex-col justify-center p-4 sm:p-5" style={INNER_CARD}>
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-2">Avg pace</p>
-              <p className={cn('text-3xl font-bold', avgWpmColor)}>
-                {avgWpm ?? '—'}<span className="text-sm font-normal text-white/50 ml-1">wpm</span>
-              </p>
-              {avgWpm !== null && (
-                <p className={cn('text-xs font-semibold mt-1', avgWpmColor)}>{avgWpmLabel}</p>
-              )}
-              <p className="text-[10px] text-white/35 mt-1">Ideal: {wpmLo}–{wpmHi} wpm</p>
-            </div>
-
-            {/* Total fillers */}
-            <div className="col-span-1 sm:col-span-1 flex flex-col justify-center p-4 sm:p-5" style={INNER_CARD}>
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-2">Filler words</p>
-              <p className="text-3xl font-bold text-white">{totalFillers}</p>
-              {topFillers.length > 0 ? (
-                <div className="flex gap-1 flex-wrap mt-2">
-                  {topFillers.map(([word, count]) => (
-                    <Badge key={word} variant="gray">{word} ×{count}</Badge>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-[10px] text-white/35 mt-1">Across all answers</p>
-              )}
-            </div>
-
-            {/* Time */}
+            {/* Your Score */}
             <div className="col-span-2 sm:col-span-1 flex flex-col justify-center p-4 sm:p-5" style={INNER_CARD}>
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-2">Time spoken</p>
-              <p className="text-3xl font-bold text-white">{totalTime}</p>
-              <p className="text-[10px] text-white/35 mt-1">Total across session</p>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-2">Your Score</p>
+              <p className={cn('text-4xl font-black', scoreColor(sessionMetrics?.yourScore ?? 0))}>
+                {sessionMetrics?.yourScore ?? '—'}
+              </p>
+              <p className="text-[10px] text-white/35 mt-1">/ 100 · {answeredCount} answers</p>
+            </div>
+
+            {/* Fluency */}
+            <div className="col-span-1 flex flex-col justify-center p-4 sm:p-5" style={INNER_CARD}>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-2">Fluency</p>
+              <p className={cn('text-3xl font-bold', scoreColor(sessionMetrics?.fluency ?? 0))}>
+                {sessionMetrics?.fluency ?? '—'}
+              </p>
+              <p className="text-[10px] text-white/35 mt-1">/ 100</p>
+              {avgWpm !== null && (
+                <p className={cn('text-[10px] font-semibold mt-1', avgWpmColor)}>
+                  {avgWpm} wpm · {totalFillers} fillers
+                </p>
+              )}
+            </div>
+
+            {/* Accuracy */}
+            <div className="col-span-1 flex flex-col justify-center p-4 sm:p-5" style={INNER_CARD}>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-2">Accuracy</p>
+              <p className={cn('text-3xl font-bold', scoreColor(sessionMetrics?.accuracy ?? 0))}>
+                {sessionMetrics?.accuracy ?? '—'}
+              </p>
+              <p className="text-[10px] text-white/35 mt-1">/ 100</p>
+              <p className="text-[10px] text-white/35 mt-1">Grammar quality</p>
+            </div>
+
+            {/* Skill */}
+            <div className="col-span-2 sm:col-span-1 flex flex-col justify-center p-4 sm:p-5" style={INNER_CARD}>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-2">Skill</p>
+              <p className={cn('text-3xl font-bold', scoreColor(sessionMetrics?.skill ?? 0))}>
+                {sessionMetrics?.skill ?? '—'}
+              </p>
+              <p className="text-[10px] text-white/35 mt-1">/ 100</p>
+              <p className="text-[10px] text-white/35 mt-1">Structure &amp; content</p>
             </div>
 
           </div>
@@ -332,7 +290,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
           <div className="mb-5 flex items-center justify-between">
             <div>
               <h2 className="text-base font-semibold text-white">AI Feedback</h2>
-              <p className="text-xs text-white/40 mt-0.5">STAR scores, ideal answers, and grammar analysis per question</p>
+              <p className="text-xs text-white/40 mt-0.5">Fluency, Accuracy, Skill breakdown and coaching tips per question</p>
             </div>
             {!isStudent && <Badge variant="brand">Student</Badge>}
           </div>
@@ -380,23 +338,24 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
 
                 return (
                   <div key={answer.id} className="p-5" style={INNER_CARD}>
-                    {/* Header: question + grade */}
+                    {/* Header: question + metric pills */}
                     <div className="flex items-start justify-between gap-3 mb-4">
                       <p className="text-sm font-medium text-white/80 leading-relaxed flex-1">
                         Q{answer.answer_index} — {q?.question_text ?? 'Question'}
                       </p>
-                      {fb && (
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          <span className={cn(
-                            'text-xl font-black',
-                            fb.grade === 'A' ? 'text-green-400' :
-                            fb.grade === 'B' ? 'text-[#F9C125]' :
-                            fb.grade === 'C' ? 'text-amber-400' :
-                            fb.grade === 'D' ? 'text-amber-500' : 'text-red-400'
-                          )}>{fb.grade}</span>
-                          <span className="text-xs text-white/35">{fb.score}/100</span>
-                        </div>
-                      )}
+                      {fb && (() => {
+                        const m = computeThreeMetrics(fb as AiFeedback)
+                        return (
+                          <div className="flex items-center gap-1 shrink-0">
+                            {([['F', m.fluency], ['A', m.accuracy], ['S', m.skill]] as [string, number][]).map(([label, val]) => (
+                              <span key={label} className={cn('text-[10px] font-bold px-1.5 py-0.5 rounded', scoreColor(val))}
+                                style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                {label} {val}
+                              </span>
+                            ))}
+                          </div>
+                        )
+                      })()}
                     </div>
 
                     {fb ? (

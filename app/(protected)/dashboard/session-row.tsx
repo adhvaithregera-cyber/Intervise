@@ -11,8 +11,10 @@ const CARD_STYLE = {
   borderRadius: '1rem',
 }
 
-const GRADE_COLORS: Record<string, string> = {
-  A: 'text-green-300', B: 'text-[#F9C125]', C: 'text-amber-300', D: 'text-orange-300', F: 'text-red-300',
+function scoreColor(n: number): string {
+  if (n >= 75) return 'text-[#F9C125]'
+  if (n >= 50) return 'text-white'
+  return 'text-red-400'
 }
 
 function formatDate(iso: string) {
@@ -21,6 +23,7 @@ function formatDate(iso: string) {
 
 export function SessionRow({
   session,
+  yourScore,
 }: {
   session: {
     id: string
@@ -29,6 +32,7 @@ export function SessionRow({
     overall_grade: string | null
     completed_at: string | null
   }
+  yourScore?: number | null
 }) {
   const [editing, setEditing] = useState(false)
   const [name, setName] = useState(session.name ?? '')
@@ -105,15 +109,15 @@ export function SessionRow({
         <p className="text-sm text-white/50 mt-0.5">{session.completed_at ? formatDate(session.completed_at) : '—'}</p>
       </div>
       <div className="flex items-center gap-4 sm:ml-4 shrink-0">
-        {session.overall_grade ? (
+        {yourScore !== null && yourScore !== undefined ? (
           <div className="text-right">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/35 mb-0.5">STAR Rating</p>
-            <span className={`text-2xl font-bold ${GRADE_COLORS[session.overall_grade] ?? 'text-white/60'}`}>
-              {session.overall_grade}
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/35 mb-0.5">Your Score</p>
+            <span className={`text-2xl font-bold ${scoreColor(yourScore)}`}>
+              {yourScore}
             </span>
           </div>
         ) : (
-          <Badge variant="gray">No grade</Badge>
+          <Badge variant="gray">No score</Badge>
         )}
         <Link
           href={`/session/report/${session.id}`}

@@ -14,6 +14,7 @@ export type SessionStat = {
   fillers: number
   wpm: number | null
   grade: string | null
+  yourScore: number | null
 }
 
 export type CategoryStat = {
@@ -27,7 +28,7 @@ export type ProgressSummary = {
   fillerTrend: 'up' | 'down' | 'flat'
   avgWpm: number | null
   wpmTrend: 'up' | 'down' | 'flat'
-  bestGrade: string | null
+  bestScore: number | null
 }
 
 const TOOLTIP_STYLE = {
@@ -43,9 +44,6 @@ const INNER_CARD = {
   border: '1.5px solid rgba(249,193,37,0.28)',
   borderRadius: '0.75rem',
 }
-
-const GRADE_VALUES: Record<string, number> = { A: 10, B: 8, C: 6, D: 4, F: 2 }
-const GRADE_LABELS: Record<number, string> = { 10: 'A', 8: 'B', 6: 'C', 4: 'D', 2: 'F' }
 
 // Show at most ~6 x-axis labels regardless of session count
 function xInterval(len: number): number {
@@ -63,7 +61,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 // ── Summary stat pills ───────────────────────────────────────────────────────
 
 export const StatPills = React.memo(function StatPills({ summary }: { summary: ProgressSummary }) {
-  const { avgFillers, fillerTrend, avgWpm, wpmTrend, bestGrade } = summary
+  const { avgFillers, fillerTrend, avgWpm, wpmTrend, bestScore } = summary
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
@@ -95,11 +93,11 @@ export const StatPills = React.memo(function StatPills({ summary }: { summary: P
         <p className="text-[10px] text-white/30 mt-0.5">words per minute</p>
       </div>
 
-      {/* Best grade */}
+      {/* Best score */}
       <div className="rounded-xl px-4 py-3" style={INNER_CARD}>
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-white/35 mb-1">Best Grade</p>
-        <span className="text-2xl font-bold text-[#F9C125]">{bestGrade ?? '—'}</span>
-        <p className="text-[10px] text-white/30 mt-0.5">STAR rating</p>
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-white/35 mb-1">Best Score</p>
+        <span className="text-2xl font-bold text-[#F9C125]">{bestScore ?? '—'}</span>
+        <p className="text-[10px] text-white/30 mt-0.5">out of 100</p>
       </div>
     </div>
   )
@@ -291,21 +289,21 @@ export const CategoryChart = React.memo(function CategoryChart({ data }: { data:
   )
 })
 
-// ── Grade trend chart ────────────────────────────────────────────────────────
+// ── Score trend chart ────────────────────────────────────────────────────────
 
 export const GradeTrendChart = React.memo(function GradeTrendChart({ data }: { data: SessionStat[] }) {
-  const graded = data.filter(d => d.grade !== null && GRADE_VALUES[d.grade!] !== undefined)
-  if (graded.length === 0) {
+  const scored = data.filter(d => d.yourScore !== null)
+  if (scored.length === 0) {
     return (
       <div className="p-5 relative" style={INNER_CARD}>
-        <SectionLabel>Overall grade trend</SectionLabel>
+        <SectionLabel>Your Score trend</SectionLabel>
         <div className="relative">
           <ResponsiveContainer width="100%" height={140}>
-            <LineChart data={[{label:'',value:null}]} margin={{ top: 4, right: 4, left: -24, bottom: 16 }}>
+            <LineChart data={[{label:'',yourScore:null}]} margin={{ top: 4, right: 4, left: -24, bottom: 16 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
               <XAxis dataKey="label" tick={{ fill: 'rgba(249,193,37,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} height={56} />
-              <YAxis tick={{ fill: 'rgba(249,193,37,0.3)', fontSize: 11 }} axisLine={false} tickLine={false} domain={[0,12]} ticks={[2,4,6,8,10]} tickFormatter={(v: number) => GRADE_LABELS[v] ?? ''} />
-              <Line type="monotone" dataKey="value" stroke="rgba(249,193,37,0.15)" strokeWidth={2} dot={false} />
+              <YAxis tick={{ fill: 'rgba(249,193,37,0.3)', fontSize: 11 }} axisLine={false} tickLine={false} domain={[0,100]} ticks={[0,25,50,75,100]} />
+              <Line type="monotone" dataKey="yourScore" stroke="rgba(249,193,37,0.15)" strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
           <div className="absolute inset-0 flex items-center justify-center">
@@ -316,43 +314,34 @@ export const GradeTrendChart = React.memo(function GradeTrendChart({ data }: { d
     )
   }
 
-  const chartData = graded.map(s => ({
-    label: s.label,
-    value: GRADE_VALUES[s.grade!],
-    grade: s.grade,
-  }))
-
   return (
     <div className="p-5" style={INNER_CARD}>
-      <SectionLabel>Overall grade trend</SectionLabel>
+      <SectionLabel>Your Score trend</SectionLabel>
       <ResponsiveContainer width="100%" height={140}>
-        <LineChart data={chartData} margin={{ top: 4, right: 4, left: -24, bottom: 16 }}>
+        <LineChart data={scored} margin={{ top: 4, right: 4, left: -24, bottom: 16 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
           <XAxis
             dataKey="label"
             tick={{ fill: 'rgba(249,193,37,0.75)', fontSize: 10, angle: -35, textAnchor: 'end' }}
             axisLine={false}
             tickLine={false}
-            interval={xInterval(chartData.length)}
+            interval={xInterval(scored.length)}
             height={56}
           />
           <YAxis
             tick={{ fill: 'rgba(249,193,37,0.75)', fontSize: 11 }}
             axisLine={false}
             tickLine={false}
-            domain={[0, 12]}
-            ticks={[2, 4, 6, 8, 10]}
-            tickFormatter={(v: number) => GRADE_LABELS[v] ?? ''}
+            domain={[0, 100]}
+            ticks={[0, 25, 50, 75, 100]}
           />
           <Tooltip
             contentStyle={TOOLTIP_STYLE}
-            formatter={(_value: unknown, _name: unknown, props: { payload?: { grade?: string } }) => [
-              props.payload?.grade ?? '—', 'STAR Rating',
-            ]}
+            formatter={(value: unknown) => [`${value}/100`, 'Your Score']}
           />
           <Line
             type="monotone"
-            dataKey="value"
+            dataKey="yourScore"
             stroke="#F9C125"
             strokeWidth={2}
             dot={{ fill: '#F9C125', r: 3, strokeWidth: 0 }}

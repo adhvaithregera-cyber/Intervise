@@ -7,6 +7,7 @@ import { RecentSessionsList } from './recent-sessions-list'
 import { ChartsClient } from './charts-client'
 import type { SessionStat, ProgressSummary } from './charts-client'
 import { Lock } from 'lucide-react'
+import { computeSessionMetrics } from '@/lib/scorecard'
 
 const TIER_LABELS: Record<string, string> = { free: 'Free', student: 'Student', pro: 'Pro' }
 
@@ -81,7 +82,7 @@ export default async function DashboardPage({
     if (sessionIds.length > 0) {
       // Fetch answers + questions for those sessions in parallel
       const { data: answers } = await supabase
-        .from('answers').select('session_id, filler_count, wpm, question_id')
+        .from('answers').select('session_id, filler_count, wpm, question_id, ai_feedback')
         .in('session_id', sessionIds).eq('transcription_failed', false)
 
       const questionIds = [...new Set((answers ?? []).map((a) => a.question_id))]
@@ -94,7 +95,8 @@ export default async function DashboardPage({
       const questionMap = Object.fromEntries((questions ?? []).map((q) => [q.id, q.category_name]))
 
       // Per-session stats
-      const statsBySession: Record<string, { fillerTotal: number; fillerCount: number; wpms: number[]; date: string }> = {}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const statsBySession: Record<string, { fillerTotal: number; fillerCount: number; wpms: number[]; date: string; feedbacks: any[] }> = {}
       for (const s of chartSessions ?? []) {
         const d = new Date(s.created_at)
         statsBySession[s.id] = {
@@ -102,6 +104,7 @@ export default async function DashboardPage({
           fillerTotal: 0,
           fillerCount: 0,
           wpms: [],
+          feedbacks: [],
         }
       }
       for (const a of answers ?? []) {
@@ -109,6 +112,7 @@ export default async function DashboardPage({
         statsBySession[a.session_id].fillerTotal += a.filler_count ?? 0
         statsBySession[a.session_id].fillerCount += 1
         if (a.wpm !== null) statsBySession[a.session_id].wpms.push(a.wpm)
+        if (a.ai_feedback) statsBySession[a.session_id].feedbacks.push({ ai_feedback: a.ai_feedback })
       }
 
       // Count occurrences of each date to detect duplicates
@@ -126,7 +130,8 @@ export default async function DashboardPage({
           : null
         const diff = s.difficulty.charAt(0).toUpperCase() + s.difficulty.slice(1)
         const label = (dateCount[st.date] ?? 1) > 1 ? `${diff} · ${st.date}` : st.date
-        return { label, date: st.date, isoDate: s.created_at, fillers: avgFillers, wpm: avgWpm, grade: s.overall_grade ?? null }
+        const m = computeSessionMetrics(st.feedbacks)
+        return { label, date: st.date, isoDate: s.created_at, fillers: avgFillers, wpm: avgWpm, grade: s.overall_grade ?? null, yourScore: m?.yourScore ?? null }
       })
 
       // Per-category stats
@@ -145,11 +150,29 @@ export default async function DashboardPage({
     }
   }
 
+  // ── Your Score per recent session ──────────────────────────────────────
+  const recentSessionIds = (recentSessions ?? []).map(s => s.id)
+  const { data: recentAnswers } = recentSessionIds.length > 0
+    ? await supabase.from('answers').select('session_id, ai_feedback').in('session_id', recentSessionIds).eq('transcription_failed', false)
+    : { data: [] as { session_id: string; ai_feedback: unknown }[] }
+
+  const sessionScores: Record<string, number | null> = {}
+  const recentBySession: Record<string, { ai_feedback: unknown }[]> = {}
+  for (const a of recentAnswers ?? []) {
+    if (!recentBySession[a.session_id]) recentBySession[a.session_id] = []
+    recentBySession[a.session_id].push({ ai_feedback: a.ai_feedback })
+  }
+  for (const [sid, ans] of Object.entries(recentBySession)) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const m = computeSessionMetrics(ans as any)
+    sessionScores[sid] = m?.yourScore ?? null
+  }
+
   // ── Progress summary stats ──────────────────────────────────────────────
   const progressSummary: ProgressSummary = {
     avgFillers: null, fillerTrend: 'flat',
     avgWpm: null, wpmTrend: 'flat',
-    bestGrade: null,
+    bestScore: null,
   }
   if (sessionStats.length > 0) {
     const allFillers = sessionStats.map(s => s.fillers)
@@ -172,13 +195,8 @@ export default async function DashboardPage({
         else if (lastAvg < firstAvg - 3) progressSummary.wpmTrend = 'down'
       }
     }
-    const GRADE_ORDER = ['A', 'B', 'C', 'D', 'F']
-    const grades = sessionStats.map(s => s.grade).filter(Boolean) as string[]
-    if (grades.length > 0) {
-      progressSummary.bestGrade = grades.reduce((best, g) =>
-        GRADE_ORDER.indexOf(g) < GRADE_ORDER.indexOf(best) ? g : best
-      )
-    }
+    const scores = sessionStats.map(s => s.yourScore).filter((s): s is number => s !== null)
+    if (scores.length > 0) progressSummary.bestScore = Math.max(...scores)
   }
 
   const sessionsLimit = TIER_SESSION_LIMITS[profile.tier] ?? 2
@@ -236,7 +254,7 @@ export default async function DashboardPage({
           <div className="h-full p-5" style={CARD_STYLE}>
             <h2 className="mb-4 text-base font-semibold text-white">Recent Sessions</h2>
             {recentSessions && recentSessions.length > 0 ? (
-              <RecentSessionsList sessions={recentSessions as import('@/types/database').Session[]} />
+              <RecentSessionsList sessions={recentSessions as import('@/types/database').Session[]} scores={sessionScores} />
             ) : (
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <p className="text-[#F9C125]/70 text-base font-medium">No completed sessions yet.</p>
@@ -270,17 +288,16 @@ export default async function DashboardPage({
             initialInterviewDate={profile.interview_date}
           />
 
-          {/* Best grade this month */}
+          {/* Best score this month */}
           <div className="p-5" style={CARD_STYLE}>
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-3">Best Grade</p>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-3">Best Score</p>
             <div className="flex items-baseline gap-2">
-              <span className="text-4xl font-bold text-white">
-                {(recentSessions ?? []).map(s => s.overall_grade).filter(Boolean).sort((a, b) => {
-                  const o = ['A','B','C','D','F']
-                  return o.indexOf(a as string) - o.indexOf(b as string)
-                })[0] ?? '—'}
+              <span className="text-4xl font-bold text-[#F9C125]">
+                {Object.values(sessionScores).filter((s): s is number => s !== null).length > 0
+                  ? Math.max(...Object.values(sessionScores).filter((s): s is number => s !== null))
+                  : '—'}
               </span>
-              <span className="text-sm text-white/40">STAR rating</span>
+              <span className="text-sm text-white/40">/ 100</span>
             </div>
             <p className="text-xs text-white/30 mt-2">Across recent sessions</p>
           </div>
@@ -301,7 +318,7 @@ export default async function DashboardPage({
           <div className="flex items-center justify-between mb-5">
             <div>
               <h2 className="text-base font-semibold text-white">Your Progress</h2>
-              <p className="text-xs text-white/40 mt-0.5">Filler words, pace, and grades across sessions</p>
+              <p className="text-xs text-white/40 mt-0.5">Filler words, pace, and scores across sessions</p>
             </div>
             {!isStudent && (
               <span className="text-xs font-semibold uppercase tracking-wider text-[#F9C125]/50">Student+</span>
@@ -313,10 +330,10 @@ export default async function DashboardPage({
             <div className="relative rounded-xl overflow-hidden" style={{ transform: 'translateZ(0)' }}>
               <div style={{ filter: 'blur(5px)', userSelect: 'none', pointerEvents: 'none', overflow: 'hidden' }} className="space-y-4 p-1">
                 <div className="grid grid-cols-3 gap-3">
-                  {['Avg Fillers', 'Avg WPM', 'Best Grade'].map((label, i) => (
+                  {['Avg Fillers', 'Avg WPM', 'Best Score'].map((label, i) => (
                     <div key={label} className="rounded-xl px-4 py-3" style={INNER_CARD}>
                       <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-1">{label}</p>
-                      <p className="text-2xl font-bold text-white">{['3', '142', 'A'][i]}</p>
+                      <p className="text-2xl font-bold text-white">{['3', '142', '78'][i]}</p>
                     </div>
                   ))}
                 </div>

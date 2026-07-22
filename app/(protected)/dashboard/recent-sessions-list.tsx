@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { SessionRow } from './session-row'
 import type { Session } from '@/types/database'
 
-export function RecentSessionsList({ sessions }: { sessions: Session[] }) {
+export function RecentSessionsList({ sessions, scores }: { sessions: Session[]; scores?: Record<string, number | null> }) {
   const [showAll, setShowAll] = useState(false)
   const visible = showAll ? sessions : sessions.slice(0, 5)
   const hidden = sessions.length - 5
@@ -12,7 +12,7 @@ export function RecentSessionsList({ sessions }: { sessions: Session[] }) {
   return (
     <div className="space-y-3">
       {visible.map((session) => (
-        <SessionRow key={session.id} session={session} />
+        <SessionRow key={session.id} session={session} yourScore={scores?.[session.id] ?? null} />
       ))}
       {!showAll && hidden > 0 && (
         <button

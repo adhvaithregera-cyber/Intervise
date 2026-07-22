@@ -1,4 +1,4 @@
-import type { Answer, Difficulty } from '@/types/database'
+import type { Answer, AiFeedback, Difficulty } from '@/types/database'
 
 export type Grade = 'A' | 'B' | 'C' | 'D' | 'F'
 
@@ -51,5 +51,50 @@ export function computeScorecardStats(
     questionCount: answers.length,
     difficulty: capitalised,
     avgScore,
+  }
+}
+
+export type ThreeMetrics = {
+  fluency: number
+  accuracy: number
+  skill: number
+  yourScore: number
+}
+
+export function computeThreeMetrics(fb: AiFeedback): ThreeMetrics {
+  const ds = fb.delivery_scores
+  const fluencyRaw = ds.filler_words.score + ds.wpm.score + ds.duration.score
+  const fluency = Math.min(100, Math.round((fluencyRaw / 30) * 100))
+
+  const gf = fb.grammar_feedback
+  const accuracy = Math.min(100, Math.round(((gf?.score ?? 10) / (gf?.max ?? 10)) * 100))
+
+  const components = Object.values(fb.component_scores)
+  const contentTotal = components.reduce((sum, c) => sum + c.score, 0)
+  const contentMax = components.reduce((sum, c) => sum + c.max, 0)
+  const skill = contentMax > 0 ? Math.min(100, Math.round((contentTotal / contentMax) * 100)) : 0
+
+  const yourScore = Math.round((fluency + accuracy + skill) / 3)
+  return { fluency, accuracy, skill, yourScore }
+}
+
+export function computeSessionMetrics(
+  answers: Pick<Answer, 'ai_feedback'>[],
+): ThreeMetrics | null {
+  const feedbacks = answers
+    .map(a => a.ai_feedback)
+    .filter((fb): fb is AiFeedback => fb !== null)
+
+  if (feedbacks.length === 0) return null
+
+  const metrics = feedbacks.map(computeThreeMetrics)
+  const avg = (key: keyof ThreeMetrics) =>
+    Math.round(metrics.reduce((sum, m) => sum + m[key], 0) / metrics.length)
+
+  return {
+    fluency: avg('fluency'),
+    accuracy: avg('accuracy'),
+    skill: avg('skill'),
+    yourScore: avg('yourScore'),
   }
 }
