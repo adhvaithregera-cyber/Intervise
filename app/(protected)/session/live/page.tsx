@@ -188,7 +188,7 @@ export default function LiveSessionPage() {
         setPhase('between')
       }
     }
-    recorder.start()
+    recorder.start(1000) // flush chunks every 1s — fixes Brave/Safari truncation on stop
     mediaRecorderRef.current = recorder
     answerStartTimeRef.current = Date.now()
     setPhase('recording')
