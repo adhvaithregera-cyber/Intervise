@@ -11,7 +11,7 @@ export function NavCenterLinks() {
     <div className="hidden sm:flex absolute left-1/2 -translate-x-1/2 items-center gap-7">
       <Link
         href="/"
-        className="text-sm font-medium text-white/65 hover:text-white transition-colors"
+        className="text-sm font-medium text-white hover:text-white/80 transition-colors"
       >
         Home
       </Link>
@@ -25,7 +25,7 @@ export function NavCenterLinks() {
       )}
       <a
         href="/#pricing"
-        className="text-sm font-medium text-white/65 hover:text-white transition-colors"
+        className="text-sm font-medium text-white hover:text-white/80 transition-colors"
       >
         Pricing
       </a>
