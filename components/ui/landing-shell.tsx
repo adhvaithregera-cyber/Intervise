@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import CursorGlow from '@/components/ui/cursor-glow'
 import { PrivacyModal } from '@/components/ui/privacy-modal'
 import { HeroSection } from '@/components/ui/hero-section'
 import { CategoryStrip } from '@/components/ui/category-strip'
@@ -22,7 +21,6 @@ export function LandingShell({ sessionHref, userTier, hasCompletedSession = fals
 
   return (
     <>
-      <CursorGlow />
       <HeroSection sessionHref={sessionHref} hasCompletedSession={hasCompletedSession} />
       <CategoryStrip />
       <AppPreview />

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { NavAuthLinks } from './nav-auth-links'
+import { ScrollNav } from './scroll-nav'
 import { Home, Tag, LogIn } from 'lucide-react'
 
 function getInitials(name?: string | null, email?: string | null): string {
@@ -45,9 +46,7 @@ export async function Navbar({ prefetched }: NavbarProps = {}) {
   }
 
   return (
-    <nav
-      className="sticky top-0 z-50 bg-[#080d1a]/80 backdrop-blur-2xl border-b border-white/[0.06] shadow-[0_1px_0_rgba(249,193,37,0.08)]"
-    >
+    <ScrollNav>
       <div className="mx-auto flex h-16 max-w-7xl items-center px-4 sm:px-6">
 
         {/* Left: wordmark */}
@@ -100,6 +99,6 @@ export async function Navbar({ prefetched }: NavbarProps = {}) {
         </div>
 
       </div>
-    </nav>
+    </ScrollNav>
   )
 }

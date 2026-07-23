@@ -55,7 +55,7 @@ function xInterval(len: number): number {
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-xs font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-3">
+    <p className="text-xs font-semibold uppercase tracking-widest text-[#F9C125] mb-3">
       {children}
     </p>
   )

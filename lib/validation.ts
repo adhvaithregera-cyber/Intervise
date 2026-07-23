@@ -68,8 +68,8 @@ export const onboardingSchema = z.object({
 
 export const profileUpdateSchema = z
   .object({
-    // Same allowlist as onboarding
-    role_type: z.enum(ALLOWED_ROLE_TYPES, 'Invalid role type').optional(),
+    // Free text — onboarding stores comma-joined multi-select values
+    role_type: z.string().min(1).max(200).trim().optional(),
     interview_date: z
       .string()
       .datetime({ offset: true })

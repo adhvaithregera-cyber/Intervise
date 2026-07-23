@@ -248,7 +248,7 @@ export default async function DashboardPage({
           <h1 className="text-2xl font-bold text-white">
             {profile.full_name ? `Hey, ${profile.full_name.split(' ')[0]}` : 'Dashboard'}
           </h1>
-          <p className="mt-0.5 text-sm font-medium text-[#F9C125]/60">
+          <p className="mt-0.5 text-sm font-medium text-white/50">
             {TIER_LABELS[profile.tier] ?? profile.tier} plan
           </p>
         </div>
@@ -294,8 +294,8 @@ export default async function DashboardPage({
               className="w-full flex items-center justify-center gap-3 rounded-2xl py-4 min-h-[64px]"
               style={{ backgroundColor: 'rgba(8,13,26,0.4)', border: '1px solid rgba(249,193,37,0.15)' }}
             >
-              <span className="text-base font-semibold text-white/30">No sessions left this month —</span>
-              <Link href="/#pricing" className="text-base font-bold text-[#F9C125]/60 underline hover:opacity-70 transition-opacity">Upgrade →</Link>
+              <span className="text-base font-semibold text-white/60">No sessions left this month —</span>
+              <Link href="/#pricing" className="text-base font-bold text-[#F9C125] underline hover:opacity-70 transition-opacity">Upgrade →</Link>
             </div>
           ) : (
             <Link
@@ -315,13 +315,13 @@ export default async function DashboardPage({
         {/* Recent sessions — takes 2/3 */}
         <FadeIn delay={0.08} className="lg:col-span-2">
           <div className="h-full p-5" style={CARD_STYLE}>
-            <h2 className="mb-4 text-base font-semibold text-white">Recent Sessions</h2>
+            <h2 className="mb-4 text-base font-semibold text-[#F9C125]">Recent Sessions</h2>
             {recentSessions && recentSessions.length > 0 ? (
               <RecentSessionsList sessions={recentSessions as import('@/types/database').Session[]} scores={sessionScores} />
             ) : (
               <div className="flex flex-col items-center justify-center py-16 text-center">
-                <p className="text-[#F9C125]/70 text-base font-medium">No completed sessions yet.</p>
-                <p className="text-white/40 text-sm mt-1">Start a session to see your results here.</p>
+                <p className="text-white/80 text-base font-medium">No completed sessions yet.</p>
+                <p className="text-white/45 text-sm mt-1">Start a session to see your results here.</p>
               </div>
             )}
           </div>
@@ -332,7 +332,7 @@ export default async function DashboardPage({
 
           {/* Sessions this month */}
           <div className="p-5" style={CARD_STYLE}>
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-3">Sessions this month</p>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/40 mb-3">Sessions this month</p>
             <div className="flex items-baseline gap-1.5 mb-3">
               <span className="text-4xl font-bold text-white">{profile.sessions_used_this_month}</span>
               <span className="text-sm text-white/40">/ {sessionsLimit}</span>
@@ -340,7 +340,7 @@ export default async function DashboardPage({
             <div className="h-1.5 w-full rounded-full mb-2" style={{ backgroundColor: 'rgba(249,193,37,0.12)' }}>
               <div className="h-1.5 rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: '#F9C125' }} />
             </div>
-            <p className="text-xs text-[#F9C125]/50">
+            <p className="text-xs text-white/45">
               {exhausted ? 'No sessions left this month' : `${sessionsLeft} remaining`}
             </p>
           </div>
@@ -353,7 +353,7 @@ export default async function DashboardPage({
 
           {/* Best score this month */}
           <div className="p-5" style={CARD_STYLE}>
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-3">Best Score</p>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/40 mb-3">Best Score</p>
             <div className="flex items-baseline gap-2">
               <span className="text-4xl font-bold text-[#F9C125]">
                 {Object.values(sessionScores).filter((s): s is number => s !== null).length > 0
@@ -362,13 +362,13 @@ export default async function DashboardPage({
               </span>
               <span className="text-sm text-white/40">/ 100</span>
             </div>
-            <p className="text-xs text-white/30 mt-2">Across recent sessions</p>
+            <p className="text-xs text-white/45 mt-2">Across recent sessions</p>
           </div>
 
           {/* Quick tip */}
           <div className="p-5" style={CARD_STYLE}>
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/60 mb-3">Quick Tip</p>
-            <p className="text-sm text-white/70 leading-relaxed">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/40 mb-3">Quick Tip</p>
+            <p className="text-sm text-white/85 leading-relaxed">
               {QUICK_TIPS[Math.floor(Math.random() * QUICK_TIPS.length)]}
             </p>
           </div>
@@ -380,11 +380,11 @@ export default async function DashboardPage({
         <div id="progress" className="p-6" style={CARD_STYLE}>
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h2 className="text-base font-semibold text-white">Your Progress</h2>
-              <p className="text-xs text-white/40 mt-0.5">Filler words, pace, and scores across sessions</p>
+              <h2 className="text-base font-semibold text-[#F9C125]">Your Progress</h2>
+              <p className="text-xs text-white/55 mt-0.5">Filler words, pace, and scores across sessions</p>
             </div>
             {!isStudent && (
-              <span className="text-xs font-semibold uppercase tracking-wider text-[#F9C125]/50">Student+</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-white/40">Student+</span>
             )}
           </div>
 
@@ -395,14 +395,14 @@ export default async function DashboardPage({
                 <div className="grid grid-cols-3 gap-3">
                   {['Avg Fillers', 'Avg WPM', 'Best Score'].map((label, i) => (
                     <div key={label} className="rounded-xl px-4 py-3" style={INNER_CARD}>
-                      <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-1">{label}</p>
+                      <p className="text-[10px] font-semibold uppercase tracking-widest text-white/40 mb-1">{label}</p>
                       <p className="text-2xl font-bold text-white">{['3', '142', '78'][i]}</p>
                     </div>
                   ))}
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="p-5" style={INNER_CARD}>
-                    <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-3">Filler words per session</p>
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-white/40 mb-3">Filler words per session</p>
                     <div className="flex items-end gap-2 h-24">
                       {[8, 5, 12, 3, 7, 4, 9, 2].map((h, i) => (
                         <div key={i} className="flex-1 rounded-t" style={{ height: `${(h / 12) * 100}%`, background: 'rgba(249,193,37,0.5)' }} />
@@ -410,7 +410,7 @@ export default async function DashboardPage({
                     </div>
                   </div>
                   <div className="p-5" style={INNER_CARD}>
-                    <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-3">Speech pace per session</p>
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-white/40 mb-3">Speech pace per session</p>
                     <div className="flex items-end gap-2 h-24">
                       {[60, 75, 55, 80, 70, 85, 65, 90].map((h, i) => (
                         <div key={i} className="flex-1 rounded-t" style={{ height: `${h}%`, background: 'rgba(249,193,37,0.3)' }} />
@@ -427,7 +427,7 @@ export default async function DashboardPage({
                     </div>
                   </div>
                   <p className="font-bold text-white mb-1">Unlock Progress Charts</p>
-                  <p className="text-sm text-white/60 mb-4">Track filler words, pace, and category performance over time</p>
+                  <p className="text-sm text-white/70 mb-4">Track filler words, pace, and category performance over time</p>
                   <Link href="/#pricing" className="inline-block rounded-xl bg-[#F9C125] px-5 py-2.5 text-sm font-bold text-[#080d1a] hover:brightness-110 transition-all">
                     Upgrade to Student →
                   </Link>

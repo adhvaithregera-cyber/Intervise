@@ -77,6 +77,11 @@ Tables: `profiles`, `questions`, `sessions`, `answers`, `question_history`
 - `cn()` from `@/lib/utils` for className merging
 - Glassmorphic design: `rgba(8,13,26,0.75)` bg, `blur(20px)`, gold border `rgba(249,193,37,0.18)`
 
+## UI / Layout rules (strict)
+- **No scroll** — every page must fit within the viewport. Use `h-screen` or `h-[calc(100vh-Xrem)]` + `overflow-hidden`. Only allow internal scroll inside a bounded container (e.g. a card's content region) when absolutely unavoidable. Never let the outer page scroll.
+- **Fill the screen** — pages should use all available space. Avoid small centred cards floating in a sea of empty background. Cards and panels should stretch to fill remaining height/width.
+- **Minimise scroll everywhere** — tighten spacing, reduce padding, keep content compact so that even content-heavy steps/pages don't require scrolling.
+
 ## Footer component (`components/ui/minimal-footer.tsx`)
 **TODO — Social links to be added:**
 - Currently only Instagram: `https://www.instagram.com/intervisehq/`

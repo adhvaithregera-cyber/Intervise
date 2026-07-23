@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { Navbar } from '@/components/layout/navbar'
-import CursorGlow from '@/components/ui/cursor-glow'
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -37,7 +36,6 @@ export default async function ProtectedLayout({ children }: { children: React.Re
 
   return (
     <div className="relative min-h-screen" style={{ backgroundColor: '#080d1a' }}>
-      <CursorGlow />
       {/* Ambient glow — behind content cards, not pinned to top */}
       <div
         className="pointer-events-none absolute inset-0 z-0"

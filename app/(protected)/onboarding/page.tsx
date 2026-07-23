@@ -1,34 +1,32 @@
 'use client'
 
 import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { Button } from '@/components/ui/button'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Check, ArrowLeft, ArrowRight } from 'lucide-react'
 
 const TOTAL_STEPS = 8
 
 const ROLE_OPTIONS = [
   'Software Engineering', 'Product Management', 'Data Science / ML',
-  'Business / Strategy', 'Finance / Consulting', 'Marketing', 'Design (UX/UI)', 'Other',
+  'Design (UX/UI)', 'Business / Strategy', 'Finance / Consulting',
+  'Marketing', 'Sales', 'Operations', 'Other',
 ]
-
 const WEAKNESS_OPTIONS = [
   'Taking too long to answer', 'Using too many filler words',
   'Speaking too fast or too slow', 'Rambling without structure',
-  'Freezing under pressure', 'Being too vague or generic', 'Other',
+  'Freezing under pressure', 'Being too vague or generic',
+  'Lack of confidence', 'Not enough examples', 'Other',
 ]
-
 const EXPERIENCE_OPTIONS = [
-  'Fresher (0–1 year)', 'Early career (1–3 years)', 'Mid-level (3–7 years)', 'Senior (7+ years)', 'Other',
+  'Fresher (0–1 year)', 'Early career (1–3 years)',
+  'Mid-level (3–7 years)', 'Senior (7+ years)', 'Other',
 ]
-
 const INTERVIEW_TYPE_OPTIONS = [
   'Behavioural only', 'Technical only', 'Both behavioural & technical', 'Other',
 ]
-
 const FREQUENCY_OPTIONS = [
   'Every day', 'A few times a week', 'Once a week', 'Just exploring', 'Other',
 ]
-
 const JOB_CHALLENGE_OPTIONS = [
   'Not getting enough interview calls',
   'Struggling to answer questions confidently',
@@ -39,25 +37,34 @@ const JOB_CHALLENGE_OPTIONS = [
   'Other',
 ]
 
-const CARD_STYLE = {
-  backgroundColor: 'rgba(8,13,26,0.75)',
-  backdropFilter: 'blur(16px)',
-  WebkitBackdropFilter: 'blur(16px)',
-  border: '1px solid rgba(249,193,37,0.20)',
-  borderRadius: '1rem',
+const STEP_META = [
+  { category: 'ABOUT YOU',       heading: "Let's start with you.",         sub: 'Your name and age help us personalise your experience.' },
+  { category: 'YOUR GOALS',      heading: 'What roles are you targeting?',  sub: 'Pick all that apply — we\'ll tailor your question bank.' },
+  { category: 'YOUR TIMELINE',   heading: 'When is your interview?',        sub: 'Helps us track how much prep time you have.' },
+  { category: 'SELF-ASSESSMENT', heading: 'Where do you struggle most?',    sub: 'Pick all that apply — we\'ll focus your drills here.' },
+  { category: 'EXPERIENCE',      heading: 'How much experience do you have?', sub: 'We\'ll calibrate question difficulty to your level.' },
+  { category: 'PREP STYLE',      heading: 'What type of interviews?',       sub: 'Shapes which question formats we prioritise.' },
+  { category: 'COMMITMENT',      heading: 'How often will you practise?',   sub: 'No pressure — helps us set the right pace for you.' },
+  { category: 'YOUR CHALLENGE',  heading: 'What\'s your biggest challenge?', sub: 'Your honest answer helps us build better features.' },
+]
+
+function toggle(arr: string[], val: string): string[] {
+  return arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val]
 }
 
 export default function OnboardingPage() {
   const [step, setStep] = useState(1)
+  const [dir, setDir] = useState(1)
+  const go = (to: number) => { setDir(to > step ? 1 : -1); setStep(to) }
 
   const [fullName, setFullName] = useState('')
   const [age, setAge] = useState(22)
-  const [roleType, setRoleType] = useState('')
+  const [roleTypes, setRoleTypes] = useState<string[]>([])
   const [roleTypeOther, setRoleTypeOther] = useState('')
   const [interviewDate, setInterviewDate] = useState('')
   const [justPracticing, setJustPracticing] = useState(false)
-  const [biggestWeakness, setBiggestWeakness] = useState('')
-  const [biggestWeaknessOther, setBiggestWeaknessOther] = useState('')
+  const [weaknesses, setWeaknesses] = useState<string[]>([])
+  const [weaknessOther, setWeaknessOther] = useState('')
   const [experienceLevel, setExperienceLevel] = useState('')
   const [experienceLevelOther, setExperienceLevelOther] = useState('')
   const [interviewType, setInterviewType] = useState('')
@@ -66,14 +73,11 @@ export default function OnboardingPage() {
   const [practiceFrequencyOther, setPracticeFrequencyOther] = useState('')
   const [jobChallenge, setJobChallenge] = useState('')
   const [jobChallengeOther, setJobChallengeOther] = useState('')
-
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
-  const progressPct = Math.round((step / TOTAL_STEPS) * 100)
-
-  const resolvedRole = roleType === 'Other' ? roleTypeOther.trim() : roleType
-  const resolvedWeakness = biggestWeakness === 'Other' ? biggestWeaknessOther.trim() : biggestWeakness
+  const resolvedRoles = roleTypes.map(r => r === 'Other' ? roleTypeOther.trim() : r).filter(Boolean).join(', ')
+  const resolvedWeaknesses = weaknesses.map(w => w === 'Other' ? weaknessOther.trim() : w).filter(Boolean).join(', ')
   const resolvedExperience = experienceLevel === 'Other' ? experienceLevelOther.trim() : experienceLevel
   const resolvedInterviewType = interviewType === 'Other' ? interviewTypeOther.trim() : interviewType
   const resolvedFrequency = practiceFrequency === 'Other' ? practiceFrequencyOther.trim() : practiceFrequency
@@ -81,305 +85,294 @@ export default function OnboardingPage() {
 
   async function handleSubmit() {
     if (!resolvedJobChallenge) return
-    setError(null)
-    setSubmitting(true)
+    setError(null); setSubmitting(true)
+    const isoDate = interviewDate ? new Date(interviewDate + 'T00:00:00').toISOString() : null
     const res = await fetch('/api/onboarding', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        full_name: fullName.trim(),
-        age,
-        role_type: resolvedRole,
-        interview_date: justPracticing ? null : (interviewDate || null),
-        biggest_weakness: resolvedWeakness,
+        full_name: fullName.trim(), age,
+        role_type: resolvedRoles,
+        interview_date: justPracticing ? null : isoDate,
+        biggest_weakness: resolvedWeaknesses,
         experience_level: resolvedExperience,
         interview_type: resolvedInterviewType,
         practice_frequency: resolvedFrequency,
         job_challenge: resolvedJobChallenge,
       }),
     })
-    if (!res.ok) {
-      const data = await res.json()
-      setError(data.error ?? 'Something went wrong.')
-      setSubmitting(false)
-      return
-    }
+    if (!res.ok) { const d = await res.json(); setError(d.error ?? 'Something went wrong.'); setSubmitting(false); return }
     window.location.href = '/dashboard'
   }
 
-  const optionClass = (active: boolean) =>
-    `w-full rounded-xl border px-5 py-3.5 text-left text-sm font-medium transition-all ${
+  // ── Styles ──────────────────────────────────────────────────────────────────
+  const chip = (active: boolean) =>
+    `inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-sm font-medium transition-all duration-150 cursor-pointer select-none ${
       active
         ? 'border-[#F9C125] bg-[#F9C125]/10 text-[#F9C125]'
-        : 'border-white/20 bg-white/5 text-white/80 hover:border-[#F9C125]/50 hover:bg-white/10'
+        : 'border-white/[0.14] bg-transparent text-white/60 hover:border-white/30 hover:text-white/85'
     }`
 
-  const inputClass = "w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-sm text-white placeholder-white/40 focus:border-[#F9C125] focus:outline-none focus:ring-2 focus:ring-[#F9C125]/20"
+  const inputCls = 'w-full rounded-xl px-4 py-3 text-sm text-white/90 placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#F9C125]/50 transition-colors'
+  const inputStyle: React.CSSProperties = { backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }
 
-  const otherInputClass = "mt-3 w-full rounded-xl border border-[#F9C125]/50 bg-white/10 px-4 py-3 text-sm text-white placeholder-white/40 focus:border-[#F9C125] focus:outline-none focus:ring-2 focus:ring-[#F9C125]/20"
+  const variants = {
+    enter: (d: number) => ({ opacity: 0, x: d > 0 ? 32 : -32 }),
+    center: { opacity: 1, x: 0 },
+    exit:  (d: number) => ({ opacity: 0, x: d > 0 ? -32 : 32 }),
+  }
+
+  const meta = STEP_META[step - 1]
+  const progressPct = (step / TOTAL_STEPS) * 100
+
+  // Per-step continue disabled logic
+  const continueDisabled: Record<number, boolean> = {
+    1: !fullName.trim(),
+    2: !resolvedRoles,
+    3: false,
+    4: !resolvedWeaknesses,
+    5: !resolvedExperience,
+    6: !resolvedInterviewType,
+    7: !resolvedFrequency,
+    8: !resolvedJobChallenge || submitting,
+  }
+
+  function handleContinue() {
+    if (step < TOTAL_STEPS) go(step + 1)
+    else handleSubmit()
+  }
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
-      <div className="w-full max-w-xl">
+    <div className="fixed inset-x-0 flex flex-col p-3" style={{ top: '4rem', bottom: 0, backgroundColor: '#080d1a', zIndex: 20 }}>
 
-        {/* Progress bar */}
-        <div className="relative mb-6">
-          <div className="absolute -inset-4 rounded-2xl" style={{ background: 'radial-gradient(ellipse 100% 200% at 50% 50%, rgba(249,193,37,0.04) 0%, transparent 70%)' }} />
-          <div className="mb-2 flex justify-between text-xs text-white/50">
-            <span>Step {step} of {TOTAL_STEPS}</span>
-            <span>{progressPct}%</span>
-          </div>
-          <div className="h-1.5 w-full rounded-full bg-white/10">
-            <div
-              className="h-1.5 rounded-full bg-[#F9C125] transition-all duration-500"
-              style={{ width: `${progressPct}%` }}
-            />
-          </div>
+      {/* ── Main content (bordered box) ── */}
+      <div className="flex flex-1 flex-col overflow-hidden rounded-2xl"
+        style={{ border: '1px solid rgba(249,193,37,0.22)', backgroundColor: 'rgba(255,255,255,0.015)' }}>
+
+        {/* ── Thin gold progress bar inside box ── */}
+        <div className="h-[2px] w-full shrink-0 rounded-t-2xl overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }}>
+          <motion.div
+            className="h-full"
+            style={{ backgroundColor: '#F9C125' }}
+            animate={{ width: `${progressPct}%` }}
+            transition={{ duration: 0.4, ease: 'easeInOut' }}
+          />
         </div>
 
-        <div style={CARD_STYLE} className="p-8 sm:p-10">
-
-          {/* Step 1: Full name + Age */}
-          {step === 1 && (
-            <motion.div
-              key={step}
-              initial={{ opacity: 0, x: 12 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3, ease: 'easeOut' }}
+        {/* Top nav row */}
+        <div className="flex shrink-0 items-center justify-between px-10 py-5 sm:px-16">
+          {step > 1 ? (
+            <button
+              onClick={() => go(step - 1)}
+              className="flex items-center gap-1.5 text-sm text-white/40 transition-colors hover:text-white/70 cursor-pointer"
             >
-              <h2 className="mb-1 text-2xl font-bold text-white">Let&apos;s start with you</h2>
-              <p className="mb-8 text-sm text-white/55">Your name and age help us personalise your experience.</p>
-              <div className="space-y-6">
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-white/80">Full name</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Priya Sharma"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    className={inputClass}
-                  />
-                </div>
-                <div>
-                  <label className="mb-2 flex items-center justify-between text-sm font-medium text-white/80">
-                    <span>Age</span>
-                    <span className="text-2xl font-bold text-[#F9C125]">{age}</span>
-                  </label>
-                  <input
-                    type="range" min={16} max={60} value={age}
-                    onChange={(e) => setAge(Number(e.target.value))}
-                    className="w-full accent-[#F9C125]"
-                  />
-                  <div className="mt-1 flex justify-between text-xs text-white/40">
-                    <span>16</span><span>60</span>
+              <ArrowLeft size={15} />
+              Back
+            </button>
+          ) : (
+            <div />
+          )}
+          <span className="text-xs font-semibold tracking-widest text-white/25">
+            STEP {String(step).padStart(2, '0')} / {String(TOTAL_STEPS).padStart(2, '0')}
+          </span>
+        </div>
+        <AnimatePresence mode="wait" custom={dir}>
+          <motion.div
+            key={step}
+            custom={dir}
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.22, ease: 'easeInOut' }}
+            className="flex h-full flex-col items-center justify-center px-10 sm:px-16 lg:px-24"
+          >
+            {/* Category + heading */}
+            <div className="mt-8 mb-7 text-center">
+              <p className="mb-3 text-[11px] font-semibold tracking-[0.18em] text-[#F9C125]/70">
+                {meta.category}
+              </p>
+              <h1 className="text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl">
+                {meta.heading}
+              </h1>
+              <p className="mt-3 text-base text-white/45">{meta.sub}</p>
+            </div>
+
+            {/* Step content */}
+            <div className="flex-1 overflow-hidden flex flex-col items-center w-full">
+
+              {/* Step 1 */}
+              {step === 1 && (
+                <div className="w-full max-w-2xl space-y-5">
+                  <div>
+                    <label className="mb-2 block text-[11px] font-semibold uppercase tracking-widest text-white/35">Full name</label>
+                    <input type="text" placeholder="e.g. Priya Sharma" value={fullName}
+                      onChange={e => setFullName(e.target.value)} className={inputCls} style={inputStyle} autoFocus />
+                  </div>
+                  <div>
+                    <div className="mb-2 flex items-center justify-between">
+                      <label className="text-[11px] font-semibold uppercase tracking-widest text-white/35">Age</label>
+                      <span className="text-2xl font-bold text-[#F9C125]">{age}</span>
+                    </div>
+                    <input type="range" min={16} max={60} value={age}
+                      onChange={e => setAge(Number(e.target.value))} className="w-full accent-[#F9C125]" />
+                    <div className="mt-1 flex justify-between text-xs text-white/25"><span>16</span><span>60</span></div>
                   </div>
                 </div>
-              </div>
-              <button
-                className="mt-8 w-full rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#080d1a] disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all"
-                disabled={!fullName.trim()}
-                onClick={() => setStep(2)}
-              >
-                Continue
-              </button>
-            </motion.div>
-          )}
-
-          {/* Step 2: Role */}
-          {step === 2 && (
-            <motion.div
-              key={step}
-              initial={{ opacity: 0, x: 12 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3, ease: 'easeOut' }}
-            >
-              <h2 className="mb-1 text-2xl font-bold text-white">What role are you targeting?</h2>
-              <p className="mb-8 text-sm text-white/55">We&apos;ll tailor your question bank to your field.</p>
-              <div className="grid grid-cols-2 gap-3">
-                {ROLE_OPTIONS.map((role) => (
-                  <button key={role} onClick={() => setRoleType(role)} className={optionClass(roleType === role)}>
-                    {role}
-                  </button>
-                ))}
-              </div>
-              {roleType === 'Other' && (
-                <input type="text" placeholder="Please specify your role..." value={roleTypeOther}
-                  onChange={(e) => setRoleTypeOther(e.target.value)} className={otherInputClass} autoFocus />
               )}
-              <div className="mt-8 flex gap-3">
-                <button onClick={() => setStep(1)} className="rounded-xl border border-white/20 px-5 py-3 text-sm font-medium text-white/70 hover:bg-white/10 transition-colors">Back</button>
-                <button disabled={!resolvedRole} onClick={() => setStep(3)} className="flex-1 rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#080d1a] disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all">Continue</button>
-              </div>
-            </motion.div>
-          )}
 
-          {/* Step 3: Interview date */}
-          {step === 3 && (
-            <motion.div
-              key={step}
-              initial={{ opacity: 0, x: 12 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3, ease: 'easeOut' }}
-            >
-              <h2 className="mb-1 text-2xl font-bold text-white">When is your interview?</h2>
-              <p className="mb-8 text-sm text-white/55">Helps us track how much time you have to prepare.</p>
-              <button onClick={() => { setJustPracticing(!justPracticing); setInterviewDate('') }} className={optionClass(justPracticing)}>
-                <span className="flex items-center gap-3">
-                  <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${justPracticing ? 'border-[#F9C125] bg-[#F9C125]' : 'border-white/40'}`}>
-                    {justPracticing && <span className="h-2 w-2 rounded-full bg-[#080d1a]" />}
-                  </span>
-                  I&apos;m just practising — no upcoming interview
-                </span>
-              </button>
-              {!justPracticing && (
-                <div className="mt-4">
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-white/40">Or pick a date</p>
-                  <input type="date" value={interviewDate} min={new Date().toISOString().split('T')[0]}
-                    onChange={(e) => setInterviewDate(e.target.value)} className={inputClass} />
+              {/* Step 2 */}
+              {step === 2 && (
+                <div className="w-full max-w-3xl">
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {ROLE_OPTIONS.map(r => (
+                      <button key={r} onClick={() => setRoleTypes(prev => toggle(prev, r))} className={chip(roleTypes.includes(r))}>
+                        {roleTypes.includes(r) && <Check size={12} strokeWidth={3} />}{r}
+                      </button>
+                    ))}
+                  </div>
+                  {roleTypes.includes('Other') && (
+                    <input type="text" placeholder="Your role..." value={roleTypeOther}
+                      onChange={e => setRoleTypeOther(e.target.value)} className={'mt-4 w-full max-w-sm ' + inputCls}
+                      style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(249,193,37,0.30)' }} autoFocus />
+                  )}
+                  {roleTypes.length > 0 && (
+                    <p className="mt-3 text-center text-sm text-white/30">{roleTypes.length} selected</p>
+                  )}
                 </div>
               )}
-              <div className="mt-8 flex gap-3">
-                <button onClick={() => setStep(2)} className="rounded-xl border border-white/20 px-5 py-3 text-sm font-medium text-white/70 hover:bg-white/10 transition-colors">Back</button>
-                <button onClick={() => setStep(4)} className="flex-1 rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#080d1a] hover:brightness-110 transition-all">Continue</button>
-              </div>
-            </motion.div>
-          )}
 
-          {/* Step 4: Biggest weakness */}
-          {step === 4 && (
-            <motion.div
-              key={step}
-              initial={{ opacity: 0, x: 12 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3, ease: 'easeOut' }}
-            >
-              <h2 className="mb-1 text-2xl font-bold text-white">Your biggest interview weakness?</h2>
-              <p className="mb-8 text-sm text-white/55">Honest answers help us focus your drills where it matters most.</p>
-              <div className="space-y-3">
-                {WEAKNESS_OPTIONS.map((w) => (
-                  <button key={w} onClick={() => setBiggestWeakness(w)} className={optionClass(biggestWeakness === w)}>{w}</button>
-                ))}
-              </div>
-              {biggestWeakness === 'Other' && (
-                <input type="text" placeholder="Describe your biggest weakness..." value={biggestWeaknessOther}
-                  onChange={(e) => setBiggestWeaknessOther(e.target.value)} className={otherInputClass} autoFocus />
+              {/* Step 3 */}
+              {step === 3 && (
+                <div className="w-full max-w-lg space-y-4">
+                  <button onClick={() => { setJustPracticing(!justPracticing); setInterviewDate('') }}
+                    className={chip(justPracticing)}>
+                    {justPracticing && <Check size={12} strokeWidth={3} />}
+                    I&apos;m just practising — no upcoming interview
+                  </button>
+                  {!justPracticing && (
+                    <div>
+                      <label className="mb-2 block text-[11px] font-semibold uppercase tracking-widest text-white/35">Interview date</label>
+                      <input type="date" value={interviewDate} min={new Date().toISOString().split('T')[0]}
+                        onChange={e => setInterviewDate(e.target.value)} className={inputCls} style={inputStyle} />
+                    </div>
+                  )}
+                </div>
               )}
-              <div className="mt-8 flex gap-3">
-                <button onClick={() => setStep(3)} className="rounded-xl border border-white/20 px-5 py-3 text-sm font-medium text-white/70 hover:bg-white/10 transition-colors">Back</button>
-                <button disabled={!resolvedWeakness} onClick={() => setStep(5)} className="flex-1 rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#080d1a] disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all">Continue</button>
-              </div>
-            </motion.div>
-          )}
 
-          {/* Step 5: Experience level */}
-          {step === 5 && (
-            <motion.div
-              key={step}
-              initial={{ opacity: 0, x: 12 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3, ease: 'easeOut' }}
-            >
-              <h2 className="mb-1 text-2xl font-bold text-white">How much experience do you have?</h2>
-              <p className="mb-8 text-sm text-white/55">We&apos;ll calibrate question difficulty to your level.</p>
-              <div className="space-y-3">
-                {EXPERIENCE_OPTIONS.map((e) => (
-                  <button key={e} onClick={() => setExperienceLevel(e)} className={optionClass(experienceLevel === e)}>{e}</button>
-                ))}
-              </div>
-              {experienceLevel === 'Other' && (
-                <input type="text" placeholder="Describe your experience level..." value={experienceLevelOther}
-                  onChange={(e) => setExperienceLevelOther(e.target.value)} className={otherInputClass} autoFocus />
+              {/* Step 4 */}
+              {step === 4 && (
+                <div className="w-full max-w-3xl">
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {WEAKNESS_OPTIONS.map(w => (
+                      <button key={w} onClick={() => setWeaknesses(prev => toggle(prev, w))} className={chip(weaknesses.includes(w))}>
+                        {weaknesses.includes(w) && <Check size={12} strokeWidth={3} />}{w}
+                      </button>
+                    ))}
+                  </div>
+                  {weaknesses.includes('Other') && (
+                    <input type="text" placeholder="Describe your weakness..." value={weaknessOther}
+                      onChange={e => setWeaknessOther(e.target.value)} className={'mt-4 max-w-sm ' + inputCls}
+                      style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(249,193,37,0.30)' }} autoFocus />
+                  )}
+                  {weaknesses.length > 0 && (
+                    <p className="mt-3 text-center text-sm text-white/30">{weaknesses.length} selected</p>
+                  )}
+                </div>
               )}
-              <div className="mt-8 flex gap-3">
-                <button onClick={() => setStep(4)} className="rounded-xl border border-white/20 px-5 py-3 text-sm font-medium text-white/70 hover:bg-white/10 transition-colors">Back</button>
-                <button disabled={!resolvedExperience} onClick={() => setStep(6)} className="flex-1 rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#080d1a] disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all">Continue</button>
-              </div>
-            </motion.div>
-          )}
 
-          {/* Step 6: Interview type */}
-          {step === 6 && (
-            <motion.div
-              key={step}
-              initial={{ opacity: 0, x: 12 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3, ease: 'easeOut' }}
-            >
-              <h2 className="mb-1 text-2xl font-bold text-white">What type of interviews are you preparing for?</h2>
-              <p className="mb-8 text-sm text-white/55">This shapes which question formats we prioritise.</p>
-              <div className="space-y-3">
-                {INTERVIEW_TYPE_OPTIONS.map((t) => (
-                  <button key={t} onClick={() => setInterviewType(t)} className={optionClass(interviewType === t)}>{t}</button>
-                ))}
-              </div>
-              {interviewType === 'Other' && (
-                <input type="text" placeholder="Describe the type of interviews..." value={interviewTypeOther}
-                  onChange={(e) => setInterviewTypeOther(e.target.value)} className={otherInputClass} autoFocus />
+              {/* Step 5 */}
+              {step === 5 && (
+                <div className="w-full max-w-3xl">
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {EXPERIENCE_OPTIONS.map(e => (
+                      <button key={e} onClick={() => setExperienceLevel(e)} className={chip(experienceLevel === e)}>
+                        {experienceLevel === e && <Check size={12} strokeWidth={3} />}{e}
+                      </button>
+                    ))}
+                  </div>
+                  {experienceLevel === 'Other' && (
+                    <input type="text" placeholder="Describe your experience..." value={experienceLevelOther}
+                      onChange={e => setExperienceLevelOther(e.target.value)} className={'mt-4 max-w-sm ' + inputCls}
+                      style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(249,193,37,0.30)' }} autoFocus />
+                  )}
+                </div>
               )}
-              <div className="mt-8 flex gap-3">
-                <button onClick={() => setStep(5)} className="rounded-xl border border-white/20 px-5 py-3 text-sm font-medium text-white/70 hover:bg-white/10 transition-colors">Back</button>
-                <button disabled={!resolvedInterviewType} onClick={() => setStep(7)} className="flex-1 rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#080d1a] disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all">Continue</button>
-              </div>
-            </motion.div>
-          )}
 
-          {/* Step 7: Practice frequency */}
-          {step === 7 && (
-            <motion.div
-              key={step}
-              initial={{ opacity: 0, x: 12 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3, ease: 'easeOut' }}
-            >
-              <h2 className="mb-1 text-2xl font-bold text-white">How often do you plan to practise?</h2>
-              <p className="mb-8 text-sm text-white/55">No pressure — just helps us set expectations.</p>
-              <div className="space-y-3">
-                {FREQUENCY_OPTIONS.map((f) => (
-                  <button key={f} onClick={() => setPracticeFrequency(f)} className={optionClass(practiceFrequency === f)}>{f}</button>
-                ))}
-              </div>
-              {practiceFrequency === 'Other' && (
-                <input type="text" placeholder="Describe how often you plan to practise..." value={practiceFrequencyOther}
-                  onChange={(e) => setPracticeFrequencyOther(e.target.value)} className={otherInputClass} autoFocus />
+              {/* Step 6 */}
+              {step === 6 && (
+                <div className="w-full max-w-3xl">
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {INTERVIEW_TYPE_OPTIONS.map(t => (
+                      <button key={t} onClick={() => setInterviewType(t)} className={chip(interviewType === t)}>
+                        {interviewType === t && <Check size={12} strokeWidth={3} />}{t}
+                      </button>
+                    ))}
+                  </div>
+                  {interviewType === 'Other' && (
+                    <input type="text" placeholder="Describe the interview type..." value={interviewTypeOther}
+                      onChange={e => setInterviewTypeOther(e.target.value)} className={'mt-4 max-w-sm ' + inputCls}
+                      style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(249,193,37,0.30)' }} autoFocus />
+                  )}
+                </div>
               )}
-              <div className="mt-8 flex gap-3">
-                <button onClick={() => setStep(6)} className="rounded-xl border border-white/20 px-5 py-3 text-sm font-medium text-white/70 hover:bg-white/10 transition-colors">Back</button>
-                <button disabled={!resolvedFrequency} onClick={() => setStep(8)} className="flex-1 rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#080d1a] disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all">Continue</button>
-              </div>
-            </motion.div>
-          )}
 
-          {/* Step 8: Main challenge landing a job */}
-          {step === 8 && (
-            <motion.div
-              key={step}
-              initial={{ opacity: 0, x: 12 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3, ease: 'easeOut' }}
-            >
-              <h2 className="mb-1 text-2xl font-bold text-white">What&apos;s your biggest challenge landing a job?</h2>
-              <p className="mb-8 text-sm text-white/55">This helps us understand what to build next — your honest answer makes a real difference.</p>
-              <div className="space-y-3">
-                {JOB_CHALLENGE_OPTIONS.map((c) => (
-                  <button key={c} onClick={() => setJobChallenge(c)} className={optionClass(jobChallenge === c)}>{c}</button>
-                ))}
-              </div>
-              {jobChallenge === 'Other' && (
-                <input type="text" placeholder="Tell us in your own words..." value={jobChallengeOther}
-                  onChange={(e) => setJobChallengeOther(e.target.value)} className={otherInputClass} autoFocus />
+              {/* Step 7 */}
+              {step === 7 && (
+                <div className="w-full max-w-3xl">
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {FREQUENCY_OPTIONS.map(f => (
+                      <button key={f} onClick={() => setPracticeFrequency(f)} className={chip(practiceFrequency === f)}>
+                        {practiceFrequency === f && <Check size={12} strokeWidth={3} />}{f}
+                      </button>
+                    ))}
+                  </div>
+                  {practiceFrequency === 'Other' && (
+                    <input type="text" placeholder="How often?" value={practiceFrequencyOther}
+                      onChange={e => setPracticeFrequencyOther(e.target.value)} className={'mt-4 max-w-sm ' + inputCls}
+                      style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(249,193,37,0.30)' }} autoFocus />
+                  )}
+                </div>
               )}
-              {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
-              <div className="mt-8 flex gap-3">
-                <button onClick={() => setStep(7)} className="rounded-xl border border-white/20 px-5 py-3 text-sm font-medium text-white/70 hover:bg-white/10 transition-colors">Back</button>
-                <button disabled={!resolvedJobChallenge || submitting} onClick={handleSubmit} className="flex-1 rounded-xl bg-[#F9C125] py-3 text-sm font-bold text-[#080d1a] disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all">
-                  {submitting ? 'Saving…' : 'Go to dashboard →'}
-                </button>
-              </div>
-            </motion.div>
-          )}
 
-        </div>
+              {/* Step 8 */}
+              {step === 8 && (
+                <div className="w-full max-w-3xl">
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {JOB_CHALLENGE_OPTIONS.map(c => (
+                      <button key={c} onClick={() => setJobChallenge(c)} className={chip(jobChallenge === c)}>
+                        {jobChallenge === c && <Check size={12} strokeWidth={3} />}{c}
+                      </button>
+                    ))}
+                  </div>
+                  {jobChallenge === 'Other' && (
+                    <input type="text" placeholder="Tell us in your own words..." value={jobChallengeOther}
+                      onChange={e => setJobChallengeOther(e.target.value)} className={'mt-4 max-w-sm ' + inputCls}
+                      style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(249,193,37,0.30)' }} autoFocus />
+                  )}
+                  {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
+                </div>
+              )}
+
+            </div>
+
+            {/* ── Continue button — centred, close to content ── */}
+            <div className="flex shrink-0 justify-center pt-3 pb-5">
+              <button
+                disabled={continueDisabled[step]}
+                onClick={handleContinue}
+                className="inline-flex items-center gap-2 rounded-full px-9 py-[15px] text-sm font-bold text-[#080d1a] transition-all hover:brightness-110 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                style={{ backgroundColor: '#F9C125' }}
+              >
+                {step === TOTAL_STEPS ? (submitting ? 'Saving…' : 'Go to dashboard') : 'Continue'}
+                {step < TOTAL_STEPS && <ArrowRight size={15} strokeWidth={2.5} />}
+              </button>
+            </div>
+
+          </motion.div>
+        </AnimatePresence>
       </div>
+
     </div>
   )
 }

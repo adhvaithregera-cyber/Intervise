@@ -17,7 +17,7 @@ export function RecentSessionsList({ sessions, scores }: { sessions: Session[]; 
       {!showAll && hidden > 0 && (
         <button
           onClick={() => setShowAll(true)}
-          className="w-full py-2.5 text-xs font-semibold text-[#F9C125]/70 hover:text-[#F9C125] transition-colors"
+          className="w-full py-2.5 text-xs font-semibold text-[#F9C125] hover:brightness-110 transition-colors"
           style={{
             background: 'rgba(249,193,37,0.05)',
             border: '1px solid rgba(249,193,37,0.12)',

@@ -34,7 +34,20 @@ export function MinimalFooter({ onPrivacyOpen }: MinimalFooterProps = {}) {
                 Master interview skills with AI-powered coaching. Practice structured answers, get instant feedback, and ace your next interview.
               </p>
             </div>
-            <SocialIcons />
+            <div className="flex flex-wrap items-center gap-3">
+              <SocialIcons />
+              <a
+                href="mailto:intervisehq@gmail.com"
+                className="inline-flex items-center gap-1.5 rounded-2xl border border-[rgba(249,193,37,0.18)] px-3 py-2 text-xs font-medium text-white/50 transition-colors hover:text-[#F9C125]"
+                style={{ backgroundColor: 'rgba(8,13,26,0.80)' }}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="size-[15px]">
+                  <rect width="20" height="16" x="2" y="4" rx="2" />
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                </svg>
+                intervisehq@gmail.com
+              </a>
+            </div>
           </div>
 
           {/* Resources card */}

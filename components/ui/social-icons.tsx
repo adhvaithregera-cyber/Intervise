@@ -82,23 +82,30 @@ export function SocialIcons() {
             }}
           />
 
-          {/* Tooltip */}
+          {/* Tooltip label */}
           <span
-            className="absolute -top-10 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-lg text-[11px] font-medium whitespace-nowrap transition-all duration-300 ease-out"
+            className="absolute -top-10 left-1/2 px-2.5 py-1 rounded-lg text-[11px] font-medium whitespace-nowrap transition-all duration-300 ease-out"
             style={{
               backgroundColor: '#F9C125',
               color: '#080d1a',
               opacity: hoveredIndex === index ? 1 : 0,
-              transform: hoveredIndex === index ? 'translateY(0)' : 'translateY(4px)',
+              transform: hoveredIndex === index ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(4px)',
               pointerEvents: hoveredIndex === index ? 'auto' : 'none',
             }}
           >
             {social.name}
-            <span
-              className="absolute -bottom-1 left-1/2 -translate-x-1/2 size-2 rotate-45"
-              style={{ backgroundColor: '#F9C125' }}
-            />
           </span>
+          {/* Arrow — anchored to the icon, not the label, so it always points at the right icon */}
+          <span
+            className="absolute size-2 rotate-45 left-1/2 transition-all duration-300 ease-out"
+            style={{
+              top: '-0.875rem',
+              marginLeft: '-0.25rem',
+              backgroundColor: '#F9C125',
+              opacity: hoveredIndex === index ? 1 : 0,
+              transform: hoveredIndex === index ? 'translateY(0) rotate(45deg)' : 'translateY(4px) rotate(45deg)',
+            }}
+          />
         </a>
       ))}
     </div>

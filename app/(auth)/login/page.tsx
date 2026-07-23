@@ -1,21 +1,27 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import Link from 'next/link'
 import { useRef, useState } from 'react'
-import type HCaptchaType from '@hcaptcha/react-hcaptcha'
+import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/button'
+import AuthSectionOne from '@/components/ui/auth-section-1'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const HCaptcha = dynamic(() => import('@hcaptcha/react-hcaptcha'), { ssr: false }) as any
 
 const FRIENDLY_ERRORS: Record<string, string> = {
   'Invalid login credentials': 'Wrong email or password. Please try again.',
-  'Email not confirmed': 'Please confirm your email first — check your inbox for the link we sent.',
+  'Email not confirmed': 'Please confirm your email first — check your inbox.',
   'Too many requests': 'Too many attempts. Please wait a moment and try again.',
 }
+
+const inputClass =
+  'w-full rounded-xl px-4 py-3 text-sm text-white/90 placeholder-white/25 outline-none transition-all focus:ring-1 focus:ring-white/20'
+const inputStyle = {
+  backgroundColor: 'rgba(255,255,255,0.06)',
+  border: '1px solid rgba(255,255,255,0.10)',
+}
+const labelClass = 'mb-1.5 block text-[11px] font-semibold uppercase tracking-widest text-[#F9C125]'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -23,7 +29,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [captchaToken, setCaptchaToken] = useState<string | null>(null)
-  const captchaRef = useRef<HCaptchaType>(null)
+  const captchaRef = useRef(null)
 
   async function handleGoogleSignIn() {
     const supabase = createClient()
@@ -44,11 +50,9 @@ export default function LoginPage() {
       password,
       options: { captchaToken },
     })
-
-    // Always reset the widget so the token can't be reused
+    // @ts-expect-error dynamic ref
     captchaRef.current?.resetCaptcha()
     setCaptchaToken(null)
-
     if (error) {
       setError(FRIENDLY_ERRORS[error.message] ?? error.message)
       setLoading(false)
@@ -57,24 +61,14 @@ export default function LoginPage() {
     window.location.href = '/dashboard'
   }
 
-  const inputClass = "w-full rounded-xl border border-white/15 bg-white/5 px-3 py-2.5 text-sm text-white placeholder-white/30 focus:border-[#F9C125] focus:outline-none focus:ring-2 focus:ring-[#F9C125]/15"
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
-      className="rounded-2xl border border-[rgba(249,193,37,0.18)] bg-[rgba(8,13,26,0.85)] backdrop-blur-xl p-5 sm:p-8 shadow-2xl"
-    >
-      <div className="mb-8 text-center">
-        <Link href="/" className="text-lg font-bold tracking-widest text-[#F9C125]">INTERVISE</Link>
-        <p className="mt-4 text-2xl font-bold text-white">Welcome back</p>
-        <p className="mt-1 text-sm text-white/55">Log in to continue practising</p>
-      </div>
-
+  const formSlot = (
+    <div className="space-y-4">
+      {/* Google */}
       <button
+        type="button"
         onClick={handleGoogleSignIn}
-        className="mb-6 flex w-full items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/8 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/15 transition-colors shadow-sm"
+        className="flex w-full items-center justify-center gap-2.5 rounded-xl py-3 text-sm font-semibold text-white/80 transition-all hover:text-white"
+        style={{ backgroundColor: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)' }}
       >
         <svg className="h-4 w-4" viewBox="0 0 24 24">
           <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -85,26 +79,26 @@ export default function LoginPage() {
         Continue with Google
       </button>
 
-      <div className="relative mb-6">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-white/10" />
-        </div>
-        <div className="relative flex justify-center text-xs text-white/40">
-          <span className="bg-[rgba(8,13,26,0.85)] px-2">or log in with email</span>
-        </div>
-      </div>
-
-      <form onSubmit={handleEmailLogin} className="space-y-4">
+{/* Email + password */}
+      <form onSubmit={handleEmailLogin} className="space-y-3">
         <div>
-          <label className="block text-sm font-medium text-white/70 mb-1">Email</label>
-          <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={inputClass} placeholder="you@example.com" />
+          <label className={labelClass}>Email</label>
+          <input
+            type="email" required value={email} placeholder="you@example.com"
+            onChange={e => setEmail(e.target.value)}
+            className={inputClass} style={inputStyle}
+          />
         </div>
         <div>
-          <label className="block text-sm font-medium text-white/70 mb-1">Password</label>
-          <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className={inputClass} placeholder="Your password" />
+          <label className={labelClass}>Password</label>
+          <input
+            type="password" required value={password} placeholder="Your password"
+            onChange={e => setPassword(e.target.value)}
+            className={inputClass} style={inputStyle}
+          />
         </div>
 
-        <div className="flex justify-center">
+        <div className="flex justify-center pt-1">
           <HCaptcha
             ref={captchaRef}
             sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY!}
@@ -113,16 +107,26 @@ export default function LoginPage() {
           />
         </div>
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
-        <Button type="submit" fullWidth disabled={loading || !captchaToken}>
-          {loading ? 'Logging in…' : 'Log in'}
-        </Button>
+        {error && <p className="text-sm" style={{ color: '#ff6b6b' }}>{error}</p>}
+
+        <button
+          type="submit"
+          disabled={loading || !captchaToken}
+          className="flex h-12 w-full items-center justify-center rounded-xl text-sm font-bold transition-all hover:brightness-110 disabled:opacity-40"
+          style={{ backgroundColor: '#F9C125', color: '#080d1a' }}
+        >
+          {loading ? 'Logging in…' : 'Log in →'}
+        </button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-white/50">
-        Don&apos;t have an account?{' '}
-        <Link href="/signup" className="font-semibold text-[#F9C125] hover:text-[#F9C125]/80">Sign up free</Link>
+      <p className="text-center text-xs" style={{ color: 'rgba(255,255,255,0.40)' }}>
+        No account?{' '}
+        <Link href="/signup" className="font-semibold underline" style={{ color: '#F9C125' }}>
+          Sign up free
+        </Link>
       </p>
-    </motion.div>
+    </div>
   )
+
+  return <AuthSectionOne mode="login" formSlot={formSlot} />
 }

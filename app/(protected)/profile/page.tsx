@@ -10,18 +10,18 @@ export default async function ProfilePage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, age, tier, sessions_used_this_month, sessions_limit, role_type, interview_date, biggest_weakness, subscription_status, tier_expires_at, razorpay_subscription_id')
+    .select('full_name, age, tier, sessions_used_this_month, sessions_limit, role_type, interview_date, biggest_weakness, subscription_status, tier_expires_at, razorpay_subscription_id, experience_level, interview_type, practice_frequency, job_challenge')
     .eq('id', user.id)
     .single()
 
   if (!profile) notFound()
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-4 sm:px-6 sm:py-6">
+    <div className="flex flex-col" style={{ height: 'calc(100vh - 8rem)' }}>
       <FadeIn delay={0}>
-        <h1 className="mb-4 text-2xl font-bold text-white">Profile</h1>
+        <h1 className="mb-3 shrink-0 text-xl font-bold text-white">Profile</h1>
       </FadeIn>
-      <FadeIn delay={0.08}>
+      <FadeIn delay={0.08} className="flex-1 min-h-0">
         <ProfileForm
           fullName={profile.full_name}
           email={user.email ?? ''}
@@ -29,6 +29,10 @@ export default async function ProfilePage() {
           initialRoleType={profile.role_type}
           initialInterviewDate={profile.interview_date}
           initialBiggestWeakness={profile.biggest_weakness}
+          initialExperienceLevel={(profile as { experience_level?: string | null }).experience_level ?? null}
+          initialInterviewType={(profile as { interview_type?: string | null }).interview_type ?? null}
+          initialPracticeFrequency={(profile as { practice_frequency?: string | null }).practice_frequency ?? null}
+          initialJobChallenge={(profile as { job_challenge?: string | null }).job_challenge ?? null}
           tier={profile.tier ?? 'free'}
           sessionsUsed={profile.sessions_used_this_month}
           sessionsLimit={profile.sessions_limit}
@@ -40,3 +44,4 @@ export default async function ProfilePage() {
     </div>
   )
 }
+

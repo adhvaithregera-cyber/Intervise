@@ -1,16 +1,23 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import Link from 'next/link'
 import { useRef, useState } from 'react'
+import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import posthog from 'posthog-js'
 import type HCaptchaType from '@hcaptcha/react-hcaptcha'
-import dynamic from 'next/dynamic'
 import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/button'
+import AuthSectionOne from '@/components/ui/auth-section-1'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const HCaptcha = dynamic(() => import('@hcaptcha/react-hcaptcha'), { ssr: false }) as any
+
+const inputClass =
+  'w-full rounded-xl px-4 py-3 text-sm text-white/90 placeholder-white/25 outline-none transition-all focus:ring-1 focus:ring-white/20'
+const inputStyle = {
+  backgroundColor: 'rgba(255,255,255,0.06)',
+  border: '1px solid rgba(255,255,255,0.10)',
+}
+const labelClass = 'mb-1.5 block text-[11px] font-semibold uppercase tracking-widest text-[#F9C125]'
 
 export default function SignupPage() {
   const [email, setEmail] = useState('')
@@ -41,69 +48,58 @@ export default function SignupPage() {
       password,
       options: { captchaToken },
     })
-
-    // Always reset the widget so the token can't be reused
     captchaRef.current?.resetCaptcha()
     setCaptchaToken(null)
-
     if (error) { setError(error.message); setLoading(false); return }
-
     if (data.session) {
-      // Email confirmation disabled — user is immediately signed in
       posthog.capture('signed_up', { method: 'email' })
       window.location.href = '/onboarding'
     } else {
-      // Email confirmation required — show check-your-inbox screen
       posthog.capture('signup_initiated', { method: 'email' })
       setConfirmed(true)
       setLoading(false)
     }
   }
 
-  const inputClass = "w-full rounded-xl border border-white/15 bg-white/5 px-3 py-2.5 text-sm text-white placeholder-white/30 focus:border-[#F9C125] focus:outline-none focus:ring-2 focus:ring-[#F9C125]/15"
-
+  // ── Check-your-inbox state ────────────────────────────────────────────────
   if (confirmed) {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="rounded-2xl border border-[rgba(249,193,37,0.18)] bg-[rgba(8,13,26,0.85)] backdrop-blur-xl p-5 sm:p-8 shadow-2xl text-center"
-      >
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-white/10">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F9C125" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="2" y="4" width="20" height="16" rx="2" />
-            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-          </svg>
-        </div>
-        <h2 className="mb-2 text-xl font-bold text-white">Check your inbox</h2>
-        <p className="mb-6 text-sm text-white/55">
-          We sent a confirmation link to <span className="font-semibold text-[#F9C125]">{email}</span>. Click it to activate your account and get started.
-        </p>
-        <p className="text-xs text-white/50">
-          Already confirmed?{' '}
-          <Link href="/login" className="font-semibold text-[#F9C125] hover:text-[#F9C125]/80">Log in</Link>
-        </p>
-      </motion.div>
+      <AuthSectionOne
+        mode="signup"
+        formSlot={
+          <div className="text-center">
+            <div
+              className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full"
+              style={{ background: 'rgba(249,193,37,0.15)', border: '1px solid rgba(249,193,37,0.30)' }}
+            >
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F9C125" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+              </svg>
+            </div>
+            <h2 className="mb-2 text-xl font-bold text-white">Check your inbox</h2>
+            <p className="mb-4 text-sm text-white/50">
+              Confirmation link sent to{' '}
+              <span className="font-semibold text-[#F9C125]">{email}</span>
+            </p>
+            <Link href="/login" className="text-sm font-semibold text-[#F9C125] hover:brightness-110">
+              Already confirmed? Log in →
+            </Link>
+          </div>
+        }
+      />
     )
   }
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
-      className="rounded-2xl border border-[rgba(249,193,37,0.18)] bg-[rgba(8,13,26,0.85)] backdrop-blur-xl p-5 sm:p-8 shadow-2xl"
-    >
-      <div className="mb-8 text-center">
-        <Link href="/" className="text-lg font-bold tracking-widest text-[#F9C125]">INTERVISE</Link>
-        <p className="mt-4 text-2xl font-bold text-white">Create your account</p>
-        <p className="mt-1 text-sm text-white/55">Start practising interviews for free</p>
-      </div>
-
+  // ── Main form slot ────────────────────────────────────────────────────────
+  const formSlot = (
+    <div className="space-y-4">
+      {/* Google */}
       <button
+        type="button"
         onClick={handleGoogleSignIn}
-        className="mb-6 flex w-full items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/8 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/15 transition-colors shadow-sm"
+        className="flex w-full items-center justify-center gap-2.5 rounded-xl py-3 text-sm font-semibold text-white/80 transition-all hover:text-white"
+        style={{ backgroundColor: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)' }}
       >
         <svg className="h-4 w-4" viewBox="0 0 24 24">
           <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -114,26 +110,26 @@ export default function SignupPage() {
         Continue with Google
       </button>
 
-      <div className="relative mb-6">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-white/10" />
-        </div>
-        <div className="relative flex justify-center text-xs text-white/40">
-          <span className="bg-[rgba(8,13,26,0.85)] px-2">or sign up with email</span>
-        </div>
-      </div>
-
-      <form onSubmit={handleEmailSignup} className="space-y-4">
+{/* Email + password */}
+      <form onSubmit={handleEmailSignup} className="space-y-3">
         <div>
-          <label className="block text-sm font-medium text-white/70 mb-1">Email</label>
-          <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={inputClass} placeholder="you@example.com" />
+          <label className={labelClass}>Email</label>
+          <input
+            type="email" required value={email} placeholder="you@example.com"
+            onChange={e => setEmail(e.target.value)}
+            className={inputClass} style={inputStyle}
+          />
         </div>
         <div>
-          <label className="block text-sm font-medium text-white/70 mb-1">Password</label>
-          <input type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} className={inputClass} placeholder="Min. 8 characters" />
+          <label className={labelClass}>Password</label>
+          <input
+            type="password" required minLength={8} value={password} placeholder="Min. 8 characters"
+            onChange={e => setPassword(e.target.value)}
+            className={inputClass} style={inputStyle}
+          />
         </div>
 
-        <div className="flex justify-center">
+        <div className="flex justify-center pt-1">
           <HCaptcha
             ref={captchaRef}
             sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY!}
@@ -142,16 +138,26 @@ export default function SignupPage() {
           />
         </div>
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
-        <Button type="submit" fullWidth disabled={loading || !captchaToken}>
-          {loading ? 'Creating account…' : 'Create account'}
-        </Button>
+        {error && <p className="text-sm text-red-400">{error}</p>}
+
+        <button
+          type="submit"
+          disabled={loading || !captchaToken}
+          className="flex h-12 w-full items-center justify-center rounded-xl text-sm font-bold transition-all hover:brightness-110 disabled:opacity-40"
+          style={{ backgroundColor: '#F9C125', color: '#080d1a' }}
+        >
+          {loading ? 'Creating account…' : 'Create account →'}
+        </button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-white/50">
+      <p className="text-center text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
         Already have an account?{' '}
-        <Link href="/login" className="font-semibold text-[#F9C125] hover:text-[#F9C125]/80">Log in</Link>
+        <Link href="/login" className="font-semibold underline" style={{ color: '#F9C125' }}>
+          Log in
+        </Link>
       </p>
-    </motion.div>
+    </div>
   )
+
+  return <AuthSectionOne mode="signup" formSlot={formSlot} />
 }

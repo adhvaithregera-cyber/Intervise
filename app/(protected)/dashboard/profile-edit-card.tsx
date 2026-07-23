@@ -54,7 +54,7 @@ export function ProfileEditCard({
   return (
     <div className="p-4" style={CARD_STYLE}>
       <div className="flex items-start justify-between mb-2">
-        <p className="text-[10px] font-semibold text-[#F9C125]/60 uppercase tracking-widest">Your info</p>
+        <p className="text-[10px] font-semibold text-[#F9C125] uppercase tracking-widest">Your info</p>
         {!editing ? (
           <button onClick={() => setEditing(true)} className="text-xs text-white/50 hover:text-[#F9C125] transition-colors">
             Edit
