@@ -57,7 +57,6 @@ export async function Navbar({ prefetched }: NavbarProps = {}) {
             alt="Intervise"
             width={30}
             height={30}
-            className="rounded-lg"
             priority
           />
           <span className="text-base font-bold tracking-widest text-[#F9C125] hover:text-white transition-colors">
