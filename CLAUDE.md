@@ -92,3 +92,32 @@ Tables: `profiles`, `questions`, `sessions`, `answers`, `question_history`
 ## Upcoming milestones
 - M7: Pro dashboard cards (weakness summary + weekly AI plan)
 - M9: Resume-based question gen (JD+CV, Pro)
+
+## Feature backlog (brainstormed 2026-07-23)
+Prioritised list — build in roughly this order:
+
+**Activation (fix post-onboarding drop-off)**
+- Guided first session: after onboarding, dashboard detects `sessions_used_this_month === 0` and shows a "Your first session is ready" welcome panel with a single CTA → `/session/briefing?difficulty=easy`. Skips setup page.
+- Empty state onboarding CTA: checklist card (Created account ✅ → First session ⬜ → See report ⬜) shown until all done.
+- Interview countdown widget: if `interview_date` is set in profile, show "Your interview is in N days — do X more sessions."
+
+**Content & Curriculum**
+- Company-specific question banks: tag questions with `company_tag` + `role_tag`; Student+ filter in session setup.
+- Format guide cards ("The Playbook"): static in-app written guides for each of the 8 answer formats (STAR, PACE, etc.) with worked examples. Free tier, no DB needed.
+- Answer of the day: daily high-scoring example answer shown on dashboard.
+
+**Deeper AI coaching**
+- Weakness drill mode: after 3+ sessions, identify lowest-scoring component → auto-target those questions; highlight the targeted metric in the report.
+- Model answer / answer rewrite: AI generates ideal version of your answer side-by-side after submission. Student+.
+- Streaks + email reminders: daily streak counter + inactivity email after 2 days. Strong retention mechanic.
+- Post-session coaching chat: chat with AI about your specific answers after viewing report. Pro.
+
+**Growth / viral**
+- Enhanced share card: add company name + QR code to existing shareable PNG.
+- Referral program: give a friend 1 free session, get 1 yourself.
+- Session transcript replay: full annotated transcript with filler words highlighted, STAR components labelled. Student+.
+
+**Long-term / big bets**
+- AI voice mock interviewer: TTS speaks question, VAD listens, asks follow-ups. Pro.
+- Video recording + body language analysis. Pro.
+- B2B campus placement portal for college placement cells.

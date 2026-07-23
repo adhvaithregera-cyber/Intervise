@@ -8,6 +8,7 @@ import { ChartsClient } from './charts-client'
 import type { SessionStat, ProgressSummary } from './charts-client'
 import { Lock } from 'lucide-react'
 import { computeSessionMetrics } from '@/lib/scorecard'
+import { FirstSessionPanel } from './first-session-panel'
 
 const QUICK_TIPS = [
   'Use the STAR format — Situation, Task, Action, Result — to keep answers concise and structured.',
@@ -239,6 +240,9 @@ export default async function DashboardPage({
   const exhausted = sessionsLeft <= 0
   const pct = Math.min((profile.sessions_used_this_month / sessionsLimit) * 100, 100)
 
+  const isFirstSession = profile.onboarding_complete && profile.sessions_used_this_month === 0
+  const firstName = profile.full_name ? profile.full_name.split(' ')[0] : null
+
   return (
     <div className="space-y-5">
 
@@ -282,35 +286,41 @@ export default async function DashboardPage({
         </FadeIn>
       )}
 
-      <FadeIn delay={0.04}>
-        <div className="flex flex-col gap-2">
-          {pageError === 'quota_exceeded' && (
-            <div className="rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-300">
-              You&apos;ve used all your sessions this month. Upgrade your plan to continue.
+      {isFirstSession ? (
+        <FadeIn delay={0.04}>
+          <FirstSessionPanel firstName={firstName} />
+        </FadeIn>
+      ) : (
+        <>
+          <FadeIn delay={0.04}>
+            <div className="flex flex-col gap-2">
+              {pageError === 'quota_exceeded' && (
+                <div className="rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-300">
+                  You&apos;ve used all your sessions this month. Upgrade your plan to continue.
+                </div>
+              )}
+              {exhausted ? (
+                <div
+                  className="w-full flex items-center justify-center gap-3 rounded-2xl py-4 min-h-[64px]"
+                  style={{ backgroundColor: 'rgba(8,13,26,0.4)', border: '1px solid rgba(249,193,37,0.15)' }}
+                >
+                  <span className="text-base font-semibold text-white/60">No sessions left this month —</span>
+                  <Link href="/#pricing" className="text-base font-bold text-[#F9C125] underline hover:opacity-70 transition-opacity">Upgrade →</Link>
+                </div>
+              ) : (
+                <Link
+                  href="/session/setup"
+                  className="w-full flex items-center justify-center rounded-2xl bg-[#F9C125] text-lg font-bold text-[#080d1a] hover:brightness-110 transition-all py-4 min-h-[64px]"
+                  style={{ boxShadow: '0 0 40px rgba(249,193,37,0.35), 0 8px 32px rgba(249,193,37,0.25)' }}
+                >
+                  Start Practice Session →
+                </Link>
+              )}
             </div>
-          )}
-          {exhausted ? (
-            <div
-              className="w-full flex items-center justify-center gap-3 rounded-2xl py-4 min-h-[64px]"
-              style={{ backgroundColor: 'rgba(8,13,26,0.4)', border: '1px solid rgba(249,193,37,0.15)' }}
-            >
-              <span className="text-base font-semibold text-white/60">No sessions left this month —</span>
-              <Link href="/#pricing" className="text-base font-bold text-[#F9C125] underline hover:opacity-70 transition-opacity">Upgrade →</Link>
-            </div>
-          ) : (
-            <Link
-              href="/session/setup"
-              className="w-full flex items-center justify-center rounded-2xl bg-[#F9C125] text-lg font-bold text-[#080d1a] hover:brightness-110 transition-all py-4 min-h-[64px]"
-              style={{ boxShadow: '0 0 40px rgba(249,193,37,0.35), 0 8px 32px rgba(249,193,37,0.25)' }}
-            >
-              Start Practice Session →
-            </Link>
-          )}
-        </div>
-      </FadeIn>
+          </FadeIn>
 
-      {/* ── Row 2: Main grid — Recent sessions (left) + Stats (right) ── */}
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+          {/* ── Row 2: Main grid — Recent sessions (left) + Stats (right) ── */}
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
 
         {/* Recent sessions — takes 2/3 */}
         <FadeIn delay={0.08} className="lg:col-span-2">
@@ -439,6 +449,8 @@ export default async function DashboardPage({
           )}
         </div>
       </FadeIn>
+        </>
+      )}
 
     </div>
   )
