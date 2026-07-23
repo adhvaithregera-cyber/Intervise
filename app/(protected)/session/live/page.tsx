@@ -4,6 +4,9 @@ import { useRouter } from 'next/navigation'
 import { Mic } from 'lucide-react'
 import posthog from 'posthog-js'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnySpeechRecognition = any
+
 type LivePhase =
   | 'loading'
   | 'need_mic'          // iOS Safari: getUserMedia requires a direct user gesture per page
@@ -66,6 +69,14 @@ export default function LiveSessionPage() {
   const chunksRef = useRef<Blob[]>([])
   const micStreamRef = useRef<MediaStream | null>(null)
   const mimeTypeRef = useRef<string | undefined>(undefined)
+
+  // Live WPM
+  const [liveWpm, setLiveWpm] = useState<number | null>(null)
+  const recognitionRef = useRef<AnySpeechRecognition>(null)
+  const liveWordCountRef = useRef(0)
+
+  // Exit button (first 10s of Q1 only)
+  const [showExitBtn, setShowExitBtn] = useState(false)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -146,6 +157,15 @@ export default function LiveSessionPage() {
     return () => clearInterval(id)
   }, [phase, currentIndex]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Exit button: show for first 10s after Q1 appears
+  useEffect(() => {
+    if (phase === 'prep' && currentIndex === 0) {
+      setShowExitBtn(true)
+      const id = setTimeout(() => setShowExitBtn(false), 10_000)
+      return () => clearTimeout(id)
+    }
+  }, [phase, currentIndex])
+
   useEffect(() => {
     if (videoRef.current && cameraStream) {
       videoRef.current.srcObject = cameraStream
@@ -193,9 +213,36 @@ export default function LiveSessionPage() {
     answerStartTimeRef.current = Date.now()
     setPhase('recording')
 
+    // Live WPM via Web Speech API (Chrome/Edge only — silent fallback elsewhere)
+    liveWordCountRef.current = 0
+    setLiveWpm(null)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const SpeechRec = (window as any).SpeechRecognition ?? (window as any).webkitSpeechRecognition
+    if (SpeechRec) {
+      const rec = new SpeechRec()
+      rec.continuous = true
+      rec.interimResults = true
+      rec.onresult = (event: AnySpeechRecognition) => {
+        let full = ''
+        for (let i = 0; i < event.results.length; i++) {
+          full += event.results[i][0].transcript
+        }
+        liveWordCountRef.current = full.trim().split(/\s+/).filter(Boolean).length
+      }
+      rec.onerror = () => { /* ignore — graceful degradation */ }
+      rec.start()
+      recognitionRef.current = rec
+    }
+
     const timeLimit = questions[currentIndex]?.time_limit_seconds ?? 60
     setAnswerTimeLeft(timeLimit)
     const id = setInterval(() => {
+      // Update live WPM
+      const elapsedSec = Math.round((Date.now() - answerStartTimeRef.current) / 1000)
+      if (elapsedSec > 3 && liveWordCountRef.current > 0) {
+        setLiveWpm(Math.round(liveWordCountRef.current / (elapsedSec / 60)))
+      }
+
       setAnswerTimeLeft(prev => {
         if (prev <= 1) {
           clearInterval(id)
@@ -213,6 +260,10 @@ export default function LiveSessionPage() {
     if (mediaRecorderRef.current?.state === 'recording') {
       mediaRecorderRef.current.stop()
     }
+    recognitionRef.current?.stop()
+    recognitionRef.current = null
+    liveWordCountRef.current = 0
+    setLiveWpm(null)
   }
 
   function goNext() {
@@ -248,6 +299,21 @@ export default function LiveSessionPage() {
       setMicErrorName(name)
       setPhase('need_mic_blocked')
     }
+  }
+
+  async function handleExit() {
+    const params = new URLSearchParams(window.location.search)
+    const sessionId = params.get('session_id')
+    if (sessionId) {
+      await fetch('/api/session/abandon', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session_id: sessionId }),
+      }).catch(() => { /* best-effort */ })
+    }
+    micStreamRef.current?.getTracks().forEach(t => t.stop())
+    recognitionRef.current?.stop()
+    window.location.href = '/dashboard'
   }
 
   async function finishAndProcess() {
@@ -462,6 +528,16 @@ export default function LiveSessionPage() {
                 End Session
               </button>
             </div>
+            {showExitBtn && (
+              <div className="mt-4">
+                <button
+                  onClick={handleExit}
+                  className="text-xs text-white/30 hover:text-white/55 transition-colors underline underline-offset-2"
+                >
+                  Exit session
+                </button>
+              </div>
+            )}
           </div>
         )}
 
@@ -492,9 +568,14 @@ export default function LiveSessionPage() {
             </div>
             <p className="text-white/50 text-xs mb-5">{answerTimeLeft}s remaining</p>
 
-            <div className="flex items-center justify-center gap-3 mb-5">
-              <div className="w-2.5 h-2.5 rounded-full bg-red-400 animate-pulse" />
-              <span className="text-white/80 font-semibold text-sm">Recording</span>
+            <div className="flex items-center justify-center gap-4 mb-5">
+              <div className="flex items-center gap-2">
+                <div className="w-2.5 h-2.5 rounded-full bg-red-400 animate-pulse" />
+                <span className="text-white/80 font-semibold text-sm">Recording</span>
+              </div>
+              <span className="text-xs font-semibold tabular-nums" style={{ color: 'rgba(249,193,37,0.70)' }}>
+                {liveWpm !== null ? `${liveWpm} WPM` : '— WPM'}
+              </span>
             </div>
 
             <div className="flex items-center justify-center gap-3">
@@ -511,6 +592,16 @@ export default function LiveSessionPage() {
                 End Session
               </button>
             </div>
+            {showExitBtn && (
+              <div className="mt-4">
+                <button
+                  onClick={handleExit}
+                  className="text-xs text-white/30 hover:text-white/55 transition-colors underline underline-offset-2"
+                >
+                  Exit session
+                </button>
+              </div>
+            )}
           </div>
         )}
 

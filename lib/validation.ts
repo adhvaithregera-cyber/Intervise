@@ -153,6 +153,12 @@ export const transcribeTextSchema = z.object({
   transcript: z.string().min(1, 'transcript must not be empty').max(3000),
 })
 
+// ─── Session abandon ─────────────────────────────────────────────────────────
+
+export const abandonSchema = z.object({
+  session_id: z.string().uuid('session_id must be a valid UUID'),
+})
+
 // ─── Payments ────────────────────────────────────────────────────────────────
 
 export const createSubscriptionSchema = z.object({
