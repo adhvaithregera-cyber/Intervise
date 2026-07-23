@@ -18,7 +18,7 @@ export function NavCenterLinks() {
       {!isOnDashboard && (
         <Link
           href="/dashboard"
-          className="text-sm font-medium text-white/65 hover:text-white transition-colors"
+          className="inline-flex items-center rounded-full border border-[#F9C125]/40 bg-[#F9C125]/10 px-3.5 py-1 text-sm font-semibold text-[#F9C125] hover:bg-[#F9C125]/20 hover:border-[#F9C125]/70 transition-colors"
         >
           Dashboard
         </Link>
