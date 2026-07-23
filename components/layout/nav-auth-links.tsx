@@ -50,27 +50,27 @@ export function NavAuthLinks({ initials, tier }: Props) {
 
   return (
     <div className="flex items-center gap-3 sm:gap-5">
+      {/* Mobile only: Home + Pricing icons */}
       <Link
         href="/"
-        className="text-sm font-medium text-white/65 hover:text-white transition-colors"
+        className="text-white/65 hover:text-white transition-colors sm:hidden"
         aria-label="Home"
       >
-        <Home className="h-5 w-5 sm:hidden" />
-        <span className="hidden sm:inline">Home</span>
+        <Home className="h-5 w-5" />
       </Link>
       <a
         href="/#pricing"
-        className="text-sm font-medium text-white/65 hover:text-white transition-colors"
+        className="text-white/65 hover:text-white transition-colors sm:hidden"
         aria-label="Pricing"
       >
-        <Tag className="h-5 w-5 sm:hidden" />
-        <span className="hidden sm:inline">Pricing</span>
+        <Tag className="h-5 w-5" />
       </a>
 
+      {/* Mobile only: Dashboard pill */}
       {!isOnDashboard && (
         <Link
           href="/dashboard"
-          className="inline-flex items-center rounded-full border border-[#F9C125]/40 bg-[#F9C125]/10 px-3.5 py-1 text-sm font-semibold text-[#F9C125] hover:bg-[#F9C125]/20 hover:border-[#F9C125]/70 transition-colors"
+          className="inline-flex items-center rounded-full border border-[#F9C125]/40 bg-[#F9C125]/10 px-3 py-1 text-xs font-semibold text-[#F9C125] hover:bg-[#F9C125]/20 hover:border-[#F9C125]/70 transition-colors sm:hidden"
         >
           Dashboard
         </Link>

@@ -1,6 +1,8 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { NavAuthLinks } from './nav-auth-links'
+import { NavCenterLinks } from './nav-center-links'
 import { ScrollNav } from './scroll-nav'
 import { Home, Tag, LogIn } from 'lucide-react'
 
@@ -25,13 +27,11 @@ export async function Navbar({ prefetched }: NavbarProps = {}) {
   let tier: string | null = null
 
   if (prefetched !== undefined) {
-    // Data already fetched by parent layout — skip the DB call entirely
     if (prefetched !== null) {
       initials = prefetched.initials
       tier = prefetched.tier
     }
   } else {
-    // No prefetched data (e.g. landing page) — fetch as before
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
@@ -47,37 +47,64 @@ export async function Navbar({ prefetched }: NavbarProps = {}) {
 
   return (
     <ScrollNav>
-      <div className="mx-auto flex h-16 max-w-7xl items-center px-4 sm:px-6">
+      {/* relative so the absolutely-positioned center cluster anchors here */}
+      <div className="relative mx-auto flex h-16 max-w-7xl items-center px-4 sm:px-6">
 
-        {/* Left: wordmark */}
-        <Link
-          href="/"
-          className="text-base font-bold tracking-widest text-[#F9C125] hover:text-white transition-colors"
-        >
-          INTERVISE
+        {/* Left: logo + wordmark */}
+        <Link href="/" className="flex items-center gap-2.5 shrink-0">
+          <Image
+            src="/logo.png"
+            alt="Intervise"
+            width={30}
+            height={30}
+            className="rounded-lg"
+            priority
+          />
+          <span className="text-base font-bold tracking-widest text-[#F9C125] hover:text-white transition-colors">
+            INTERVISE
+          </span>
         </Link>
 
-        {/* Right: all nav links */}
+        {/* Center: nav links (desktop only) */}
+        {tier !== null ? (
+          <NavCenterLinks />
+        ) : (
+          <div className="hidden sm:flex absolute left-1/2 -translate-x-1/2 items-center gap-7">
+            <Link
+              href="/"
+              className="text-sm font-medium text-white/65 hover:text-white transition-colors"
+            >
+              Home
+            </Link>
+            <a
+              href="/#pricing"
+              className="text-sm font-medium text-white/65 hover:text-white transition-colors"
+            >
+              Pricing
+            </a>
+          </div>
+        )}
+
+        {/* Right: profile (auth) or login + signup (unauth) */}
         <div className="ml-auto flex items-center gap-3 sm:gap-5">
           {tier !== null ? (
             <NavAuthLinks initials={initials} tier={tier} />
           ) : (
             <>
+              {/* Mobile only: icon links */}
               <Link
                 href="/"
-                className="text-sm font-medium text-white/65 hover:text-white transition-colors"
+                className="text-white/65 hover:text-white transition-colors sm:hidden"
                 aria-label="Home"
               >
-                <Home className="h-5 w-5 sm:hidden" />
-                <span className="hidden sm:inline">Home</span>
+                <Home className="h-5 w-5" />
               </Link>
               <a
                 href="/#pricing"
-                className="text-sm font-medium text-white/65 hover:text-white transition-colors"
+                className="text-white/65 hover:text-white transition-colors sm:hidden"
                 aria-label="Pricing"
               >
-                <Tag className="h-5 w-5 sm:hidden" />
-                <span className="hidden sm:inline">Pricing</span>
+                <Tag className="h-5 w-5" />
               </a>
               <Link
                 href="/login"
