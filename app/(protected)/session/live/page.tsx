@@ -9,6 +9,7 @@ type LivePhase =
   | 'need_mic'          // iOS Safari: getUserMedia requires a direct user gesture per page
   | 'need_mic_blocked'  // Permission denied even after user gesture — blocked in OS/browser settings
   | 'prep'
+  | 'reading'           // 8s: question shown clearly before recording begins
   | 'recording'
   | 'between'
   | 'transcribing'
@@ -42,7 +43,8 @@ export default function LiveSessionPage() {
   const [phase, setPhase] = useState<LivePhase>('loading')
   const [questions, setQuestions] = useState<Question[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [prepCount, setPrepCount] = useState(5)
+  const [prepCount, setPrepCount] = useState(3)
+  const [readingCount, setReadingCount] = useState(8)
   const [answerTimeLeft, setAnswerTimeLeft] = useState(0)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [micErrorName, setMicErrorName] = useState<string | null>(null)
@@ -55,6 +57,7 @@ export default function LiveSessionPage() {
   const WAIT_MSGS = ['Analysing your answers…', 'Almost there…', 'Crunching the numbers…', 'Just a moment…', 'Processing your session…', 'Hang tight…']
 
   const prepTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const readingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const answerTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const answerStartTimeRef = useRef<number>(0)
   const storedAnswersRef = useRef<StoredAnswer[]>([])
@@ -66,6 +69,10 @@ export default function LiveSessionPage() {
   const chunksRef = useRef<Blob[]>([])
   const micStreamRef = useRef<MediaStream | null>(null)
   const mimeTypeRef = useRef<string | undefined>(undefined)
+
+  // Question blur: blurs immediately when recording starts; reveal button to unblur
+  const [questionBlurred, setQuestionBlurred] = useState(false)
+  const [questionRevealed, setQuestionRevealed] = useState(false)
 
   // Exit button (first 10s of Q1 only)
   const [showExitBtn, setShowExitBtn] = useState(false)
@@ -128,6 +135,7 @@ export default function LiveSessionPage() {
       micStreamRef.current?.getTracks().forEach(t => t.stop())
       cameraStreamRef.current?.getTracks().forEach(t => t.stop())
       if (prepTimerRef.current) clearInterval(prepTimerRef.current)
+      if (readingTimerRef.current) clearInterval(readingTimerRef.current)
       if (answerTimerRef.current) clearInterval(answerTimerRef.current)
       if (mediaRecorderRef.current?.state === 'recording') mediaRecorderRef.current.stop()
     }
@@ -135,17 +143,33 @@ export default function LiveSessionPage() {
 
   useEffect(() => {
     if (phase !== 'prep') return
-    setPrepCount(5)
-    let count = 5
+    setPrepCount(3)
+    let count = 3
     const id = setInterval(() => {
       count -= 1
       setPrepCount(count)
       if (count <= 0) {
         clearInterval(id)
-        startRecording()
+        setPhase('reading')
       }
     }, 1000)
     prepTimerRef.current = id
+    return () => clearInterval(id)
+  }, [phase, currentIndex]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (phase !== 'reading') return
+    setReadingCount(8)
+    let count = 8
+    const id = setInterval(() => {
+      count -= 1
+      setReadingCount(count)
+      if (count <= 0) {
+        clearInterval(id)
+        startRecording()
+      }
+    }, 1000)
+    readingTimerRef.current = id
     return () => clearInterval(id)
   }, [phase, currentIndex]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -205,6 +229,10 @@ export default function LiveSessionPage() {
     answerStartTimeRef.current = Date.now()
     setPhase('recording')
 
+    // Blur immediately when recording begins — user had 8s reading time before this
+    setQuestionBlurred(true)
+    setQuestionRevealed(false)
+
     const timeLimit = questions[currentIndex]?.time_limit_seconds ?? 60
     setAnswerTimeLeft(timeLimit)
     const id = setInterval(() => {
@@ -228,6 +256,8 @@ export default function LiveSessionPage() {
   }
 
   function goNext() {
+    setQuestionBlurred(false)
+    setQuestionRevealed(false)
     setCurrentIndex(i => i + 1)
     setPhase('prep')
   }
@@ -453,8 +483,34 @@ export default function LiveSessionPage() {
           </div>
         )}
 
-        {/* Prep countdown */}
+        {/* Prep countdown — blank breathing space, no question shown */}
         {phase === 'prep' && (
+          <div style={glassCard} className="p-6 sm:p-8 text-center">
+            <p className="text-white/35 text-xs uppercase tracking-[0.2em] mb-6 font-semibold">
+              Question {currentIndex + 1} of {questions.length}
+            </p>
+            <div
+              className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full text-4xl font-black text-[#F9C125]"
+              style={{ border: '3px solid rgba(249,193,37,0.4)', background: 'rgba(249,193,37,0.08)' }}
+            >
+              {prepCount}
+            </div>
+            <p className="text-white/40 text-sm">Take a breath...</p>
+            {showExitBtn && (
+              <div className="mt-6">
+                <button
+                  onClick={handleExit}
+                  className="text-xs text-white/30 hover:text-white/55 transition-colors underline underline-offset-2"
+                >
+                  Exit session
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Reading phase — question shown clearly for 8s before recording starts */}
+        {phase === 'reading' && (
           <div style={glassCard} className="p-6 sm:p-8 text-center">
             <p className="text-[#F9C125]/70 text-xs uppercase tracking-[0.2em] mb-1.5 font-semibold">
               Question {currentIndex + 1} of {questions.length}
@@ -464,32 +520,22 @@ export default function LiveSessionPage() {
                 {q.answer_format.split(' ')[0]} · {q.category_name}
               </p>
             )}
-            <h2 className="text-xl font-bold text-white mb-6 leading-snug">
-              {q?.question_text}
-            </h2>
-            <div
-              className="mx-auto mb-3 flex h-20 w-20 items-center justify-center rounded-full text-4xl font-black text-[#F9C125]"
-              style={{ border: '3px solid rgba(249,193,37,0.4)', background: 'rgba(249,193,37,0.08)' }}
-            >
-              {prepCount}
+            <div className="mb-5">
+              <h2 className="text-xl font-bold text-white leading-snug">
+                {q?.question_text}
+              </h2>
             </div>
-            <p className="text-white/50 text-sm mb-4">Recording starts automatically...</p>
-            <div className="flex items-center justify-center gap-3">
-              <button
-                onClick={skipPrep}
-                className="rounded-xl bg-[#F9C125] px-8 py-3 text-sm font-bold text-[#080d1a] hover:brightness-110 transition-all shadow-lg shadow-[#F9C125]/20"
-              >
-                Start Now
-              </button>
-              <button
-                onClick={endSession}
-                className="rounded-xl border border-white/20 px-6 py-3 text-sm font-semibold text-white/60 hover:bg-white/5 hover:text-white/80 transition-all"
-              >
-                End Session
-              </button>
+            <div className="mb-1 h-1 w-full rounded-full bg-white/10">
+              <div
+                className="h-1 rounded-full transition-all duration-1000"
+                style={{ width: `${(readingCount / 8) * 100}%`, backgroundColor: 'rgba(249,193,37,0.6)' }}
+              />
             </div>
+            <p className="text-white/40 text-xs mb-4">
+              Recording starts in {readingCount}s · question will blur
+            </p>
             {showExitBtn && (
-              <div className="mt-4">
+              <div className="mt-2">
                 <button
                   onClick={handleExit}
                   className="text-xs text-white/30 hover:text-white/55 transition-colors underline underline-offset-2"
@@ -512,9 +558,25 @@ export default function LiveSessionPage() {
                 {q.answer_format.split(' ')[0]} · {q.category_name}
               </p>
             )}
-            <h2 className="text-xl font-bold text-white mb-5 leading-snug">
-              {q?.question_text}
-            </h2>
+            <div className="mb-5">
+              <h2
+                className="text-xl font-bold text-white leading-snug transition-all duration-500"
+                style={{
+                  filter: questionBlurred && !questionRevealed ? 'blur(6px)' : 'none',
+                  userSelect: questionBlurred && !questionRevealed ? 'none' : 'auto',
+                }}
+              >
+                {q?.question_text}
+              </h2>
+              {questionBlurred && !questionRevealed && (
+                <button
+                  onClick={() => setQuestionRevealed(true)}
+                  className="mt-2 text-xs text-white/35 hover:text-white/60 transition-colors underline underline-offset-2"
+                >
+                  Reveal question
+                </button>
+              )}
+            </div>
 
             {/* Timer bar */}
             <div className="mb-2 h-1.5 w-full rounded-full bg-white/10">
@@ -547,16 +609,6 @@ export default function LiveSessionPage() {
                 End Session
               </button>
             </div>
-            {showExitBtn && (
-              <div className="mt-4">
-                <button
-                  onClick={handleExit}
-                  className="text-xs text-white/30 hover:text-white/55 transition-colors underline underline-offset-2"
-                >
-                  Exit session
-                </button>
-              </div>
-            )}
           </div>
         )}
 

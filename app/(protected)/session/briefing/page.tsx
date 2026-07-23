@@ -93,7 +93,7 @@ export default async function BriefingPage({
           <div className="flex items-start gap-3 p-3.5" style={CARD_STYLE}>
             <Clock className="mt-0.5 h-4 w-4 shrink-0 text-[#F9C125]" />
             <p className="text-sm text-white/70">
-              You&apos;ll have 5 seconds to read each question before recording starts automatically.
+              You&apos;ll have 8 seconds to read each question. Once recording starts, the question blurs — use the reading time to lock in your answer structure.
             </p>
           </div>
 

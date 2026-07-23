@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowRight, Mic, Brain, FileText } from 'lucide-react'
+import { ArrowRight, Mic } from 'lucide-react'
 
 const CARD_STYLE = {
   backgroundColor: 'rgba(8,13,26,0.75)',
@@ -11,11 +11,7 @@ const CARD_STYLE = {
   borderRadius: '1rem',
 }
 
-const PILLS = [
-  { icon: Mic, label: '5 questions' },
-  { icon: Brain, label: 'AI feedback' },
-  { icon: FileText, label: 'Score report' },
-]
+const PILLS = ['5 questions', 'AI feedback', 'Score report']
 
 export function FirstSessionPanel({ firstName }: { firstName: string | null }) {
   return (
@@ -39,13 +35,12 @@ export function FirstSessionPanel({ firstName }: { firstName: string | null }) {
 
         {/* Info pills */}
         <div className="mb-8 flex justify-center gap-2.5">
-          {PILLS.map(({ icon: Icon, label }) => (
+          {PILLS.map((label) => (
             <span
               key={label}
-              className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold text-white/55"
+              className="inline-flex items-center rounded-full px-3.5 py-1.5 text-xs font-semibold text-white/55"
               style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)' }}
             >
-              <Icon size={11} strokeWidth={2.5} className="text-[#F9C125]" />
               {label}
             </span>
           ))}
@@ -64,7 +59,7 @@ export function FirstSessionPanel({ firstName }: { firstName: string | null }) {
           <ArrowRight size={18} strokeWidth={2.5} />
         </Link>
 
-        <p className="mt-4 text-xs text-white/25">Easy difficulty · ~10 minutes</p>
+        <p className="mt-4 text-xs text-white/25">Easy difficulty · ~5 minutes</p>
       </div>
     </div>
   )

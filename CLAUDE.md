@@ -59,14 +59,28 @@ Tables: `profiles`, `questions`, `sessions`, `answers`, `question_history`
 | Plan | Price | Sessions/mo | Key features |
 |---|---|---|---|
 | Free | ₹0 | 2 | Grade, WPM, fillers, blurred AI feedback |
-| Student | ₹199 | 12 | Full AI feedback, progress charts, shareable scorecard |
-| Pro | ₹499 | 30 | Hard+Mixed difficulty, resume-based Qs, weekly plan |
+| Student | ₹199/mo or ₹499/qtr | 12 | Full AI feedback, progress charts, shareable scorecard |
+| Pro | ₹349/mo or ₹999/qtr | 30 | Hard+Mixed difficulty, resume-based Qs, weekly plan |
+
+## API cost baseline (per session)
+- AssemblyAI (`universal-2`): ~$0.04 (6 min audio @ $0.37/hr)
+- Gemini 2.5 Flash: ~$0.001 (5 answers × ~700 tokens)
+- **Total: ~$0.041/session**
+- Student margin at full utilisation: ~79% | Pro: ~70%
+- ElevenLabs TTS considered and rejected — adds ~$0.13/session, makes Pro unprofitable at full utilisation. Revisit when revenue supports it.
 
 ## Tier rules
 - AI feedback always runs; Free users see it with CSS blur overlay
 - Progress charts (WPM, fillers): Student+ only
 - Shareable PNG scorecard: all tiers
 - Hard + Mixed difficulty: Pro only
+
+## Live session flow (current)
+- 3-second blank prep countdown ("Take a breath...") — no question shown
+- Question appears clearly for 10 seconds after recording starts
+- After 10s the question blurs automatically; "Reveal question" button to unblur
+- No TTS — text only
+- Exit session button visible for first 10s of Q1 only (accidental start escape hatch); calls `/api/session/abandon` which marks session failed + restores quota
 
 ## Conventions
 - Server Components for data fetching, Client Components for interactivity
@@ -76,6 +90,9 @@ Tables: `profiles`, `questions`, `sessions`, `answers`, `question_history`
 - Commit after every task
 - `cn()` from `@/lib/utils` for className merging
 - Glassmorphic design: `rgba(8,13,26,0.75)` bg, `blur(20px)`, gold border `rgba(249,193,37,0.18)`
+
+## Claude behaviour
+- **Keep CLAUDE.md up to date** — after every significant decision, feature addition, pricing change, or architectural choice made during conversation, update this file to reflect the current state of the product. Do not wait to be asked.
 
 ## UI / Layout rules (strict)
 - **No scroll** — every page must fit within the viewport. Use `h-screen` or `h-[calc(100vh-Xrem)]` + `overflow-hidden`. Only allow internal scroll inside a bounded container (e.g. a card's content region) when absolutely unavoidable. Never let the outer page scroll.

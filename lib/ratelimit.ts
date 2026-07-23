@@ -79,4 +79,6 @@ export const RATE_LIMITS = {
   webhook: { maxRequests: 60, windowMs: 60 * 1000 }, // 60 per minute per IP
   /** Weakness summary — calls Gemini; Pro only but still needs a cap */
   weaknessSummary: { maxRequests: 5, windowMs: 60 * 60 * 1000 }, // 5 per hour
+  /** TTS — ElevenLabs proxy; 1 call per question, 5 questions per session */
+  tts: { maxRequests: 50, windowMs: 60 * 60 * 1000 }, // 50 per hour
 } as const satisfies Record<string, RateLimitConfig>
