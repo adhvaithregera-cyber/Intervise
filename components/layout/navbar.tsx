@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { NavAuthLinks } from './nav-auth-links'
 import { NavCenterLinks } from './nav-center-links'
+import { NavGuestLinks } from './nav-guest-links'
 import { ScrollNav } from './scroll-nav'
 import { Home, Tag, LogIn } from 'lucide-react'
 
@@ -65,24 +66,7 @@ export async function Navbar({ prefetched }: NavbarProps = {}) {
         </Link>
 
         {/* Center: nav links (desktop only) */}
-        {tier !== null ? (
-          <NavCenterLinks />
-        ) : (
-          <div className="hidden sm:flex absolute left-1/2 -translate-x-1/2 items-center gap-7">
-            <Link
-              href="/"
-              className="text-sm font-medium text-white hover:text-white/80 transition-colors"
-            >
-              Home
-            </Link>
-            <a
-              href="/#pricing"
-              className="text-sm font-medium text-white hover:text-white/80 transition-colors"
-            >
-              Pricing
-            </a>
-          </div>
-        )}
+        {tier !== null ? <NavCenterLinks /> : <NavGuestLinks />}
 
         {/* Right: profile (auth) or login + signup (unauth) */}
         <div className="ml-auto flex items-center gap-3 sm:gap-5">
@@ -98,13 +82,13 @@ export async function Navbar({ prefetched }: NavbarProps = {}) {
               >
                 <Home className="h-5 w-5" />
               </Link>
-              <a
-                href="/#pricing"
+              <Link
+                href="/pricing"
                 className="text-white/65 hover:text-white transition-colors sm:hidden"
                 aria-label="Pricing"
               >
                 <Tag className="h-5 w-5" />
-              </a>
+              </Link>
               <Link
                 href="/login"
                 className="text-sm font-medium text-white/65 hover:text-white transition-colors"

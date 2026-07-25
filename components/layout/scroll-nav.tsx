@@ -4,9 +4,15 @@ import { useEffect, useState } from 'react'
 
 export function ScrollNav({ children }: { children: React.ReactNode }) {
   const [scrolled, setScrolled] = useState(false)
+  const [progress, setProgress] = useState(0)
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 16)
+    function onScroll() {
+      const y = window.scrollY
+      setScrolled(y > 16)
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight
+      setProgress(docHeight > 0 ? Math.min(100, (y / docHeight) * 100) : 0)
+    }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
@@ -34,6 +40,15 @@ export function ScrollNav({ children }: { children: React.ReactNode }) {
       }
     >
       {children}
+      {/* Scroll progress bar — gold line along the bottom, no transition so it tracks instantly */}
+      <div
+        className="absolute bottom-0 left-0 h-[1.5px]"
+        style={{
+          width: `${progress}%`,
+          background: 'linear-gradient(to right, rgba(249,193,37,0.5), #F9C125)',
+          opacity: progress > 0 ? 1 : 0,
+        }}
+      />
     </nav>
   )
 }

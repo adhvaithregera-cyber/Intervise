@@ -1,10 +1,5 @@
-'use client';
-
-import { SocialIcons } from '@/components/ui/social-icons';
-
-interface MinimalFooterProps {
-  onPrivacyOpen?: () => void
-}
+import { SocialIcons } from '@/components/ui/social-icons'
+import { PrivacyTrigger } from '@/components/ui/privacy-trigger'
 
 const CARD = {
   backgroundColor: 'rgba(8,13,26,0.75)',
@@ -14,7 +9,7 @@ const CARD = {
   borderRadius: '1rem',
 } as const
 
-export function MinimalFooter({ onPrivacyOpen }: MinimalFooterProps = {}) {
+export function MinimalFooter() {
   const year = new Date().getFullYear()
 
   return (
@@ -96,12 +91,7 @@ export function MinimalFooter({ onPrivacyOpen }: MinimalFooterProps = {}) {
                 </li>
               ))}
               <li>
-                <button
-                  onClick={onPrivacyOpen}
-                  className="text-sm text-white/55 transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F9C125] focus-visible:rounded px-0.5"
-                >
-                  Privacy Policy
-                </button>
+                <PrivacyTrigger />
               </li>
             </ul>
           </div>

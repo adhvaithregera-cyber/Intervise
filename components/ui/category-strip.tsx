@@ -1,5 +1,3 @@
-'use client'
-
 const categories = [
   { num: '01', label: 'Identity' },
   { num: '02', label: 'Behavioural' },

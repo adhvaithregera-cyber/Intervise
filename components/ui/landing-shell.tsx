@@ -1,7 +1,3 @@
-'use client'
-
-import { useState } from 'react'
-import { PrivacyModal } from '@/components/ui/privacy-modal'
 import { HeroSection } from '@/components/ui/hero-section'
 import { CategoryStrip } from '@/components/ui/category-strip'
 import { AppPreview } from '@/components/ui/app-preview'
@@ -17,8 +13,6 @@ interface LandingShellProps {
 }
 
 export function LandingShell({ sessionHref, userTier, hasCompletedSession = false }: LandingShellProps) {
-  const [privacyOpen, setPrivacyOpen] = useState(false)
-
   return (
     <>
       <HeroSection sessionHref={sessionHref} hasCompletedSession={hasCompletedSession} />
@@ -26,8 +20,7 @@ export function LandingShell({ sessionHref, userTier, hasCompletedSession = fals
       <AppPreview />
       <PricingSection userTier={userTier} />
       <FinalCta showSignup={!userTier} />
-      <MinimalFooter onPrivacyOpen={() => setPrivacyOpen(true)} />
-      <PrivacyModal open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
+      <MinimalFooter />
     </>
   )
 }

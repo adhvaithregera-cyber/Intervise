@@ -38,6 +38,7 @@ export async function middleware(request: NextRequest) {
   }
 
   const isPublicPath   = pathname === '/' || pathname === '/login' || pathname === '/signup'
+    || pathname === '/pricing' || pathname === '/privacy' || pathname === '/terms'
   const isAuthCallback = pathname.startsWith('/auth/')
 
   // Allow auth callbacks through

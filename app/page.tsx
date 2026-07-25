@@ -5,9 +5,25 @@ export const metadata: Metadata = {
   description: 'Practice interviews with structured answer formats. Get AI feedback on your speaking pace, filler words, and answer structure. Prepare smarter for your next job interview.',
   alternates: { canonical: 'https://intervise.in' },
 }
+
 import { LandingShell } from '@/components/ui/landing-shell'
 import { Navbar } from '@/components/layout/navbar'
 import { createClient } from '@/lib/supabase/server'
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'Intervise',
+  applicationCategory: 'EducationApplication',
+  operatingSystem: 'Web',
+  url: 'https://intervise.in',
+  description: 'AI-powered interview coaching. Practice structured answers, get instant feedback on pace, filler words, and answer structure.',
+  offers: [
+    { '@type': 'Offer', name: 'Free', price: '0', priceCurrency: 'INR' },
+    { '@type': 'Offer', name: 'Student', price: '199', priceCurrency: 'INR' },
+    { '@type': 'Offer', name: 'Pro', price: '349', priceCurrency: 'INR' },
+  ],
+}
 
 export default async function LandingPage() {
   const supabase = await createClient()
@@ -24,9 +40,15 @@ export default async function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen text-white">
-      <Navbar />
-      <LandingShell sessionHref={user ? '/session/setup' : '/signup'} userTier={tier} hasCompletedSession={hasCompletedSession} />
-    </div>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <div className="min-h-screen text-white">
+        <Navbar />
+        <LandingShell sessionHref={user ? '/session/setup' : '/signup'} userTier={tier} hasCompletedSession={hasCompletedSession} />
+      </div>
+    </>
   )
 }

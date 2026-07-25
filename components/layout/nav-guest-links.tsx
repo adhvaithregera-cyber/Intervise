@@ -5,17 +5,15 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 
 const NAV_LINKS = [
-  { href: '/pricing', label: 'Pricing' },
   { href: '/', label: 'Home' },
-  { href: '/session/setup', label: 'Practice' },
+  { href: '/pricing', label: 'Pricing' },
 ]
 
-export function NavCenterLinks() {
+export function NavGuestLinks() {
   const pathname = usePathname()
 
   function isActive(href: string) {
-    if (href === '/') return pathname === '/'
-    return pathname === href || pathname.startsWith(href + '/')
+    return href === '/' ? pathname === '/' : pathname === href
   }
 
   return (

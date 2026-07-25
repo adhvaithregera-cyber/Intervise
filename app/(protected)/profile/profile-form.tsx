@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 
 const TIER_LABEL: Record<string, string> = { free: 'Free', student: 'Student', pro: 'Pro' }
 const TIER_SESSIONS: Record<string, string> = {
@@ -126,15 +125,12 @@ export function ProfileForm({
   async function handleSave() {
     setSaving(true)
     setSaveMsg(null)
-    const isoDate = interviewDate
-      ? new Date(interviewDate + 'T00:00:00').toISOString()
-      : undefined
     const res = await fetch('/api/profile', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         role_type: roleType || undefined,
-        interview_date: isoDate,
+        interview_date: interviewDate || undefined,
         biggest_weakness: biggestWeakness || undefined,
         ...(age !== '' && !isNaN(Number(age)) && { age: Number(age) }),
       }),
@@ -149,11 +145,15 @@ export function ProfileForm({
     if (newPassword.length < 6) { setPasswordMsg('Password must be at least 6 characters.'); return }
     setChangingPassword(true)
     setPasswordMsg(null)
-    const supabase = createClient()
-    const { error } = await supabase.auth.updateUser({ password: newPassword })
+    const res = await fetch('/api/profile/password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: newPassword }),
+    })
+    const data = await res.json().catch(() => ({}))
     setChangingPassword(false)
-    if (error) {
-      setPasswordMsg(error.message)
+    if (!res.ok) {
+      setPasswordMsg((data as { error?: string }).error ?? 'Failed to update password.')
     } else {
       setPasswordMsg('Password updated!')
       setNewPassword('')

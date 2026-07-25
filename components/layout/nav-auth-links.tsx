@@ -49,22 +49,14 @@ export function NavAuthLinks({ initials, tier }: Props) {
   }
 
   return (
-    <div className="flex items-center gap-3 sm:gap-5">
+    <div className="flex items-center gap-3 sm:gap-4">
       {/* Mobile only: Home + Pricing icons */}
-      <Link
-        href="/"
-        className="text-white/65 hover:text-white transition-colors sm:hidden"
-        aria-label="Home"
-      >
+      <Link href="/" className="text-white/65 hover:text-white transition-colors sm:hidden" aria-label="Home">
         <Home className="h-5 w-5" />
       </Link>
-      <a
-        href="/#pricing"
-        className="text-white/65 hover:text-white transition-colors sm:hidden"
-        aria-label="Pricing"
-      >
+      <Link href="/pricing" className="text-white/65 hover:text-white transition-colors sm:hidden" aria-label="Pricing">
         <Tag className="h-5 w-5" />
-      </a>
+      </Link>
 
       {/* Mobile only: Dashboard pill */}
       {!isOnDashboard && (
@@ -76,7 +68,17 @@ export function NavAuthLinks({ initials, tier }: Props) {
         </Link>
       )}
 
-      {/* Avatar + dropdown (Profile) */}
+      {/* Desktop: Dashboard link next to avatar */}
+      {!isOnDashboard && (
+        <Link
+          href="/dashboard"
+          className="hidden sm:inline-flex items-center rounded-full border border-[#F9C125]/40 bg-[#F9C125]/10 px-3.5 py-1 text-sm font-semibold text-[#F9C125] hover:bg-[#F9C125]/20 hover:border-[#F9C125]/70 transition-colors"
+        >
+          Dashboard
+        </Link>
+      )}
+
+      {/* Avatar + dropdown */}
       <div ref={ref} className="relative">
         <button
           onClick={() => setOpen((v) => !v)}
@@ -110,6 +112,7 @@ export function NavAuthLinks({ initials, tier }: Props) {
             <div className="py-1">
               {[
                 { label: 'Dashboard', href: '/dashboard' },
+                { label: 'Practice', href: '/session/setup' },
                 { label: 'Profile', href: '/profile' },
               ].map((item) => (
                 <Link

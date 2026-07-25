@@ -75,6 +75,24 @@ body {
   100% { transform: translateX(250%) skewX(-15deg); }
 }
 
+/* Landing page entrance animations (replaces framer-motion on server components) */
+@keyframes hero-fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes hero-fade-down {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes shape-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes shape-float {
+  0%, 100% { transform: translateY(0px); }
+  50%      { transform: translateY(12px); }
+}
+
 /* Respect user's motion preferences */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

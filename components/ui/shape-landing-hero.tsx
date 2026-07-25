@@ -1,6 +1,3 @@
-"use client";
-
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export function ElegantShape({
@@ -19,39 +16,33 @@ export function ElegantShape({
   gradient?: string;
 }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -150, rotate: rotate - 15 }}
-      animate={{ opacity: 1, y: 0, rotate: rotate }}
-      transition={{
-        duration: 2.4,
-        delay,
-        ease: [0.23, 0.86, 0.39, 0.96],
-        opacity: { duration: 1.2 },
-      }}
+    <div
       className={cn("absolute", className)}
+      style={{ rotate: `${rotate}deg` }}
     >
-      <motion.div
-        animate={{ y: [0, 15, 0] }}
-        transition={{
-          duration: 12,
-          repeat: Number.POSITIVE_INFINITY,
-          ease: "easeInOut",
-        }}
-        style={{ width, height }}
-        className="relative"
-      >
+      {/* Entrance fade */}
+      <div style={{ width, height, animation: `shape-in 1.2s ease-out ${delay}s both` }}>
+        {/* Continuous float */}
         <div
-          className={cn(
-            "absolute inset-0 rounded-full",
-            "bg-gradient-to-r to-transparent",
-            gradient,
-            "border border-[#F9C125]/[0.12]",
-            "shadow-[0_8px_32px_0_rgba(249,193,37,0.08)]",
-            "after:absolute after:inset-0 after:rounded-full",
-            "after:bg-[radial-gradient(circle_at_50%_50%,rgba(249,193,37,0.12),transparent_70%)]"
-          )}
-        />
-      </motion.div>
-    </motion.div>
+          style={{
+            width: '100%',
+            height: '100%',
+            animation: `shape-float 12s ease-in-out ${delay}s infinite`,
+          }}
+        >
+          <div
+            className={cn(
+              "absolute inset-0 rounded-full",
+              "bg-gradient-to-r to-transparent",
+              gradient,
+              "border border-[#F9C125]/[0.12]",
+              "shadow-[0_8px_32px_0_rgba(249,193,37,0.08)]",
+              "after:absolute after:inset-0 after:rounded-full",
+              "after:bg-[radial-gradient(circle_at_50%_50%,rgba(249,193,37,0.12),transparent_70%)]"
+            )}
+          />
+        </div>
+      </div>
+    </div>
   );
 }
