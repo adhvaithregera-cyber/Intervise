@@ -229,7 +229,7 @@ function computeDeliveryScores(
 
 // ── Step 1: Grade + score computation (no AI needed) ─────────────────────────
 
-export function computeGradeAndScore(
+function computeGradeAndScore(
   componentScores: Record<string, AiFeedbackComponentScore>,
   deliveryTotal: number,
   appliedCaps: string[],
@@ -258,7 +258,7 @@ export function computeGradeAndScore(
 
 // ── Step 2: Rule-based automatic caps detection ───────────────────────────────
 
-export function detectAutomaticCaps(
+function detectAutomaticCaps(
   transcript: string,
   durationSeconds: number,
   categoryId: number,
@@ -351,7 +351,7 @@ const GRAMMAR_PATTERNS: RegExp[] = [
   /\bis\s+is\b/i,
 ]
 
-export function preCheckGrammar(transcript: string): boolean {
+function preCheckGrammar(transcript: string): boolean {
   return !GRAMMAR_PATTERNS.some(p => p.test(transcript))
 }
 
@@ -403,7 +403,7 @@ const COACHING_TEMPLATES: Record<number, Record<string, string>> = {
   },
 }
 
-export function selectCoachingTemplate(
+function selectCoachingTemplate(
   categoryId: number,
   componentScores: Record<string, AiFeedbackComponentScore>,
 ): string | null {

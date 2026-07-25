@@ -7,7 +7,8 @@ Desktop-first AI interview coaching web app. Users learn 8 structured answer for
 - Next.js 16 (App Router), TypeScript, Tailwind CSS v3
 - Supabase SSR auth + Postgres (`@supabase/ssr`)
 - AssemblyAI — post-answer audio transcription
-- Google Gemini API (`gemini-2.5-flash`) — AI feedback + question generation
+- OpenAI API — AI answer feedback (8-category rubric via `lib/aifeedback.ts`)
+- Google Gemini API (`gemini-2.5-flash`) — weakness summary only (`lib/weaknesssummary.ts`)
 - Razorpay — payments (live)
 - Vercel — hosting (`intervise.in`)
 - Vitest + @testing-library/react — unit tests
@@ -19,6 +20,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 SUPABASE_DB_PASSWORD=
 ASSEMBLYAI_API_KEY=
+OPENAI_API_KEY=
 GEMINI_API_KEY=
 NEXT_PUBLIC_HCAPTCHA_SITE_KEY=
 HCAPTCHA_SECRET_KEY=
@@ -35,7 +37,8 @@ app/(protected)/session/live/              Recorder + countdown timer + question
 app/(protected)/session/report/[id]/       Full report (grade, WPM, fillers, AI feedback)
 app/api/session/transcribe/route.ts        Audio → AssemblyAI → AI feedback → store
 app/api/session/complete/route.ts          Marks session complete, sets overall_grade
-lib/aifeedback.ts                          generateAnswerFeedback() — Gemini, 8-category rubric
+lib/aifeedback.ts                          generateAnswerFeedback() — OpenAI, 8-category rubric
+lib/weaknesssummary.ts                     generateWeaknessSummary() — Gemini 2.5 Flash
 lib/session.ts                             createSession() — question selection + RPC call
 lib/questions.ts                           selectAdaptiveQuestions() — TDD'd
 lib/analysis.ts                            Filler detection + WPM calculation — TDD'd
@@ -64,8 +67,9 @@ Tables: `profiles`, `questions`, `sessions`, `answers`, `question_history`
 
 ## API cost baseline (per session)
 - AssemblyAI (`universal-2`): ~$0.04 (6 min audio @ $0.37/hr)
-- Gemini 2.5 Flash: ~$0.001 (5 answers × ~700 tokens)
-- **Total: ~$0.041/session**
+- OpenAI (answer feedback): ~$0.01 (5 answers × ~700 tokens, GPT-4o-mini class)
+- Gemini 2.5 Flash (weakness summary): ~$0.001 (single call per session)
+- **Total: ~$0.051/session**
 - Student margin at full utilisation: ~79% | Pro: ~70%
 - ElevenLabs TTS considered and rejected — adds ~$0.13/session, makes Pro unprofitable at full utilisation. Revisit when revenue supports it.
 
