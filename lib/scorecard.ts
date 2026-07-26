@@ -63,7 +63,9 @@ export type ThreeMetrics = {
 
 export function computeThreeMetrics(fb: AiFeedback): ThreeMetrics {
   const ds = fb.delivery_scores
-  const fluencyRaw = ds.filler_words.score + ds.wpm.score + ds.duration.score
+  const fluencyRaw = ds
+    ? (ds.filler_words?.score ?? 0) + (ds.wpm?.score ?? 0) + (ds.duration?.score ?? 0)
+    : 0
   const fluency = Math.min(100, Math.round((fluencyRaw / 30) * 100))
 
   const gf = fb.grammar_feedback
@@ -74,7 +76,8 @@ export function computeThreeMetrics(fb: AiFeedback): ThreeMetrics {
   const contentMax = components.reduce((sum, c) => sum + c.max, 0)
   const skill = contentMax > 0 ? Math.min(100, Math.round((contentTotal / contentMax) * 100)) : 0
 
-  const yourScore = Math.round((fluency + accuracy + skill) / 3)
+  // yourScore uses the stored, cap-applied score so it always agrees with the letter grade.
+  const yourScore = fb.score ?? Math.round((fluency + accuracy + skill) / 3)
   return { fluency, accuracy, skill, yourScore }
 }
 

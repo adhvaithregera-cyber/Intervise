@@ -172,12 +172,12 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
 
             {/* Accuracy */}
             <div className="col-span-1 flex flex-col justify-center p-4 sm:p-5" style={INNER_CARD}>
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-2">Accuracy</p>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 mb-2">Grammar</p>
               <p className={cn('text-3xl font-bold', scoreColor(sessionMetrics?.accuracy ?? 0))}>
                 {sessionMetrics?.accuracy ?? '—'}
               </p>
               <p className="text-[10px] text-white/35 mt-1">/ 100</p>
-              <p className="text-[10px] text-white/35 mt-1">Grammar quality</p>
+              <p className="text-[10px] text-white/35 mt-1">Language quality</p>
             </div>
 
             {/* Skill */}
@@ -205,8 +205,8 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
             {(answers ?? []).map((answer) => {
               const question = questionMap[answer.question_id]
               const formatLabel = question?.answer_format?.split(' ')[0] ?? 'N/A'
-              const label = getWpmLabel(answer.wpm)
-              const color = getWpmColor(answer.wpm)
+              const label = getWpmLabel(answer.wpm, sessionDifficulty)
+              const color = getWpmColor(answer.wpm, sessionDifficulty)
 
               return (
                 <div key={answer.id} className="flex flex-col p-5" style={INNER_CARD}>
@@ -345,7 +345,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
                         const m = computeThreeMetrics(fb as AiFeedback)
                         return (
                           <div className="flex items-center gap-1 shrink-0">
-                            {([['F', m.fluency], ['A', m.accuracy], ['S', m.skill]] as [string, number][]).map(([label, val]) => (
+                            {([['F', m.fluency], ['G', m.accuracy], ['S', m.skill]] as [string, number][]).map(([label, val]) => (
                               <span key={label} className={cn('text-[10px] font-bold px-1.5 py-0.5 rounded', scoreColor(val))}
                                 style={{ backgroundColor: 'rgba(249,193,37,0.07)', border: '1px solid rgba(249,193,37,0.30)' }}>
                                 {label} {val}

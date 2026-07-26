@@ -98,7 +98,7 @@ export function ChartsClient({
       <CategoryChart data={categoryStats} />
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <MetricLineChart data={filtered} dataKey="fluency" label="Fluency" />
-        <MetricLineChart data={filtered} dataKey="accuracy" label="Accuracy" />
+        <MetricLineChart data={filtered} dataKey="accuracy" label="Grammar" />
         <MetricLineChart data={filtered} dataKey="skill" label="Skill" />
       </div>
       <GradeTrendChart data={filtered} />
