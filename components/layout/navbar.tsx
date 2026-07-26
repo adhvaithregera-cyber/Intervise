@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getUser } from '@/lib/supabase/server'
 import { NavAuthLinks } from './nav-auth-links'
 import { NavCenterLinks } from './nav-center-links'
 import { NavGuestLinks } from './nav-guest-links'
@@ -33,9 +33,9 @@ export async function Navbar({ prefetched }: NavbarProps = {}) {
       tier = prefetched.tier
     }
   } else {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const user = await getUser()
     if (user) {
+      const supabase = await createClient()
       const { data: profile } = await supabase
         .from('profiles')
         .select('full_name, tier')

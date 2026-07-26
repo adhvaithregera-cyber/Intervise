@@ -29,3 +29,11 @@ export const createClient = cache(async function createClient() {
     }
   )
 })
+
+// Cached per-request getUser — multiple Server Components calling this
+// within the same render share one network round-trip to Supabase auth.
+export const getUser = cache(async function getUser() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  return user
+})

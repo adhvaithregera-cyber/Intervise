@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { Navbar } from '@/components/layout/navbar'
 import PricingSection from '@/components/ui/pricing-section'
 import { MinimalFooter } from '@/components/ui/minimal-footer'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getUser } from '@/lib/supabase/server'
 
 export const metadata: Metadata = {
   title: 'Pricing',
@@ -11,10 +11,10 @@ export const metadata: Metadata = {
 }
 
 export default async function PricingPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const user = await getUser()
   let tier: string | null = null
   if (user) {
+    const supabase = await createClient()
     const { data } = await supabase.from('profiles').select('tier').eq('id', user.id).single()
     tier = data?.tier ?? 'free'
   }

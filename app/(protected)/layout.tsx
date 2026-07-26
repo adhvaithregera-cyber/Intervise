@@ -4,7 +4,7 @@ import { Navbar } from '@/components/layout/navbar'
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
 }
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getUser } from '@/lib/supabase/server'
 import { PostHogIdentify } from '@/components/posthog-identify'
 
 function getInitials(name?: string | null, email?: string | null): string {
@@ -21,11 +21,11 @@ function getInitials(name?: string | null, email?: string | null): string {
 export default async function ProtectedLayout({ children }: { children: React.ReactNode }) {
   // Fetch user + profile once here; pass to Navbar so it skips its own DB call.
   // React.cache() on createClient means this shares the same client as the page below.
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const user = await getUser()
 
   let prefetched: { initials: string; tier: string } | null = null
   if (user) {
+    const supabase = await createClient()
     const { data: profile } = await supabase
       .from('profiles').select('full_name, tier').eq('id', user.id).single()
     prefetched = {
