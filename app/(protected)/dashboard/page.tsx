@@ -9,6 +9,8 @@ import type { SessionStat, ProgressSummary } from './charts-client'
 import { Lock } from 'lucide-react'
 import { computeSessionMetrics } from '@/lib/scorecard'
 import { FirstSessionPanel } from './first-session-panel'
+import { DashboardRefresher } from '@/components/dashboard/dashboard-refresher'
+import type { Answer, AiFeedback } from '@/types/database'
 
 const QUICK_TIPS = [
   'Use the STAR format — Situation, Task, Action, Result — to keep answers concise and structured.',
@@ -124,8 +126,7 @@ export default async function DashboardPage({
       const questionMap = Object.fromEntries((questions ?? []).map((q) => [q.id, q.category_name]))
 
       // Per-session stats
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const statsBySession: Record<string, { fillerTotal: number; fillerCount: number; wpms: number[]; date: string; feedbacks: any[] }> = {}
+      const statsBySession: Record<string, { fillerTotal: number; fillerCount: number; wpms: number[]; date: string; feedbacks: Pick<Answer, 'ai_feedback'>[] }> = {}
       for (const s of chartSessions ?? []) {
         const d = new Date(s.created_at)
         statsBySession[s.id] = {
@@ -141,7 +142,7 @@ export default async function DashboardPage({
         statsBySession[a.session_id].fillerTotal += a.filler_count ?? 0
         statsBySession[a.session_id].fillerCount += 1
         if (a.wpm !== null) statsBySession[a.session_id].wpms.push(a.wpm)
-        if (a.ai_feedback) statsBySession[a.session_id].feedbacks.push({ ai_feedback: a.ai_feedback })
+        if (a.ai_feedback) statsBySession[a.session_id].feedbacks.push({ ai_feedback: a.ai_feedback as AiFeedback })
       }
 
       // Count occurrences of each date to detect duplicates
@@ -199,8 +200,7 @@ export default async function DashboardPage({
     recentBySession[a.session_id].push({ ai_feedback: a.ai_feedback })
   }
   for (const [sid, ans] of Object.entries(recentBySession)) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const m = computeSessionMetrics(ans as any)
+    const m = computeSessionMetrics(ans.map(a => ({ ai_feedback: a.ai_feedback as AiFeedback | null })))
     sessionScores[sid] = m?.yourScore ?? null
   }
 
@@ -236,7 +236,7 @@ export default async function DashboardPage({
   }
 
   const sessionsLimit = TIER_SESSION_LIMITS[profile.tier] ?? 2
-  const sessionsLeft = sessionsLimit - profile.sessions_used_this_month
+  const sessionsLeft = Math.max(0, sessionsLimit - profile.sessions_used_this_month)
   const exhausted = sessionsLeft <= 0
   const pct = Math.min((profile.sessions_used_this_month / sessionsLimit) * 100, 100)
 
@@ -245,6 +245,8 @@ export default async function DashboardPage({
 
   return (
     <div className="space-y-5">
+      {/* Live sync — invisible, keeps dashboard data fresh via Supabase Realtime */}
+      <DashboardRefresher userId={user.id} />
 
       {/* ── Row 1: Header + CTA ── */}
       <FadeIn delay={0}>
@@ -379,7 +381,7 @@ export default async function DashboardPage({
           <div className="p-5" style={CARD_STYLE}>
             <p className="text-[10px] font-semibold uppercase tracking-widest text-white/40 mb-3">Quick Tip</p>
             <p className="text-sm text-white/85 leading-relaxed">
-              {QUICK_TIPS[Math.floor(Math.random() * QUICK_TIPS.length)]}
+              {QUICK_TIPS[user.id.charCodeAt(0) % QUICK_TIPS.length]}
             </p>
           </div>
         </FadeIn>

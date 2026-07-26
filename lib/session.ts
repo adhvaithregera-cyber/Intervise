@@ -82,9 +82,19 @@ export async function createSession(
   const questionCount = TIER_QUESTION_COUNT[profile.tier] ?? 5
 
   if (questionPool.length < questionCount) {
-    questionPool = profile.tier === 'free'
+    const basePool = profile.tier === 'free'
       ? allQuestions.filter(q => FREE_CATEGORY_IDS.includes(q.category_id))
       : allQuestions
+    // Re-apply difficulty filter in fallback to prevent wrong-difficulty questions
+    if (difficulty === 'easy') {
+      questionPool = basePool.filter(q => q.difficulty === 'easy')
+    } else if (difficulty === 'hard') {
+      questionPool = basePool.filter(q => q.difficulty === 'hard')
+    } else {
+      questionPool = basePool
+    }
+    // Last resort: if still not enough, use the full base pool
+    if (questionPool.length < questionCount) questionPool = basePool
   }
 
   const selectedQuestions = selectAdaptiveQuestions(questionPool, askedIds, questionCount)

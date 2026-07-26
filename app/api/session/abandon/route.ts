@@ -31,18 +31,10 @@ export async function POST(request: Request) {
   // Mark session as failed (not completed)
   await supabase.from('sessions').update({ status: 'failed' }).eq('id', session_id)
 
-  // Restore quota — fetch current value and decrement (floor at 0)
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('sessions_used_this_month')
-    .eq('id', user.id)
-    .single()
-
-  const current = profile?.sessions_used_this_month ?? 0
-  await supabase
-    .from('profiles')
-    .update({ sessions_used_this_month: Math.max(0, current - 1) })
-    .eq('id', user.id)
+  // Restore quota atomically — single UPDATE avoids TOCTOU race between
+  // concurrent requests reading and writing the same counter value.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (supabase as any).rpc('decrement_sessions_used', { p_user_id: user.id })
 
   return NextResponse.json({ ok: true })
 }

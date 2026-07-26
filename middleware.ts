@@ -37,8 +37,10 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  const isPublicPath   = pathname === '/' || pathname === '/login' || pathname === '/signup'
-    || pathname === '/pricing' || pathname === '/privacy' || pathname === '/terms'
+  // Normalise trailing slashes so /pricing/ is treated the same as /pricing
+  const normPath = pathname.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname
+  const isPublicPath   = normPath === '/' || normPath === '/login' || normPath === '/signup'
+    || normPath === '/pricing' || normPath === '/privacy' || normPath === '/terms'
   const isAuthCallback = pathname.startsWith('/auth/')
 
   // Allow auth callbacks through
@@ -60,6 +62,11 @@ export async function middleware(request: NextRequest) {
       .select('onboarding_complete, tier')
       .eq('id', user.id)
       .single()
+
+    // Profile row missing (e.g. DB trigger hasn't run yet after signup)
+    if (!profile && pathname !== '/onboarding') {
+      return NextResponse.redirect(new URL('/onboarding', request.url))
+    }
 
     // Onboarding guard
     if (profile && !profile.onboarding_complete && pathname !== '/onboarding') {

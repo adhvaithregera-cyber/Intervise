@@ -207,15 +207,18 @@ function computeDeliveryScores(
   let durLabel: string
   if (durationSeconds < dur.tooShort) {
     durScore = 0; durLabel = 'Too short'
-  } else if (durationSeconds > dur.tooLong) {
-    durScore = 2; durLabel = 'Too long'
   } else if (durationSeconds >= dur.min && durationSeconds <= dur.max) {
     durScore = 10; durLabel = 'Ideal'
   } else if (
     (durationSeconds >= dur.min - 15 && durationSeconds < dur.min) ||
     (durationSeconds > dur.max && durationSeconds <= dur.max + 15)
   ) {
+    // "Slightly short/long" check must come before tooLong so that the
+    // [max+1, max+15] window scores 7 rather than being swallowed by the
+    // tooLong catch-all below.
     durScore = 7; durLabel = 'Slightly short/long'
+  } else if (durationSeconds > dur.tooLong) {
+    durScore = 2; durLabel = 'Too long'
   } else {
     durScore = 4; durLabel = 'Off pace'
   }

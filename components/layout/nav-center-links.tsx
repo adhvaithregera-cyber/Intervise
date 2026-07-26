@@ -15,6 +15,8 @@ export function NavCenterLinks() {
 
   function isActive(href: string) {
     if (href === '/') return pathname === '/'
+    // Treat the entire /session/* tree as active for the Practice link
+    if (href === '/session/setup') return pathname.startsWith('/session/')
     return pathname === href || pathname.startsWith(href + '/')
   }
 

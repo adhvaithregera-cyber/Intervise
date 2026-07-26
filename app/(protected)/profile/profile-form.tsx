@@ -114,12 +114,13 @@ export function ProfileForm({
   async function saveFullName() {
     if (!fullNameValue.trim()) return
     setSavingName(true)
-    await fetch('/api/profile', {
+    const res = await fetch('/api/profile', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ full_name: fullNameValue.trim() }),
     })
     setSavingName(false)
+    if (!res.ok) setSaveMsg('Failed to save name. Try again.')
   }
 
   async function handleSave() {

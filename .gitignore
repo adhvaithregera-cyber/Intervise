@@ -45,3 +45,10 @@ next-env.d.ts
 
 # Security audit — keep off public repo
 REVIEW.md
+
+# Claude Code local settings — may contain API keys
+.claude/settings.local.json
+
+# Raw data files
+questions_raw.json
+.backups/

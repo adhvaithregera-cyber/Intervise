@@ -101,7 +101,7 @@ export async function POST(request: Request) {
   // ── Verify ownership and status ─────────────────────────────────────────
   const { data: session } = await supabase
     .from('sessions')
-    .select('id, status, user_id')
+    .select('id, status, user_id, tier_at_time')
     .eq('id', session_id)
     .eq('user_id', user.id)
     .single()
@@ -119,7 +119,11 @@ export async function POST(request: Request) {
     .select('wpm, filler_count, ai_feedback, transcription_failed')
     .eq('session_id', session_id)
 
-  const totalExpected = answers?.length ?? 5
+  // totalExpected must come from the session's original question count, NOT the answers
+  // actually submitted — otherwise skipped questions incur no unanswered penalty.
+  // All tiers use 5 questions; use tier_at_time as the authoritative source.
+  const QUESTIONS_BY_TIER: Record<string, number> = { free: 5, student: 5, pro: 5 }
+  const totalExpected = QUESTIONS_BY_TIER[session.tier_at_time ?? 'free'] ?? 5
   const grade = calculateGrade(answers ?? [], totalExpected)
 
   const { error: updateError } = await supabase
@@ -134,7 +138,7 @@ export async function POST(request: Request) {
   }
 
   // ── Auto-update weakness summary for Pro users (fire-and-forget) ───────
-  refreshWeaknessSummary(user.id).catch(() => {})
+  refreshWeaknessSummary(user.id).catch((err) => console.error('[complete] refreshWeaknessSummary failed:', err))
 
   return NextResponse.json({ grade, sessionId: session_id })
 }

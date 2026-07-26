@@ -62,6 +62,7 @@ export default function LiveSessionPage() {
   const answerStartTimeRef = useRef<number>(0)
   const storedAnswersRef = useRef<StoredAnswer[]>([])
   const endingSessionRef = useRef(false)
+  const processingRef = useRef(false)
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const cameraStreamRef = useRef<MediaStream | null>(null)
 
@@ -189,7 +190,7 @@ export default function LiveSessionPage() {
   }, [cameraStream])
 
   function startRecording() {
-    if (!micStreamRef.current) return
+    if (!micStreamRef.current || !questions[currentIndex]) return
     // Safari only supports audio/mp4 — must be checked explicitly.
     // webm/ogg are Chrome/Firefox; mp4 is Safari on macOS/iOS.
     const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
@@ -262,11 +263,6 @@ export default function LiveSessionPage() {
     setPhase('prep')
   }
 
-  function skipPrep() {
-    if (prepTimerRef.current) clearInterval(prepTimerRef.current)
-    startRecording()
-  }
-
   function endSession() {
     endingSessionRef.current = true
     if (prepTimerRef.current) clearInterval(prepTimerRef.current)
@@ -307,6 +303,8 @@ export default function LiveSessionPage() {
   }
 
   async function finishAndProcess() {
+    if (processingRef.current) return
+    processingRef.current = true
     const answers = storedAnswersRef.current
     const total = answers.length
     const SECS_PER_ANSWER = 18

@@ -40,20 +40,13 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ ok: true })
   }
 
-  // full_name is one-time: only apply it if the current value is null
-  let applyFullName = false
-  if (full_name !== undefined) {
-    const { data: current } = await supabase.from('profiles').select('full_name').eq('id', user.id).single()
-    applyFullName = current?.full_name === null || current?.full_name === ''
-  }
-
   const { error } = await supabase
     .from('profiles')
     .update({
       ...(role_type        !== undefined && { role_type:        role_type        || null }),
       ...(interview_date   !== undefined && { interview_date:   interview_date   || null }),
       ...(biggest_weakness !== undefined && { biggest_weakness: biggest_weakness || null }),
-      ...(applyFullName                  && { full_name }),
+      ...(full_name        !== undefined && { full_name }),
       ...(age              !== undefined && { age }),
     })
     .eq('id', user.id)
