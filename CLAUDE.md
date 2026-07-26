@@ -55,7 +55,7 @@ Tables: `profiles`, `questions`, `sessions`, `answers`, `question_history`
 - `profiles.tier`: `free | student | pro`
 - Sessions/month: Free=2, Student=12, Pro=30
 - Difficulty gating: Free=Easy only, Student=Easy+Medium, Pro=all
-- Category pools: Free=Cat 1+2, Student/Pro=All 8
+- Category pools: Free=Cat 1+2, Student/Pro=All 9 (categories 1–9; category 9 = Weaknesses, split from old Strengths & Weaknesses in migration 019)
 - Session history: Free=7 days, Student=30 days, Pro=unlimited
 
 ## Pricing

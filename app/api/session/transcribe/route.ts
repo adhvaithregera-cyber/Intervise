@@ -125,7 +125,7 @@ async function handleAudioPath(
 
   // Build the allowed category filter based on tier
   const tierAtTime = sessionRow.tier_at_time as string
-  const allowedCategories = tierAtTime === 'free' ? [1, 2] : [1, 2, 3, 4, 5, 6, 7, 8]
+  const allowedCategories = tierAtTime === 'free' ? [1, 2] : [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
   // Check if question belongs to allowed categories for this session
   const { data: questionRow } = await supabase

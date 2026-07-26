@@ -14,6 +14,7 @@ const CATEGORIES: Record<number, { name: string; format: string }> = {
   6: { name: 'Future & Ambition',            format: 'Near-term → Long-term → Bridge to this role' },
   7: { name: 'Situational / Hypothetical',   format: 'PACE — Prioritise · Act · Communicate · Evaluate' },
   8: { name: 'Curveball / Pressure',         format: 'Pause → Reframe → Redirect' },
+  9: { name: 'Weaknesses',                   format: 'Name it → Show awareness → Show action → Show progress' },
 }
 
 // ── Ideal duration per category (seconds) ────────────────────────────────────
@@ -27,6 +28,7 @@ const IDEAL_DURATION: Record<number, { min: number; max: number; tooShort: numbe
   6: { min: 45,  max: 60,  tooShort: 20, tooLong: 120 },
   7: { min: 75,  max: 120, tooShort: 40, tooLong: 180 },
   8: { min: 45,  max: 75,  tooShort: 15, tooLong: 120 },
+  9: { min: 60,  max: 90,  tooShort: 30, tooLong: 150 },
 }
 
 // ── Rubrics per category ──────────────────────────────────────────────────────
@@ -136,6 +138,20 @@ const RUBRICS: Record<number, object> = {
       "'I can't think of anything' → automatic F (final score 0)",
       "Blames other people for the failure → cap at D (max total 54)",
       "Answer under 20 seconds → cap at D (max total 54)",
+    ],
+  },
+  9: {
+    components: {
+      name_it:        { max: 15, scoring: "A real weakness. 'Perfectionist/I work too hard/I care too much' = automatic F. No exceptions." },
+      show_awareness: { max: 20, scoring: "Specific example of when this weakness caused a real problem. Not hypothetical. Missing = 0pts." },
+      show_action:    { max: 25, scoring: "What they are actively doing RIGHT NOW. Must be specific (named course, habit, practice). Vague ('I am working on it') = -15pts. Missing = 0pts." },
+      show_progress:  { max: 10, scoring: "Evidence it is improving. A recent positive signal. Missing or claiming fully fixed = 0pts." },
+    },
+    automatic_caps: [
+      "'I'm a perfectionist' or any variant → automatic F (final score 0)",
+      "'I work too hard' or 'I care too much' → automatic F (final score 0)",
+      "No action plan → cap at D (max total 54)",
+      "Reframed weakness as strength immediately → deduct 20 points",
     ],
   },
 }
@@ -292,7 +308,7 @@ function detectAutomaticCaps(
       fired.push(caps[0])
   }
 
-  if (categoryId === 4) {
+  if (categoryId === 4 || categoryId === 9) {
     if (/\bperfectionist\b/i.test(transcript))
       fired.push(caps[0])
     if (/\b(i\s+work\s+too\s+hard|i\s+care\s+too\s+much)\b/i.test(transcript))
@@ -403,6 +419,12 @@ const COACHING_TEMPLATES: Record<number, Record<string, string>> = {
     pause:    "Practise a composure opener: 'That is a great question — let me think for a second.' This buys 3 seconds and signals confidence, not panic.",
     reframe:  "Your failure must include: what happened (no softening), your specific role in it, and the real consequence. Deliver this in under 30 seconds without deflection.",
     redirect: "Prepare a redirect for each past failure: 'What this taught me was [lesson] which I now apply by [specific behaviour].' End on the redirect, not the failure.",
+  },
+  9: {
+    name_it:        "Choose a real weakness that has caused a documented problem — not perfectionism, not 'I work too hard'. Write down the last time it cost you something specific.",
+    show_awareness: "Your awareness section must name when, where, and what the concrete consequence was. Hypotheticals score zero.",
+    show_action:    "Name the exact course, book, habit, or system you have adopted. 'I am working on it' scores zero — 'I completed X / I now use Y system' scores full marks.",
+    show_progress:  "Prepare a recent positive signal — a situation where the weakness showed up and you handled it better than before.",
   },
 }
 
