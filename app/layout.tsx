@@ -8,7 +8,8 @@ import { SpeedInsights } from '@vercel/speed-insights/react'
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
   display: 'swap',
-  weight: ['400', '500', '600', '700'],
+  // No explicit weight → next/font uses the Space Grotesk variable font (wght 300–700)
+  // in a single .woff2 file instead of 4 separate static weight files
 })
 
 export const metadata: Metadata = {
