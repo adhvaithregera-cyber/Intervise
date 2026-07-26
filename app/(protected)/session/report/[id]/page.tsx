@@ -347,7 +347,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
                           <div className="flex items-center gap-1 shrink-0">
                             {([['F', m.fluency], ['A', m.accuracy], ['S', m.skill]] as [string, number][]).map(([label, val]) => (
                               <span key={label} className={cn('text-[10px] font-bold px-1.5 py-0.5 rounded', scoreColor(val))}
-                                style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                style={{ backgroundColor: 'rgba(249,193,37,0.07)', border: '1px solid rgba(249,193,37,0.30)' }}>
                                 {label} {val}
                               </span>
                             ))}

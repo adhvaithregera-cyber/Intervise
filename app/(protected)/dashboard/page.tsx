@@ -114,7 +114,7 @@ export default async function DashboardPage({
       // Fetch answers + questions for those sessions in parallel
       const { data: answers } = await supabase
         .from('answers').select('session_id, filler_count, wpm, question_id, ai_feedback')
-        .in('session_id', sessionIds).eq('transcription_failed', false)
+        .in('session_id', sessionIds).not('transcription_failed', 'is', true)
 
       const questionIds = [...new Set((answers ?? []).map((a) => a.question_id))]
       const [{ data: questions }] = await Promise.all([
@@ -190,7 +190,7 @@ export default async function DashboardPage({
   // ── Your Score per recent session ──────────────────────────────────────
   const recentSessionIds = (recentSessions ?? []).map(s => s.id)
   const { data: recentAnswers } = recentSessionIds.length > 0
-    ? await supabase.from('answers').select('session_id, ai_feedback').in('session_id', recentSessionIds).eq('transcription_failed', false)
+    ? await supabase.from('answers').select('session_id, ai_feedback').in('session_id', recentSessionIds).not('transcription_failed', 'is', true)
     : { data: [] as { session_id: string; ai_feedback: unknown }[] }
 
   const sessionScores: Record<string, number | null> = {}
