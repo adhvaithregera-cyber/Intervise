@@ -41,6 +41,7 @@ export async function middleware(request: NextRequest) {
   const normPath = pathname.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname
   const isPublicPath   = normPath === '/' || normPath === '/login' || normPath === '/signup'
     || normPath === '/pricing' || normPath === '/privacy' || normPath === '/terms'
+    || normPath === '/about' || normPath === '/help'
   const isAuthCallback = pathname.startsWith('/auth/')
 
   // Allow auth callbacks through

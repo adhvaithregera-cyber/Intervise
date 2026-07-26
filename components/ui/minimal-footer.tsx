@@ -1,5 +1,5 @@
+import Link from 'next/link'
 import { SocialIcons } from '@/components/ui/social-icons'
-import { PrivacyTrigger } from '@/components/ui/privacy-trigger'
 
 const CARD = {
   backgroundColor: 'rgba(8,13,26,0.75)',
@@ -52,18 +52,17 @@ export function MinimalFooter() {
             </h4>
             <ul className="space-y-3">
               {[
-                { title: 'Help Center', href: '#' },
-                { title: 'Contact Support', href: '#' },
-                { title: 'FAQ', href: '#' },
-                { title: 'Community', href: '#' },
+                { title: 'Help Center', href: '/help' },
+                { title: 'Contact Support', href: 'mailto:support@intervise.in' },
+                { title: 'Pricing', href: '/pricing' },
               ].map((link) => (
                 <li key={link.title}>
-                  <a
+                  <Link
                     href={link.href}
                     className="text-sm text-white/55 transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F9C125] focus-visible:rounded px-0.5"
                   >
                     {link.title}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -76,23 +75,19 @@ export function MinimalFooter() {
             </h4>
             <ul className="space-y-3">
               {[
-                { title: 'About Intervise', href: '#' },
-                { title: 'Careers', href: '#' },
-                { title: 'Blog', href: '#' },
-                { title: 'Terms of Service', href: '#' },
+                { title: 'About Intervise', href: '/about' },
+                { title: 'Terms of Service', href: '/terms' },
+                { title: 'Privacy Policy', href: '/privacy' },
               ].map((link) => (
                 <li key={link.title}>
-                  <a
+                  <Link
                     href={link.href}
                     className="text-sm text-white/55 transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F9C125] focus-visible:rounded px-0.5"
                   >
                     {link.title}
-                  </a>
+                  </Link>
                 </li>
               ))}
-              <li>
-                <PrivacyTrigger />
-              </li>
             </ul>
           </div>
         </div>
