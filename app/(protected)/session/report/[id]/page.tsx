@@ -56,15 +56,58 @@ function getWpmColor(wpm: number | null, difficulty = 'medium'): string {
   return 'text-red-400'
 }
 
-const COMPONENT_LABELS: Record<string, string> = {
-  present: 'Present', past: 'Past', future: 'Future',
-  situation: 'Situation', task: 'Task', action: 'Action', result: 'Result',
-  name_it: 'Name It', prove_it: 'Prove It', connect_it: 'Connect It',
-  show_awareness: 'Show Awareness', show_action: 'Show Action', show_progress: 'Show Progress',
-  them: 'Them', you: 'You', together: 'Together',
-  near_term: 'Near-term', long_term: 'Long-term', bridge: 'Bridge',
-  prioritise: 'Prioritise', act: 'Act', communicate: 'Communicate', evaluate: 'Evaluate',
-  pause: 'Pause', reframe: 'Reframe', redirect: 'Redirect',
+const COMPONENT_LABELS: Record<string, Record<string, { label: string; gloss: string }>> = {
+  'Identity & Background': {
+    present: { label: 'Where you are now',    gloss: 'Your current role and strengths' },
+    past:    { label: 'How you got here',     gloss: 'The experience that shaped you' },
+    future:  { label: "Where you're heading", gloss: "How this connects to what's next" },
+  },
+  'Behavioural / Experience': {
+    situation: { label: 'Set the scene',       gloss: 'What was the context or situation?' },
+    task:      { label: 'Your responsibility', gloss: 'What was your specific role in it?' },
+    action:    { label: 'What you did',        gloss: 'The concrete steps you actually took' },
+    result:    { label: 'How it turned out',   gloss: 'The outcome — ideally something measurable' },
+  },
+  'Strengths': {
+    name_it:    { label: 'Name the strength', gloss: 'State it clearly and specifically' },
+    prove_it:   { label: 'Back it up',        gloss: 'A real example that proves it' },
+    connect_it: { label: 'Make it relevant',  gloss: 'Why it matters for this role' },
+  },
+  'Weaknesses': {
+    name_it:        { label: 'Name a real weakness',       gloss: 'A genuine one — not a humblebrag' },
+    show_awareness: { label: 'Show its impact',            gloss: 'A time it caused a real problem' },
+    show_action:    { label: "What you're doing about it", gloss: "Concrete steps you're taking" },
+    show_progress:  { label: "Show you're improving",      gloss: "Evidence it's getting better" },
+  },
+  'Motivation & Fit': {
+    them:     { label: 'Why them',       gloss: 'What draws you to this company or role specifically' },
+    you:      { label: 'What you bring', gloss: 'Your relevant strengths and experience' },
+    together: { label: 'The fit',        gloss: 'How you and the role connect and grow together' },
+  },
+  'Future & Ambition': {
+    near_term: { label: 'Your next steps',       gloss: 'Specific goals for the next 1–2 years' },
+    long_term: { label: 'Your bigger direction', gloss: 'Where you ultimately want to go' },
+    bridge:    { label: 'How they connect',      gloss: 'How this role gets you there' },
+  },
+  'Situational / Hypothetical': {
+    prioritise:  { label: "How you'd size it up",    gloss: 'Judging what matters first' },
+    act:         { label: 'Your plan',               gloss: 'Concrete, step-by-step actions' },
+    communicate: { label: "Who you'd involve",       gloss: 'Keeping the right people in the loop' },
+    evaluate:    { label: "How you'd know it worked", gloss: 'Checking the outcome was resolved' },
+  },
+  'Curveball / Pressure': {
+    pause:    { label: 'Staying composed',       gloss: 'Taking a beat instead of panicking' },
+    reframe:  { label: 'Reframing the question', gloss: 'Turning it into something answerable' },
+    redirect: { label: 'Steering to strength',   gloss: 'Guiding it toward a strong answer' },
+  },
+}
+
+function getComponentLabel(
+  categoryName: string | undefined,
+  key: string,
+): { label: string; gloss: string } {
+  return (categoryName && COMPONENT_LABELS[categoryName]?.[key])
+    ?? { label: key, gloss: '' }
 }
 
 export default async function ReportPage({ params }: { params: Promise<{ id: string }> }) {
@@ -331,7 +374,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
                 const excelledComponents: string[] = fb?.component_scores
                   ? Object.entries(fb.component_scores as Record<string, { score: number; max: number }>)
                       .filter(([, v]) => v.max > 0 && v.score / v.max >= 0.70)
-                      .map(([k]) => COMPONENT_LABELS[k] ?? k)
+                      .map(([k]) => getComponentLabel(q?.category_name, k).label)
                   : []
 
                 return (
@@ -396,16 +439,19 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
                               return entries.map(([key, item]) => {
                                 const pct = item.max > 0 ? Math.round((item.score / item.max) * 100) : 0
                                 const isGap = pct < 60
-                                const label = COMPONENT_LABELS[key] ?? key
-                                const barColor = pct >= 70 ? 'bg-green-400/70' : pct >= 45 ? 'bg-amber-400/80' : 'bg-red-400/80'
-                                const labelColor = pct >= 70 ? 'text-white/40' : pct >= 45 ? 'text-amber-400/80' : 'text-red-400/80'
+                                const { label, gloss } = getComponentLabel(q?.category_name, key)
+                                const barColor = pct >= 70 ? 'bg-green-400' : pct >= 45 ? 'bg-amber-400' : 'bg-red-500'
+                                const labelColor = pct >= 70 ? 'text-white/40' : pct >= 45 ? 'text-amber-400' : 'text-red-400'
                                 return (
                                   <div key={key}>
-                                    <div className="flex items-center justify-between mb-1">
-                                      <p className={cn('text-[10px] font-bold uppercase tracking-widest', labelColor)}>{label}</p>
-                                      <span className="text-xs font-bold text-white/50">{item.score}/{item.max}</span>
+                                    <div className="flex items-center justify-between mb-0.5">
+                                      <div>
+                                        <p className={cn('text-[10px] font-bold uppercase tracking-widest', labelColor)}>{label}</p>
+                                        {gloss && <p className="text-[10px] text-white/50 normal-case tracking-normal font-normal leading-snug">{gloss}</p>}
+                                      </div>
+                                      <span className="text-xs font-bold text-white/50 shrink-0 ml-2">{item.score}/{item.max}</span>
                                     </div>
-                                    <div className="h-1 w-full rounded-full bg-white/10 mb-1.5">
+                                    <div className="h-1 w-full rounded-full bg-white/10 mb-1.5 mt-1">
                                       <div className={cn('h-1 rounded-full', barColor)} style={{ width: `${pct}%` }} />
                                     </div>
                                     {isGap && item.feedback && (
