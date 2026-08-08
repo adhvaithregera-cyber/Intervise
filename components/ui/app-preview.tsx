@@ -1,8 +1,28 @@
 'use client'
 
-import { useRef } from 'react'
-import { motion, useInView } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
+
+function useVisible(margin = '-60px') {
+  const ref = useRef<HTMLDivElement>(null)
+  const [visible, setVisible] = useState(false)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true)
+          obs.disconnect()
+        }
+      },
+      { rootMargin: margin },
+    )
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [margin])
+  return [ref, visible] as const
+}
 
 const WORKFLOW_STEPS = [
   {
@@ -87,20 +107,19 @@ function ScreenshotFrame({
   alt: string
   delay: number
 }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const inView = useInView(ref, { once: true, margin: '-60px' })
+  const [ref, visible] = useVisible('-60px')
 
   return (
-    <motion.div
+    <div
       ref={ref}
-      initial={{ opacity: 0, y: 16 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.5, delay, ease: 'easeOut' }}
       className="relative w-full overflow-hidden rounded-xl"
       style={{
         border: '1px solid rgba(249,193,37,0.22)',
         aspectRatio: '16/10',
         background: 'rgba(255,255,255,0.04)',
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(16px)',
+        transition: `opacity 0.5s ease-out ${delay}s, transform 0.5s ease-out ${delay}s`,
       }}
     >
       <Image
@@ -111,16 +130,14 @@ function ScreenshotFrame({
         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
         style={{ boxShadow: '0 0 40px rgba(249,193,37,0.12)' }}
       />
-    </motion.div>
+    </div>
   )
 }
 
 export function AppPreview() {
-  const headingRef = useRef<HTMLDivElement>(null)
-  const headingInView = useInView(headingRef, { once: true, margin: '-60px' })
-
-  const dividerRef = useRef<HTMLDivElement>(null)
-  const dividerInView = useInView(dividerRef, { once: true, margin: '-60px' })
+  const [headingRef, headingVisible] = useVisible('-60px')
+  const [dividerRef, dividerVisible] = useVisible('-60px')
+  const [stepsRef, stepsVisible] = useVisible('-40px')
 
   return (
     <section
@@ -141,40 +158,49 @@ export function AppPreview() {
 
         {/* Heading */}
         <div ref={headingRef} className="mb-12 text-center">
-          <motion.span
-            initial={{ opacity: 0, y: 10 }}
-            animate={headingInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.4 }}
+          <span
             className="mb-3 inline-block rounded-full px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em]"
-            style={{ background: 'rgba(249,193,37,0.12)', color: '#F9C125' }}
+            style={{
+              background: 'rgba(249,193,37,0.12)',
+              color: '#F9C125',
+              opacity: headingVisible ? 1 : 0,
+              transform: headingVisible ? 'translateY(0)' : 'translateY(10px)',
+              transition: 'opacity 0.4s ease-out 0s, transform 0.4s ease-out 0s',
+            }}
           >
             The Full Loop
-          </motion.span>
-          <motion.h2
-            initial={{ opacity: 0, y: 16 }}
-            animate={headingInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.45, delay: 0.08 }}
+          </span>
+          <h2
             className="text-3xl font-bold text-white sm:text-4xl"
+            style={{
+              opacity: headingVisible ? 1 : 0,
+              transform: headingVisible ? 'translateY(0)' : 'translateY(16px)',
+              transition: 'opacity 0.45s ease-out 0.08s, transform 0.45s ease-out 0.08s',
+            }}
           >
             From zero to{' '}
             <span className="bg-gradient-to-r from-[#F9C125] to-amber-300 bg-clip-text text-transparent">
               feedback
             </span>{' '}
             in under 20 minutes
-          </motion.h2>
+          </h2>
           <p className="mt-2 text-xs text-white/30">No app to install. Just a browser and a microphone.</p>
         </div>
 
         {/* Workflow steps — 5 columns on desktop, 2 on mobile (Briefing hidden below lg) */}
-        <div className="mb-16 grid grid-cols-2 gap-6 sm:gap-8 lg:grid-cols-5">
+        <div
+          ref={stepsRef}
+          className="mb-16 grid grid-cols-2 gap-6 sm:gap-8 lg:grid-cols-5"
+        >
           {WORKFLOW_STEPS.map((step, i) => (
-            <motion.div
+            <div
               key={step.label}
-              initial={{ opacity: 0, y: 32 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.08, ease: 'easeOut' }}
               className={step.label === 'Briefing' ? 'hidden lg:flex flex-col gap-3' : 'flex flex-col gap-3'}
+              style={{
+                opacity: stepsVisible ? 1 : 0,
+                transform: stepsVisible ? 'translateY(0)' : 'translateY(32px)',
+                transition: `opacity 0.5s ease-out ${i * 0.08}s, transform 0.5s ease-out ${i * 0.08}s`,
+              }}
             >
               <ScreenshotFrame src={step.src} alt={step.alt} delay={0.15 + i * 0.08} />
               <div>
@@ -188,27 +214,31 @@ export function AppPreview() {
                   {step.caption}
                 </p>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 
         {/* Divider */}
         <div ref={dividerRef} className="mb-12">
-          <motion.hr
-            initial={{ scaleX: 0, opacity: 0 }}
-            animate={dividerInView ? { scaleX: 1, opacity: 1 } : {}}
-            transition={{ duration: 0.6, ease: 'easeOut' }}
+          <hr
             className="origin-left border-0 h-px"
-            style={{ background: 'rgba(249,193,37,0.18)' }}
+            style={{
+              background: 'rgba(249,193,37,0.18)',
+              transform: dividerVisible ? 'scaleX(1)' : 'scaleX(0)',
+              opacity: dividerVisible ? 1 : 0,
+              transition: 'transform 0.6s ease-out 0s, opacity 0.6s ease-out 0s',
+            }}
           />
         </div>
 
         {/* Premium strip heading */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={dividerInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.4, delay: 0.1 }}
+        <div
           className="mb-8 text-center"
+          style={{
+            opacity: dividerVisible ? 1 : 0,
+            transform: dividerVisible ? 'translateY(0)' : 'translateY(12px)',
+            transition: 'opacity 0.4s ease-out 0.1s, transform 0.4s ease-out 0.1s',
+          }}
         >
           <h3 className="text-xl font-bold text-white sm:text-2xl">
             Go deeper with Student &amp; Pro
@@ -216,17 +246,19 @@ export function AppPreview() {
           <p className="mt-2 text-sm text-white/60">
             More sessions, richer feedback, and progress tracking.
           </p>
-        </motion.div>
+        </div>
 
         {/* Premium feature cards */}
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
           {PREMIUM_FEATURES.map((feature, i) => (
-            <motion.div
+            <div
               key={feature.title}
-              initial={{ opacity: 0, y: 16 }}
-              animate={dividerInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.45, delay: 0.18 + i * 0.1, ease: 'easeOut' }}
               className="glass-card flex flex-col gap-4 rounded-2xl p-5"
+              style={{
+                opacity: dividerVisible ? 1 : 0,
+                transform: dividerVisible ? 'translateY(0)' : 'translateY(16px)',
+                transition: `opacity 0.45s ease-out ${0.18 + i * 0.1}s, transform 0.45s ease-out ${0.18 + i * 0.1}s`,
+              }}
             >
               {/* Screenshot */}
               <div
@@ -259,7 +291,7 @@ export function AppPreview() {
                   {feature.description}
                 </p>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

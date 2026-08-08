@@ -1,15 +1,13 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
-import { motion, useInView } from 'framer-motion'
 
 const NumberFlow = dynamic(() => import('@number-flow/react'), { ssr: false })
 import { Mic2, BarChart2, CalendarDays, CheckCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useRazorpayCheckout } from '@/hooks/use-razorpay-checkout'
-import posthog from 'posthog-js'
 
 const plans = [
   {
@@ -118,17 +116,37 @@ function PricingSwitch({ onSwitch }: { onSwitch: (value: string) => void }) {
 
 function FadeUp({ children, delay = 0, className }: { children: React.ReactNode; delay?: number; className?: string }) {
   const ref = useRef<HTMLDivElement>(null)
-  const inView = useInView(ref, { once: true, margin: '-60px' })
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true)
+          obs.disconnect()
+        }
+      },
+      { rootMargin: '-60px' },
+    )
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [])
+
   return (
-    <motion.div
+    <div
       ref={ref}
-      initial={{ opacity: 0, y: 24, filter: 'blur(6px)' }}
-      animate={inView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
-      transition={{ duration: 0.5, delay, ease: 'easeOut' }}
       className={className}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'none' : 'translateY(24px)',
+        filter: visible ? 'blur(0px)' : 'blur(6px)',
+        transition: `opacity 0.5s ease-out ${delay}s, transform 0.5s ease-out ${delay}s, filter 0.5s ease-out ${delay}s`,
+      }}
     >
       {children}
-    </motion.div>
+    </div>
   )
 }
 
@@ -142,7 +160,7 @@ export default function PricingSection({ userTier }: { userTier?: string | null 
 
   async function handleCheckout(plan: 'student' | 'pro') {
     const period = isQuarterly ? 'quarterly' : 'monthly'
-    posthog?.capture('checkout_initiated', { plan, period })
+    import('posthog-js').then(({ default: posthog }) => posthog.capture('checkout_initiated', { plan, period }))
     setCheckoutError(null)
     setCheckoutLoading(plan)
     await startCheckout(plan, period)
@@ -184,13 +202,7 @@ export default function PricingSection({ userTier }: { userTier?: string | null 
           </div>
         )}
         {/* Heading */}
-        <motion.div
-          className="mb-10 text-center"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
+        <div className="mb-10 text-center">
           <FadeUp delay={0}>
             <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/40">Pricing</p>
           </FadeUp>
@@ -204,7 +216,7 @@ export default function PricingSection({ userTier }: { userTier?: string | null 
               One week of Intervise practice beats months of hoping for the best.
             </p>
           </FadeUp>
-        </motion.div>
+        </div>
 
         {/* Toggle */}
         <FadeUp delay={0.3} className="mb-12">

@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
 
 export function FadeIn({
   children,
@@ -11,15 +11,36 @@ export function FadeIn({
   delay?: number
   className?: string
 }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true)
+          obs.disconnect()
+        }
+      },
+      { rootMargin: '-40px' },
+    )
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [])
+
   return (
-    <motion.div
+    <div
+      ref={ref}
       className={className}
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.45, ease: 'easeOut', delay }}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(16px)',
+        transition: `opacity 0.45s ease-out ${delay}s, transform 0.45s ease-out ${delay}s`,
+      }}
     >
       {children}
-    </motion.div>
+    </div>
   )
 }
