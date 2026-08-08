@@ -123,17 +123,19 @@ export function ChartsClient({
         </span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <FillerBarChart data={filtered} />
-        <WpmLineChart data={filtered} />
-      </div>
-      <CategoryChart data={categoryStats} />
+      <p className="text-[10px] font-semibold uppercase tracking-widest text-white/40">Your Scores</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <MetricLineChart data={filtered} dataKey="fluency" label="Fluency" color="#60a5fa" />
         <MetricLineChart data={filtered} dataKey="accuracy" label="Grammar" color="#34d399" />
         <MetricLineChart data={filtered} dataKey="skill" label="Skill" color="#a78bfa" />
         <GradeTrendChart data={filtered} />
       </div>
+      <p className="text-[10px] font-semibold uppercase tracking-widest text-white/40">Your Delivery</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <FillerBarChart data={filtered} />
+        <WpmLineChart data={filtered} />
+      </div>
+      <CategoryChart data={categoryStats} />
     </div>
   )
 }
