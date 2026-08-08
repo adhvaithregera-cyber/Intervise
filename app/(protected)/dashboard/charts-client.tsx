@@ -4,6 +4,39 @@ import { useState, useMemo } from 'react'
 import dynamic from 'next/dynamic'
 import type { SessionStat, CategoryStat, ProgressSummary } from './progress-charts'
 
+function computeSummary(stats: SessionStat[]): ProgressSummary {
+  if (stats.length === 0) return { avgFillers: null, fillerTrend: 'flat', avgWpm: null, wpmTrend: 'flat', bestScore: null }
+
+  const allFillers = stats.map(s => s.fillers)
+  const avgFillers = Math.round(allFillers.reduce((a, b) => a + b, 0) / allFillers.length)
+
+  let fillerTrend: 'up' | 'down' | 'flat' = 'flat'
+  if (stats.length >= 2) {
+    const half = Math.ceil(stats.length / 2)
+    const firstAvg = stats.slice(0, half).reduce((a, s) => a + s.fillers, 0) / half
+    const lastAvg = stats.slice(-half).reduce((a, s) => a + s.fillers, 0) / half
+    if (lastAvg < firstAvg - 0.5) fillerTrend = 'down'
+    else if (lastAvg > firstAvg + 0.5) fillerTrend = 'up'
+  }
+
+  const wpmData = stats.filter(s => s.wpm !== null)
+  const avgWpm = wpmData.length > 0 ? Math.round(wpmData.reduce((a, s) => a + (s.wpm ?? 0), 0) / wpmData.length) : null
+
+  let wpmTrend: 'up' | 'down' | 'flat' = 'flat'
+  if (wpmData.length >= 2) {
+    const half = Math.ceil(wpmData.length / 2)
+    const firstAvg = wpmData.slice(0, half).reduce((a, s) => a + (s.wpm ?? 0), 0) / half
+    const lastAvg = wpmData.slice(-half).reduce((a, s) => a + (s.wpm ?? 0), 0) / half
+    if (lastAvg > firstAvg + 3) wpmTrend = 'up'
+    else if (lastAvg < firstAvg - 3) wpmTrend = 'down'
+  }
+
+  const scores = stats.map(s => s.yourScore).filter((s): s is number => s !== null)
+  const bestScore = scores.length > 0 ? Math.max(...scores) : null
+
+  return { avgFillers, fillerTrend, avgWpm, wpmTrend, bestScore }
+}
+
 const StatPills = dynamic(
   () => import('./progress-charts').then((m) => ({ default: m.StatPills })),
   { ssr: false }
@@ -57,19 +90,18 @@ function filterByRange(stats: SessionStat[], range: Range): SessionStat[] {
 export function ChartsClient({
   sessionStats,
   categoryStats,
-  summary,
 }: {
   sessionStats: SessionStat[]
   categoryStats: CategoryStat[]
-  summary: ProgressSummary
 }) {
   const [range, setRange] = useState<Range>('all')
 
   const filtered = useMemo(() => filterByRange(sessionStats, range), [sessionStats, range])
+  const derivedSummary = useMemo(() => computeSummary(filtered), [filtered])
 
   return (
     <div className="space-y-4">
-      <StatPills summary={summary} />
+      <StatPills summary={derivedSummary} />
 
       {/* Range selector */}
       <div className="flex gap-1.5">
