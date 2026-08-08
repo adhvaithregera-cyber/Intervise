@@ -416,24 +416,11 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
 
                 return (
                   <div key={answer.id} className="p-5" style={INNER_CARD}>
-                    {/* Header: question + metric pills */}
-                    <div className="flex items-start justify-between gap-3 mb-4">
-                      <p className="text-sm font-medium text-white/80 leading-relaxed flex-1">
+                    {/* Header: question */}
+                    <div className="mb-4">
+                      <p className="text-sm font-medium text-white/80 leading-relaxed">
                         Q{answer.answer_index} — {q?.question_text ?? 'Question'}
                       </p>
-                      {fb && (() => {
-                        const m = computeThreeMetrics(fb as AiFeedback)
-                        return (
-                          <div className="flex items-center gap-1 shrink-0">
-                            {([['F', m.fluency], ['G', m.accuracy], ['S', m.skill]] as [string, number][]).map(([label, val]) => (
-                              <span key={label} className={cn('text-[10px] font-bold px-1.5 py-0.5 rounded', scoreColor(val))}
-                                style={{ backgroundColor: 'rgba(249,193,37,0.07)', border: '1px solid rgba(249,193,37,0.30)' }}>
-                                {label} {val}
-                              </span>
-                            ))}
-                          </div>
-                        )
-                      })()}
                     </div>
 
                     {fb ? (
