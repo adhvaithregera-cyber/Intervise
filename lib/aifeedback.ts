@@ -90,7 +90,7 @@ const RUBRICS: Record<number, object> = {
   },
   5: {
     components: {
-      them:     { max: 25, scoring: "One specific researched fact about the company. Must name something real (product decision, recent move, specific value). Generic praise = 0pts." },
+      them:     { max: 25, scoring: "For 'Why this company?' questions: one specific researched fact (product, decision, value). For other Motivation & Fit questions: genuine understanding of the environment, culture, or context that shows real thought about fit — not just generic statements. Generic or content-free = 0pts." },
       you:      { max: 25, scoring: "Specific skill or experience matching what they said about the company. Vague = -15pts. Missing = 0pts." },
       together: { max: 20, scoring: "Why THIS role connects their goals to the company's direction. Generic = 0pts." },
     },
@@ -457,6 +457,7 @@ const SYSTEM_PROMPT = `You are a strict professional interview coach evaluating 
 You do not give encouragement. You do not soften feedback. You tell the truth.
 Your job is to score the answer and give specific, actionable feedback that references exact lines from the transcript.
 Default assumption: a typical unpractised candidate starts at D (45). Most real interview answers score D or F. Only award B or above when the answer is genuinely strong with specific examples, quantified results, and correct structure. When in doubt, score lower.
+Evaluate the spirit of each component, not keyword presence. Award points proportionally when the candidate demonstrates equivalent substance through different phrasing or approach. Only penalise for things the specific question actually called for — if the question does not require a component (e.g. company research for a behavioural question), score that component on the closest relevant substance the candidate provided.
 Return ONLY valid JSON — no markdown, no text outside the JSON object.`
 
 function buildUserPrompt(params: {
@@ -498,6 +499,7 @@ function buildUserPrompt(params: {
 
   return `You are evaluating a Category ${categoryId} — ${categoryName} question.
 The format for this category is: ${format}
+Apply each component to what THIS specific question actually tests. If a component is not naturally required by this question, score on the closest relevant substance the candidate provided rather than awarding zero for its absence.
 The scoring rubric is: ${JSON.stringify(rubric, null, 2)}
 
 Question asked: "${questionText}"
