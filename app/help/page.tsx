@@ -193,7 +193,7 @@ const CATEGORIES = [
       },
       {
         q: 'Is my data shared with third parties?',
-        a: 'Your data is shared only with the processors required to deliver the service: AssemblyAI (transcription), OpenAI and Google Gemini (AI feedback), Supabase (database), Vercel (hosting), Razorpay (payments), and PostHog (anonymised analytics). See our Privacy Policy for full details.',
+        a: 'Your data is shared only with the processors required to deliver the service: AssemblyAI (transcription), OpenAI and Google Gemini (AI feedback), Supabase (database), Vercel (hosting), and Razorpay (payments). See our Privacy Policy for full details.',
       },
       {
         q: 'How do I contact support?',

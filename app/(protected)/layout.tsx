@@ -5,7 +5,6 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 }
 import { createClient, getUser } from '@/lib/supabase/server'
-import { PostHogIdentify } from '@/components/posthog-identify'
 
 function getInitials(name?: string | null, email?: string | null): string {
   if (name) {
@@ -51,9 +50,6 @@ export default async function ProtectedLayout({ children }: { children: React.Re
           backgroundSize: '26px 26px',
         }}
       />
-      {user && prefetched && (
-        <PostHogIdentify userId={user.id} tier={prefetched.tier} />
-      )}
       <Navbar prefetched={prefetched} />
       <main className="relative z-10 mx-auto w-full max-w-6xl flex-1 px-6 py-8">{children}</main>
     </div>

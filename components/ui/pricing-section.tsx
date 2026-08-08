@@ -160,7 +160,6 @@ export default function PricingSection({ userTier }: { userTier?: string | null 
 
   async function handleCheckout(plan: 'student' | 'pro') {
     const period = isQuarterly ? 'quarterly' : 'monthly'
-    import('posthog-js').then(({ default: posthog }) => posthog.capture('checkout_initiated', { plan, period }))
     setCheckoutError(null)
     setCheckoutLoading(plan)
     await startCheckout(plan, period)

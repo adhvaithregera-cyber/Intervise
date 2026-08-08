@@ -44,7 +44,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://hcaptcha.com https://*.hcaptcha.com",
       "img-src 'self' data: blob:",
       "font-src 'self'",
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.assemblyai.com https://hcaptcha.com https://*.hcaptcha.com https://api.razorpay.com https://*.razorpay.com https://us.i.posthog.com https://us.posthog.com",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.assemblyai.com https://hcaptcha.com https://*.hcaptcha.com https://api.razorpay.com https://*.razorpay.com",
       "media-src 'self' blob:",
       "worker-src 'self' blob:",
       "object-src 'none'",

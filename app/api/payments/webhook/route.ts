@@ -4,14 +4,15 @@ import {
   verifyRazorpayWebhookSignature,
   planIdToTier,
 } from '@/lib/razorpay'
-import { getPostHogClient } from '@/lib/posthog-server'
 import { checkRateLimit, RATE_LIMITS } from '@/lib/ratelimit'
 
 // Razorpay requires the raw body for HMAC verification.
 // Do NOT call request.json() before request.text().
 export async function POST(request: NextRequest) {
   // ── Coarse IP-level rate limit — guards against flood of bad-sig requests ──
-  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
+  // Use rightmost IP — Vercel appends the true client IP last, so it cannot be spoofed
+  // via a crafted X-Forwarded-For header (leftmost is client-controlled).
+  const ip = request.headers.get('x-forwarded-for')?.split(',').pop()?.trim() ?? 'unknown'
   const rl = checkRateLimit(`webhook:${ip}`, RATE_LIMITS.webhook)
   if (!rl.allowed) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
@@ -60,7 +61,6 @@ export async function POST(request: NextRequest) {
   const planId = entity.plan_id ?? ''
 
   const supabase = createServiceClient()
-  const posthog = getPostHogClient()
   // tier_expires_at = now + 31 days (covers billing month with a 1-day buffer)
   const expires = new Date(Date.now() + 31 * 24 * 60 * 60 * 1000).toISOString()
 
@@ -69,65 +69,47 @@ export async function POST(request: NextRequest) {
       const tier = planIdToTier(planId)
       if (!tier) {
         console.error('[webhook] unknown plan_id on activation:', planId)
-        await posthog.shutdown()
         return NextResponse.json({ error: 'Unknown plan' }, { status: 500 })
       }
-      const { data: profile, error, count } = await supabase
+      const { error, count } = await supabase
         .from('profiles')
         .update({ tier, subscription_status: 'active', tier_expires_at: expires }, { count: 'exact' })
         .eq('razorpay_subscription_id', subscriptionId)
-        .select('id')
-        .single()
       if (error) console.error('[webhook] activated update error:', error.message)
       if (!error && count === 0) {
         console.error('[webhook] activated: no profile matched subscription_id', subscriptionId)
-        await posthog.shutdown()
         return NextResponse.json({ error: 'Profile not found' }, { status: 500 })
-      }
-      if (profile?.id) {
-        posthog.capture({ distinctId: profile.id, event: 'subscription_activated', properties: { tier, plan_id: planId } })
       }
       break
     }
 
     case 'subscription.charged': {
-      const { data: profile, error, count } = await supabase
+      const { error, count } = await supabase
         .from('profiles')
         .update({ tier_expires_at: expires }, { count: 'exact' })
         .eq('razorpay_subscription_id', subscriptionId)
-        .select('id, tier')
-        .single()
       if (error) console.error('[webhook] charged update error:', error.message)
       if (!error && count === 0) {
         console.error('[webhook] charged: no profile matched subscription_id', subscriptionId)
-        await posthog.shutdown()
         return NextResponse.json({ error: 'Profile not found' }, { status: 500 })
-      }
-      if (profile?.id) {
-        posthog.capture({ distinctId: profile.id, event: 'subscription_charged', properties: { tier: profile.tier } })
       }
       break
     }
 
     case 'subscription.cancelled': {
       // Tier stays active until tier_expires_at — only update status
-      const { data: profile, error, count } = await supabase
+      const { error, count } = await supabase
         .from('profiles')
         .update({ subscription_status: 'cancelled' }, { count: 'exact' })
         .eq('razorpay_subscription_id', subscriptionId)
-        .select('id, tier')
-        .single()
       if (error) console.error('[webhook] cancelled update error:', error.message)
       if (!error && count === 0) console.error('[webhook] cancelled: no profile matched subscription_id', subscriptionId)
-      if (profile?.id) {
-        posthog.capture({ distinctId: profile.id, event: 'subscription_cancelled', properties: { tier: profile.tier } })
-      }
       break
     }
 
     case 'subscription.halted': {
       // Payment failed after all retries — drop to free immediately
-      const { data: profile, error, count } = await supabase
+      const { error, count } = await supabase
         .from('profiles')
         .update({
           tier: 'free',
@@ -135,23 +117,17 @@ export async function POST(request: NextRequest) {
           tier_expires_at: null,
         }, { count: 'exact' })
         .eq('razorpay_subscription_id', subscriptionId)
-        .select('id')
-        .single()
       if (error) console.error('[webhook] halted update error:', error.message)
       if (!error && count === 0) {
         console.error('[webhook] halted: no profile matched subscription_id', subscriptionId)
-        await posthog.shutdown()
         return NextResponse.json({ error: 'Profile not found' }, { status: 500 })
-      }
-      if (profile?.id) {
-        posthog.capture({ distinctId: profile.id, event: 'subscription_halted' })
       }
       break
     }
 
     case 'subscription.completed': {
       // Subscription ran its course — clear everything
-      const { data: profile, error, count } = await supabase
+      const { error, count } = await supabase
         .from('profiles')
         .update({
           tier: 'free',
@@ -160,13 +136,8 @@ export async function POST(request: NextRequest) {
           razorpay_subscription_id: null,
         }, { count: 'exact' })
         .eq('razorpay_subscription_id', subscriptionId)
-        .select('id')
-        .single()
       if (error) console.error('[webhook] completed update error:', error.message)
       if (!error && count === 0) console.error('[webhook] completed: no profile matched subscription_id', subscriptionId)
-      if (profile?.id) {
-        posthog.capture({ distinctId: profile.id, event: 'subscription_completed' })
-      }
       break
     }
 
@@ -175,6 +146,5 @@ export async function POST(request: NextRequest) {
       break
   }
 
-  await posthog.shutdown()
   return NextResponse.json({ ok: true })
 }

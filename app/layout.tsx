@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { Space_Grotesk } from 'next/font/google'
 import './globals.css'
-import { PostHogProvider } from '@/components/posthog-provider'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 
@@ -42,7 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${spaceGrotesk.className} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
-        <PostHogProvider>{children}</PostHogProvider>
+        {children}
         <Analytics />
         <SpeedInsights />
       </body>

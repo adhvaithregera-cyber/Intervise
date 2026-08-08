@@ -61,7 +61,6 @@ export default function PrivacyPage() {
                 'Question history — which practice questions you have been asked, used to avoid repetition.',
                 'Profile preferences — interview date, biggest weakness, and other optional fields you fill in.',
                 'Payment information — processed entirely by Razorpay. We store only your Razorpay subscription ID and subscription status; no card or banking details are held by us.',
-                'Usage analytics — aggregated, anonymised event data collected via PostHog to understand how the platform is used.',
               ].map((item, i) => (
                 <li key={i} className="flex gap-3 text-sm leading-relaxed text-white/65">
                   <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#F9C125]/50" />
@@ -114,7 +113,6 @@ export default function PrivacyPage() {
                 { name: 'Supabase', desc: 'Database and authentication.', url: 'https://supabase.com/privacy', label: 'supabase.com/privacy' },
                 { name: 'Vercel', desc: 'Hosting and edge network.', url: 'https://vercel.com/legal/privacy-policy', label: 'vercel.com/legal/privacy-policy' },
                 { name: 'Razorpay', desc: 'Payment processing.', url: 'https://razorpay.com/privacy/', label: 'razorpay.com/privacy' },
-                { name: 'PostHog', desc: 'Anonymised product analytics.', url: 'https://posthog.com/privacy', label: 'posthog.com/privacy' },
               ].map((p) => (
                 <li key={p.name} className="flex gap-3 text-sm leading-relaxed text-white/65">
                   <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#F9C125]/50" />

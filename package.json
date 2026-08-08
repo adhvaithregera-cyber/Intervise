@@ -25,8 +25,6 @@
     "next": "^16.2.11",
     "openai": "^6.48.0",
     "postcss": "^8.5.14",
-    "posthog-js": "^1.376.3",
-    "posthog-node": "^5.35.5",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "recharts": "^3.8.1",
