@@ -136,8 +136,8 @@ function getComponentLabel(
   categoryName: string | undefined,
   key: string,
 ): { label: string; gloss: string } {
-  return (categoryName && COMPONENT_LABELS[categoryName]?.[key])
-    ?? { label: key, gloss: '' }
+  if (!categoryName) return { label: key, gloss: '' }
+  return COMPONENT_LABELS[categoryName]?.[key] ?? { label: key, gloss: '' }
 }
 
 export default async function ReportPage({ params }: { params: Promise<{ id: string }> }) {
