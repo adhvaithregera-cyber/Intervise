@@ -5,7 +5,7 @@ import { FadeIn } from '@/components/ui/fade-in'
 import { ProfileEditCard } from './profile-edit-card'
 import { RecentSessionsList } from './recent-sessions-list'
 import { ChartsClient } from './charts-client'
-import type { SessionStat, ProgressSummary } from './charts-client'
+import type { SessionStat } from './charts-client'
 import { Lock } from 'lucide-react'
 import { computeSessionMetrics } from '@/lib/scorecard'
 import { FirstSessionPanel } from './first-session-panel'
@@ -91,7 +91,7 @@ export default async function DashboardPage({
 
   let chartQ = supabase
     .from('sessions').select('id, created_at, difficulty, overall_grade').eq('user_id', user.id).eq('status', 'complete')
-    .order('created_at', { ascending: true })
+    .order('created_at', { ascending: false })
   if (windowCutoff) chartQ = chartQ.gte('created_at', windowCutoff)
 
   // ── Fetch both in parallel ──────────────────────────────────────────────
@@ -169,7 +169,7 @@ export default async function DashboardPage({
           accuracy: m?.accuracy ?? null,
           skill: m?.skill ?? null,
         }
-      })
+      }).reverse()
 
       // Per-category stats
       const catMap: Record<string, { total: number; count: number }> = {}
@@ -202,37 +202,6 @@ export default async function DashboardPage({
   for (const [sid, ans] of Object.entries(recentBySession)) {
     const m = computeSessionMetrics(ans.map(a => ({ ai_feedback: a.ai_feedback as AiFeedback | null })))
     sessionScores[sid] = m?.yourScore ?? null
-  }
-
-  // ── Progress summary stats ──────────────────────────────────────────────
-  const progressSummary: ProgressSummary = {
-    avgFillers: null, fillerTrend: 'flat',
-    avgWpm: null, wpmTrend: 'flat',
-    bestScore: null,
-  }
-  if (sessionStats.length > 0) {
-    const allFillers = sessionStats.map(s => s.fillers)
-    progressSummary.avgFillers = Math.round(allFillers.reduce((a, b) => a + b, 0) / allFillers.length)
-    if (sessionStats.length >= 2) {
-      const half = Math.ceil(sessionStats.length / 2)
-      const firstAvg = sessionStats.slice(0, half).reduce((a, s) => a + s.fillers, 0) / half
-      const lastAvg = sessionStats.slice(-half).reduce((a, s) => a + s.fillers, 0) / half
-      if (lastAvg < firstAvg - 0.5) progressSummary.fillerTrend = 'down'
-      else if (lastAvg > firstAvg + 0.5) progressSummary.fillerTrend = 'up'
-    }
-    const wpmData = sessionStats.filter(s => s.wpm !== null)
-    if (wpmData.length > 0) {
-      progressSummary.avgWpm = Math.round(wpmData.reduce((a, s) => a + (s.wpm ?? 0), 0) / wpmData.length)
-      if (wpmData.length >= 2) {
-        const half = Math.ceil(wpmData.length / 2)
-        const firstAvg = wpmData.slice(0, half).reduce((a, s) => a + (s.wpm ?? 0), 0) / half
-        const lastAvg = wpmData.slice(-half).reduce((a, s) => a + (s.wpm ?? 0), 0) / half
-        if (lastAvg > firstAvg + 3) progressSummary.wpmTrend = 'up'
-        else if (lastAvg < firstAvg - 3) progressSummary.wpmTrend = 'down'
-      }
-    }
-    const scores = sessionStats.map(s => s.yourScore).filter((s): s is number => s !== null)
-    if (scores.length > 0) progressSummary.bestScore = Math.max(...scores)
   }
 
   const sessionsLimit = TIER_SESSION_LIMITS[profile.tier] ?? 2
@@ -447,7 +416,7 @@ export default async function DashboardPage({
               </div>
             </div>
           ) : (
-            <ChartsClient sessionStats={sessionStats} categoryStats={categoryStats} summary={progressSummary} />
+            <ChartsClient sessionStats={sessionStats} categoryStats={categoryStats} />
           )}
         </div>
       </FadeIn>
