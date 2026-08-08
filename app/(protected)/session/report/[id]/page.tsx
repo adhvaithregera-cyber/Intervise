@@ -6,7 +6,37 @@ import { FadeIn } from '@/components/ui/fade-in'
 import { cn } from '@/lib/utils'
 import { Lock } from 'lucide-react'
 import { computeThreeMetrics, computeSessionMetrics } from '@/lib/scorecard'
+import { FILLER_PATTERNS } from '@/lib/analysis'
 import type { AiFeedback } from '@/types/database'
+
+function highlightFillers(
+  transcript: string,
+  fillerBreakdown: Record<string, number>,
+): Array<{ text: string; filler: boolean }> {
+  const activePatterns = FILLER_PATTERNS.filter(p => fillerBreakdown[p.key])
+  if (activePatterns.length === 0) return [{ text: transcript, filler: false }]
+
+  const combined = new RegExp(
+    activePatterns.map(p => p.regex.source).join('|'),
+    'gi',
+  )
+
+  const segments: Array<{ text: string; filler: boolean }> = []
+  let lastIndex = 0
+  let match: RegExpExecArray | null
+
+  while ((match = combined.exec(transcript)) !== null) {
+    if (match.index > lastIndex) {
+      segments.push({ text: transcript.slice(lastIndex, match.index), filler: false })
+    }
+    segments.push({ text: match[0], filler: true })
+    lastIndex = match.index + match[0].length
+  }
+  if (lastIndex < transcript.length) {
+    segments.push({ text: transcript.slice(lastIndex), filler: false })
+  }
+  return segments
+}
 
 function scoreColor(n: number): string {
   if (n >= 75) return 'text-[#F9C125]'
@@ -310,12 +340,19 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
                   {/* Transcript — collapsible */}
                   {answer.transcript && (
                     <details className="mt-4 group">
-                      <summary className="cursor-pointer list-none flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/50 hover:text-[#F9C125]/80 transition-colors select-none">
+                      <summary className="cursor-pointer list-none flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-widest text-[#F9C125]/80 hover:text-[#F9C125] transition-colors select-none">
                         <span className="transition-transform group-open:rotate-90 inline-block">▶</span>
                         Your answer
                       </summary>
-                      <p className="mt-2 text-xs text-white/55 leading-relaxed border-l-2 border-[#F9C125]/20 pl-3">
-                        {answer.transcript}
+                      <p className="mt-2 text-xs text-white/75 leading-relaxed border-l-2 border-[#F9C125]/35 pl-3">
+                        {answer.filler_breakdown && Object.keys(answer.filler_breakdown).length > 0
+                          ? highlightFillers(answer.transcript, answer.filler_breakdown as Record<string, number>).map((seg, i) =>
+                              seg.filler
+                                ? <mark key={i} className="bg-amber-400/20 text-amber-300 not-italic rounded-sm px-0.5">{seg.text}</mark>
+                                : <span key={i}>{seg.text}</span>
+                            )
+                          : answer.transcript
+                        }
                       </p>
                     </details>
                   )}

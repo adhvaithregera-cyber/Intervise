@@ -15,7 +15,7 @@ const MIN_WORDS_FOR_WPM = 5
 
 // Order matters: multi-word phrases must be listed before their component words
 // so that "you know" is matched as a phrase before individual word patterns.
-const FILLER_PATTERNS: Array<{ key: string; regex: RegExp }> = [
+export const FILLER_PATTERNS: Array<{ key: string; regex: RegExp }> = [
   { key: 'you know', regex: /\byou\s+know\b/gi },
   { key: 'um', regex: /\bum\b/gi },
   { key: 'uh', regex: /\buh\b/gi },
