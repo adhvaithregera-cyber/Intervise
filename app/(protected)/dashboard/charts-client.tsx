@@ -128,12 +128,12 @@ export function ChartsClient({
         <WpmLineChart data={filtered} />
       </div>
       <CategoryChart data={categoryStats} />
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <MetricLineChart data={filtered} dataKey="fluency" label="Fluency" />
-        <MetricLineChart data={filtered} dataKey="accuracy" label="Grammar" />
-        <MetricLineChart data={filtered} dataKey="skill" label="Skill" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <MetricLineChart data={filtered} dataKey="fluency" label="Fluency" color="#60a5fa" />
+        <MetricLineChart data={filtered} dataKey="accuracy" label="Grammar" color="#34d399" />
+        <MetricLineChart data={filtered} dataKey="skill" label="Skill" color="#a78bfa" />
+        <GradeTrendChart data={filtered} />
       </div>
-      <GradeTrendChart data={filtered} />
     </div>
   )
 }

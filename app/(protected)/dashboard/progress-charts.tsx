@@ -8,8 +8,8 @@ import {
 } from 'recharts'
 
 export type SessionStat = {
-  label: string       // display label — de-duped by difficulty if same date
-  date: string        // formatted date e.g. "12 May"
+  label: string       // display label — de-duped by difficulty if same date (used in tooltip)
+  date: string        // short date e.g. "12 May" (used as x-axis tick)
   isoDate: string     // ISO date string for filtering e.g. "2026-05-25T10:30:00Z"
   fillers: number
   wpm: number | null
@@ -48,9 +48,14 @@ const INNER_CARD = {
   borderRadius: '0.75rem',
 }
 
-// Show at most ~6 x-axis labels regardless of session count
+// Show at most ~4 x-axis labels regardless of session count
 function xInterval(len: number): number {
-  return Math.max(0, Math.ceil(len / 6) - 1)
+  return Math.max(0, Math.ceil(len / 4) - 1)
+}
+
+// X-axis shows date only; tooltip shows full label (including difficulty when same-day sessions exist)
+function tooltipLabel(_: unknown, payload: Array<{ payload?: { label?: string } }>): string {
+  return payload?.[0]?.payload?.label ?? String(_)
 }
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
@@ -68,7 +73,6 @@ export const StatPills = React.memo(function StatPills({ summary }: { summary: P
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
-      {/* Avg fillers */}
       <div className="rounded-xl px-4 py-3" style={INNER_CARD}>
         <p className="text-[10px] font-semibold uppercase tracking-widest text-white/35 mb-1">Avg Fillers</p>
         <div className="flex items-center gap-1.5">
@@ -82,7 +86,6 @@ export const StatPills = React.memo(function StatPills({ summary }: { summary: P
         <p className="text-[10px] text-white/30 mt-0.5">per answer</p>
       </div>
 
-      {/* Avg WPM */}
       <div className="rounded-xl px-4 py-3" style={INNER_CARD}>
         <p className="text-[10px] font-semibold uppercase tracking-widest text-white/35 mb-1">Avg WPM</p>
         <div className="flex items-center gap-1.5">
@@ -96,7 +99,6 @@ export const StatPills = React.memo(function StatPills({ summary }: { summary: P
         <p className="text-[10px] text-white/30 mt-0.5">words per minute</p>
       </div>
 
-      {/* Best score */}
       <div className="rounded-xl px-4 py-3" style={INNER_CARD}>
         <p className="text-[10px] font-semibold uppercase tracking-widest text-white/35 mb-1">Best Score</p>
         <span className="text-2xl font-bold text-[#F9C125]">{bestScore ?? '—'}</span>
@@ -106,7 +108,7 @@ export const StatPills = React.memo(function StatPills({ summary }: { summary: P
   )
 })
 
-// ── Filler bar chart ─────────────────────────────────────────────────────────
+// ── Filler bar chart — orange ────────────────────────────────────────────────
 
 export const FillerBarChart = React.memo(function FillerBarChart({ data }: { data: SessionStat[] }) {
   if (data.length === 0) {
@@ -114,12 +116,12 @@ export const FillerBarChart = React.memo(function FillerBarChart({ data }: { dat
       <div className="p-5 relative" style={INNER_CARD}>
         <SectionLabel>Filler words per session</SectionLabel>
         <div className="relative">
-          <ResponsiveContainer width="100%" height={140}>
-            <BarChart data={[{label:'',fillers:0}]} margin={{ top: 4, right: 4, left: -24, bottom: 16 }}>
+          <ResponsiveContainer width="100%" height={180}>
+            <BarChart data={[{ date: '', fillers: 0 }]} margin={{ top: 4, right: 4, left: -24, bottom: 8 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
-              <XAxis dataKey="label" tick={{ fill: 'rgba(249,193,37,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} height={56} />
-              <YAxis tick={{ fill: 'rgba(249,193,37,0.3)', fontSize: 12 }} axisLine={false} tickLine={false} domain={[0,10]} ticks={[0,2,4,6,8,10]} />
-              <Bar dataKey="fillers" fill="rgba(249,193,37,0.08)" radius={[4,4,0,0]} maxBarSize={32} />
+              <XAxis dataKey="date" tick={{ fill: 'rgba(255,255,255,0.25)', fontSize: 10 }} axisLine={false} tickLine={false} height={28} />
+              <YAxis tick={{ fill: 'rgba(255,255,255,0.25)', fontSize: 12 }} axisLine={false} tickLine={false} domain={[0, 10]} ticks={[0, 2, 4, 6, 8, 10]} />
+              <Bar dataKey="fillers" fill="rgba(251,146,60,0.08)" radius={[4, 4, 0, 0]} maxBarSize={32} />
             </BarChart>
           </ResponsiveContainer>
           <div className="absolute inset-0 flex items-center justify-center">
@@ -132,19 +134,19 @@ export const FillerBarChart = React.memo(function FillerBarChart({ data }: { dat
   return (
     <div className="p-5" style={INNER_CARD}>
       <SectionLabel>Filler words per session</SectionLabel>
-      <ResponsiveContainer width="100%" height={140}>
-        <BarChart data={data} margin={{ top: 4, right: 4, left: -24, bottom: 16 }}>
+      <ResponsiveContainer width="100%" height={180}>
+        <BarChart data={data} margin={{ top: 4, right: 4, left: -24, bottom: 8 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
           <XAxis
-            dataKey="label"
-            tick={{ fill: 'rgba(249,193,37,0.75)', fontSize: 10, angle: -35, textAnchor: 'end' }}
+            dataKey="date"
+            tick={{ fill: 'rgba(255,255,255,0.65)', fontSize: 10 }}
             axisLine={false}
             tickLine={false}
             interval={xInterval(data.length)}
-            height={56}
+            height={28}
           />
           <YAxis
-            tick={{ fill: 'rgba(249,193,37,0.75)', fontSize: 12 }}
+            tick={{ fill: 'rgba(255,255,255,0.65)', fontSize: 12 }}
             axisLine={false}
             tickLine={false}
             allowDecimals={false}
@@ -153,17 +155,18 @@ export const FillerBarChart = React.memo(function FillerBarChart({ data }: { dat
           />
           <Tooltip
             contentStyle={TOOLTIP_STYLE}
-            cursor={{ fill: 'rgba(249,193,37,0.06)' }}
+            cursor={{ fill: 'rgba(251,146,60,0.08)' }}
+            labelFormatter={tooltipLabel}
             formatter={(value) => [Number(value), 'Fillers']}
           />
-          <Bar dataKey="fillers" fill="#F9C125" radius={[4, 4, 0, 0]} maxBarSize={32} />
+          <Bar dataKey="fillers" fill="#fb923c" radius={[4, 4, 0, 0]} maxBarSize={32} />
         </BarChart>
       </ResponsiveContainer>
     </div>
   )
 })
 
-// ── WPM line chart with ideal range band ────────────────────────────────────
+// ── WPM line chart — cyan ────────────────────────────────────────────────────
 
 export const WpmLineChart = React.memo(function WpmLineChart({ data }: { data: SessionStat[] }) {
   const filtered = data.filter((d) => d.wpm !== null)
@@ -172,13 +175,13 @@ export const WpmLineChart = React.memo(function WpmLineChart({ data }: { data: S
       <div className="p-5 relative" style={INNER_CARD}>
         <SectionLabel>Speech pace per session (wpm)</SectionLabel>
         <div className="relative">
-          <ResponsiveContainer width="100%" height={140}>
-            <LineChart data={[{label:'',wpm:null}]} margin={{ top: 4, right: 4, left: -24, bottom: 16 }}>
+          <ResponsiveContainer width="100%" height={180}>
+            <LineChart data={[{ date: '', wpm: null }]} margin={{ top: 4, right: 4, left: -24, bottom: 8 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
               <ReferenceArea y1={110} y2={160} fill="rgba(34,197,94,0.06)" stroke="rgba(34,197,94,0.12)" label={{ value: 'Ideal range', position: 'insideTopRight', fill: 'rgba(34,197,94,0.3)', fontSize: 10 }} />
-              <XAxis dataKey="label" tick={{ fill: 'rgba(249,193,37,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} height={56} />
-              <YAxis tick={{ fill: 'rgba(249,193,37,0.3)', fontSize: 12 }} axisLine={false} tickLine={false} domain={[60,200]} ticks={[60,80,100,120,140,160,180,200]} />
-              <Line type="monotone" dataKey="wpm" stroke="rgba(249,193,37,0.15)" strokeWidth={2} dot={false} />
+              <XAxis dataKey="date" tick={{ fill: 'rgba(255,255,255,0.25)', fontSize: 10 }} axisLine={false} tickLine={false} height={28} />
+              <YAxis tick={{ fill: 'rgba(255,255,255,0.25)', fontSize: 12 }} axisLine={false} tickLine={false} domain={[60, 200]} ticks={[60, 80, 100, 120, 140, 160, 180, 200]} />
+              <Line type="monotone" dataKey="wpm" stroke="rgba(34,211,238,0.15)" strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
           <div className="absolute inset-0 flex items-center justify-center">
@@ -191,8 +194,8 @@ export const WpmLineChart = React.memo(function WpmLineChart({ data }: { data: S
   return (
     <div className="p-5" style={INNER_CARD}>
       <SectionLabel>Speech pace per session (wpm)</SectionLabel>
-      <ResponsiveContainer width="100%" height={140}>
-        <LineChart data={filtered} margin={{ top: 4, right: 4, left: -24, bottom: 16 }}>
+      <ResponsiveContainer width="100%" height={180}>
+        <LineChart data={filtered} margin={{ top: 4, right: 4, left: -24, bottom: 8 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
           <ReferenceArea
             y1={110}
@@ -202,15 +205,15 @@ export const WpmLineChart = React.memo(function WpmLineChart({ data }: { data: S
             label={{ value: 'Ideal range', position: 'insideTopRight', fill: 'rgba(34,197,94,0.55)', fontSize: 10 }}
           />
           <XAxis
-            dataKey="label"
-            tick={{ fill: 'rgba(249,193,37,0.75)', fontSize: 10, angle: -35, textAnchor: 'end' }}
+            dataKey="date"
+            tick={{ fill: 'rgba(255,255,255,0.65)', fontSize: 10 }}
             axisLine={false}
             tickLine={false}
             interval={xInterval(filtered.length)}
-            height={56}
+            height={28}
           />
           <YAxis
-            tick={{ fill: 'rgba(249,193,37,0.75)', fontSize: 12 }}
+            tick={{ fill: 'rgba(255,255,255,0.65)', fontSize: 12 }}
             axisLine={false}
             tickLine={false}
             allowDecimals={false}
@@ -219,15 +222,16 @@ export const WpmLineChart = React.memo(function WpmLineChart({ data }: { data: S
           />
           <Tooltip
             contentStyle={TOOLTIP_STYLE}
+            labelFormatter={tooltipLabel}
             formatter={(value) => [`${Number(value)} wpm`, 'Pace']}
           />
           <Line
             type="monotone"
             dataKey="wpm"
-            stroke="#F9C125"
+            stroke="#22d3ee"
             strokeWidth={2}
-            dot={{ fill: '#F9C125', r: 3, strokeWidth: 0 }}
-            activeDot={{ r: 5, fill: '#F9C125' }}
+            dot={{ fill: '#22d3ee', r: 3, strokeWidth: 0 }}
+            activeDot={{ r: 5, fill: '#22d3ee' }}
           />
         </LineChart>
       </ResponsiveContainer>
@@ -261,7 +265,6 @@ export const CategoryChart = React.memo(function CategoryChart({ data }: { data:
   }
 
   const sorted = [...data].sort((a, b) => b.avgFillers - a.avgFillers)
-  // Use absolute max baseline of 5 so a single low-value category doesn't span full width
   const max = Math.max(sorted[0]?.avgFillers ?? 0, 5)
 
   return (
@@ -292,7 +295,7 @@ export const CategoryChart = React.memo(function CategoryChart({ data }: { data:
   )
 })
 
-// ── Generic 0-100 metric line chart ─────────────────────────────────────────
+// ── Generic 0–100 metric line chart ─────────────────────────────────────────
 
 const METRIC_TICKS = [0, 20, 40, 60, 80, 100]
 
@@ -300,10 +303,12 @@ export const MetricLineChart = React.memo(function MetricLineChart({
   data,
   dataKey,
   label,
+  color,
 }: {
   data: SessionStat[]
   dataKey: 'fluency' | 'accuracy' | 'skill' | 'yourScore'
   label: string
+  color: string
 }) {
   const filtered = data.filter(d => d[dataKey] !== null)
   if (filtered.length === 0) {
@@ -311,12 +316,12 @@ export const MetricLineChart = React.memo(function MetricLineChart({
       <div className="p-5 relative" style={INNER_CARD}>
         <SectionLabel>{label} per session</SectionLabel>
         <div className="relative">
-          <ResponsiveContainer width="100%" height={140}>
-            <LineChart data={[{ label: '', [dataKey]: null }]} margin={{ top: 4, right: 4, left: -24, bottom: 16 }}>
+          <ResponsiveContainer width="100%" height={180}>
+            <LineChart data={[{ date: '', [dataKey]: null }]} margin={{ top: 4, right: 4, left: -24, bottom: 8 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
-              <XAxis dataKey="label" tick={{ fill: 'rgba(249,193,37,0.3)', fontSize: 10 }} axisLine={false} tickLine={false} height={56} />
-              <YAxis tick={{ fill: 'rgba(249,193,37,0.3)', fontSize: 11 }} axisLine={false} tickLine={false} domain={[0, 100]} ticks={METRIC_TICKS} />
-              <Line type="monotone" dataKey={dataKey} stroke="rgba(249,193,37,0.15)" strokeWidth={2} dot={false} />
+              <XAxis dataKey="date" tick={{ fill: 'rgba(255,255,255,0.25)', fontSize: 10 }} axisLine={false} tickLine={false} height={28} />
+              <YAxis tick={{ fill: 'rgba(255,255,255,0.25)', fontSize: 11 }} axisLine={false} tickLine={false} domain={[0, 100]} ticks={METRIC_TICKS} />
+              <Line type="monotone" dataKey={dataKey} stroke={`${color}26`} strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
           <div className="absolute inset-0 flex items-center justify-center">
@@ -329,19 +334,19 @@ export const MetricLineChart = React.memo(function MetricLineChart({
   return (
     <div className="p-5" style={INNER_CARD}>
       <SectionLabel>{label} per session</SectionLabel>
-      <ResponsiveContainer width="100%" height={140}>
-        <LineChart data={filtered} margin={{ top: 4, right: 4, left: -24, bottom: 16 }}>
+      <ResponsiveContainer width="100%" height={180}>
+        <LineChart data={filtered} margin={{ top: 4, right: 4, left: -24, bottom: 8 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
           <XAxis
-            dataKey="label"
-            tick={{ fill: 'rgba(249,193,37,0.75)', fontSize: 10, angle: -35, textAnchor: 'end' }}
+            dataKey="date"
+            tick={{ fill: 'rgba(255,255,255,0.65)', fontSize: 10 }}
             axisLine={false}
             tickLine={false}
             interval={xInterval(filtered.length)}
-            height={56}
+            height={28}
           />
           <YAxis
-            tick={{ fill: 'rgba(249,193,37,0.75)', fontSize: 11 }}
+            tick={{ fill: 'rgba(255,255,255,0.65)', fontSize: 11 }}
             axisLine={false}
             tickLine={false}
             domain={[0, 100]}
@@ -349,15 +354,16 @@ export const MetricLineChart = React.memo(function MetricLineChart({
           />
           <Tooltip
             contentStyle={TOOLTIP_STYLE}
+            labelFormatter={tooltipLabel}
             formatter={(value: unknown) => [`${value}/100`, label]}
           />
           <Line
             type="monotone"
             dataKey={dataKey}
-            stroke="#F9C125"
+            stroke={color}
             strokeWidth={2}
-            dot={{ fill: '#F9C125', r: 3, strokeWidth: 0 }}
-            activeDot={{ r: 5, fill: '#F9C125' }}
+            dot={{ fill: color, r: 3, strokeWidth: 0 }}
+            activeDot={{ r: 5, fill: color }}
             connectNulls={false}
           />
         </LineChart>
@@ -366,8 +372,8 @@ export const MetricLineChart = React.memo(function MetricLineChart({
   )
 })
 
-// ── Score trend chart ────────────────────────────────────────────────────────
+// ── Score trend chart — gold (headline metric) ───────────────────────────────
 
 export const GradeTrendChart = React.memo(function GradeTrendChart({ data }: { data: SessionStat[] }) {
-  return <MetricLineChart data={data} dataKey="yourScore" label="Your Score" />
+  return <MetricLineChart data={data} dataKey="yourScore" label="Your Score" color="#F9C125" />
 })
