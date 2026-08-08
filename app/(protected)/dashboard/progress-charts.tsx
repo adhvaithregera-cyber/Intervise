@@ -54,7 +54,7 @@ function xInterval(len: number): number {
 }
 
 // X-axis shows date only; tooltip shows full label (including difficulty when same-day sessions exist)
-function tooltipLabel(_: unknown, payload: Array<{ payload?: { label?: string } }>): string {
+function tooltipLabel(_: unknown, payload: ReadonlyArray<{ payload?: { label?: string } }>): string {
   return payload?.[0]?.payload?.label ?? String(_)
 }
 
