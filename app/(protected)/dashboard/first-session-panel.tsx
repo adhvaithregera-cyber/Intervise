@@ -15,8 +15,8 @@ const PILLS = ['5 questions', 'AI feedback', 'Score report']
 
 export function FirstSessionPanel({ firstName }: { firstName: string | null }) {
   return (
-    <div className="flex flex-col items-center justify-center py-20 text-center" style={CARD_STYLE}>
-      <div className="max-w-md">
+    <div className="flex flex-col items-center justify-center py-8 sm:py-16 text-center" style={CARD_STYLE}>
+      <div className="max-w-md w-full px-5 sm:px-6">
         {/* Icon */}
         <div
           className="mx-auto mb-7 flex h-16 w-16 items-center justify-center rounded-2xl"
@@ -49,7 +49,7 @@ export function FirstSessionPanel({ firstName }: { firstName: string | null }) {
         {/* CTA */}
         <Link
           href="/session/briefing?difficulty=easy"
-          className="inline-flex items-center gap-2 rounded-2xl px-8 py-4 text-base font-bold text-[#080d1a] transition-all hover:brightness-110"
+          className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-2xl px-8 py-4 text-base font-bold text-[#080d1a] transition-all hover:brightness-110"
           style={{
             backgroundColor: '#F9C125',
             boxShadow: '0 0 40px rgba(249,193,37,0.35), 0 8px 32px rgba(249,193,37,0.20)',

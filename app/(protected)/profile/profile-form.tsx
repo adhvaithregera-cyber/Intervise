@@ -55,11 +55,11 @@ function InfoTile({ label, value }: { label: string; value: string | null }) {
   if (!value) return null
   return (
     <div
-      className="flex items-center gap-2 rounded-xl px-3 py-2"
+      className="flex min-w-0 max-w-full items-center gap-2 rounded-xl px-3 py-2"
       style={{ backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
     >
-      <span className="text-[10px] font-semibold uppercase tracking-widest text-white/30 shrink-0">{label}:</span>
-      <span className="text-xs font-medium text-white/75">{value}</span>
+      <span className="shrink-0 text-[10px] font-semibold uppercase tracking-widest text-white/30">{label}:</span>
+      <span className="min-w-0 truncate text-xs font-medium text-white/75">{value}</span>
     </div>
   )
 }
@@ -390,7 +390,7 @@ export function ProfileForm({
       </div>
 
       {/* ── Right column: Interview Profile ── */}
-      <div style={CARD} className="h-full p-5">
+      <div style={CARD} className="h-full p-5 overflow-hidden min-w-0">
 
         <p className={sectionLabelClass}>Interview Profile</p>
 
