@@ -147,10 +147,11 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const [{ data: session }, { data: answers }, { data: profile }] = await Promise.all([
+  const [{ data: session }, { data: answers }, { data: profile }, { count: completedCount }] = await Promise.all([
     supabase.from('sessions').select('*').eq('id', sessionId).single(),
     supabase.from('answers').select('*').eq('session_id', sessionId).order('answer_index'),
     supabase.from('profiles').select('tier').eq('id', user.id).single(),
+    supabase.from('sessions').select('*', { count: 'exact', head: true }).eq('user_id', user.id).eq('status', 'complete'),
   ])
 
   if (!session || session.user_id !== user.id) notFound()
@@ -163,6 +164,8 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
   const tier = profile?.tier ?? 'free'
   const isStudent = tier === 'student' || tier === 'pro'
   const isPro = tier === 'pro'
+  const isFirstCompletedSession = completedCount === 1
+  const showFullFeedback = isStudent || isFirstCompletedSession
   const questionMap = Object.fromEntries((questions ?? []).map((q) => [q.id, q]))
 
   const sessionMetrics = computeSessionMetrics(answers ?? [])
@@ -364,16 +367,38 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
           {/* ── Divider ────────────────────────────────────────── */}
           <div className="border-t border-white/8 mt-8 mb-6" />
 
-          {/* ── Section 4: AI Feedback (Student+) ──────────────── */}
+          {/* ── Section 4: AI Feedback ──────────────────────────── */}
           <div className="mb-5 flex items-center justify-between">
             <div>
               <h2 className="text-base font-semibold text-white">AI Feedback</h2>
               <p className="text-xs text-white/40 mt-0.5">Fluency, Accuracy, Skill breakdown and coaching tips per question</p>
             </div>
-            {!isStudent && <Badge variant="brand">Student</Badge>}
+            {!showFullFeedback && <Badge variant="brand">Student</Badge>}
           </div>
 
-          {!isStudent ? (
+          {/* Trial banner — shown only on first completed session for non-Student users */}
+          {isFirstCompletedSession && !isStudent && (
+            <div
+              className="mb-5 flex items-start gap-3 rounded-xl px-4 py-3.5"
+              style={{ background: 'rgba(249,193,37,0.08)', border: '1px solid rgba(249,193,37,0.25)' }}
+            >
+              <span className="mt-0.5 text-base leading-none">✨</span>
+              <div className="min-w-0">
+                <p className="text-sm font-bold text-[#F9C125]">First session bonus</p>
+                <p className="mt-0.5 text-xs leading-relaxed text-white/60">
+                  You&apos;re seeing full AI feedback as a one-time trial — scores, coaching tips, and component breakdown included. Upgrade to Student to unlock this on every session.
+                </p>
+                <Link
+                  href="/#pricing"
+                  className="mt-2 inline-block text-xs font-bold text-[#F9C125] underline underline-offset-2 hover:opacity-80 transition-opacity"
+                >
+                  Upgrade to Student →
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {!showFullFeedback ? (
             <div className="relative rounded-xl overflow-hidden">
               {/* Blurred placeholder image */}
               <div style={{ filter: 'blur(6px)', userSelect: 'none', pointerEvents: 'none' }}>
@@ -392,8 +417,8 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
                       <Lock className="h-6 w-6 text-[#F9C125]" />
                     </div>
                   </div>
-                  <p className="font-bold text-white mb-1">Unlock AI Feedback</p>
-                  <p className="text-sm text-white/60 mb-4">Score, key strengths &amp; one actionable coaching tip per answer</p>
+                  <p className="font-bold text-white mb-1">Your free trial is complete</p>
+                  <p className="text-sm text-white/60 mb-4">Your first session came with full AI feedback. Upgrade to Student to unlock it on every session going forward.</p>
                   <Link href="/#pricing" className="rounded-xl bg-[#F9C125] px-5 py-2.5 text-sm font-bold text-[#080d1a] hover:brightness-110 transition-all inline-block">
                     Upgrade to Student →
                   </Link>
