@@ -364,9 +364,6 @@ export default async function DashboardPage({
               <h2 className="text-base font-semibold text-[#F9C125]">Your Progress</h2>
               <p className="text-xs text-white/55 mt-0.5">Filler words, pace, and scores across sessions</p>
             </div>
-            {!isStudent && (
-              <span className="text-xs font-semibold uppercase tracking-wider text-white/40">Student+</span>
-            )}
           </div>
 
           {!isStudent ? (
