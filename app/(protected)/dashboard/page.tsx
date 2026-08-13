@@ -210,8 +210,13 @@ export default async function DashboardPage({
     sessionScores[sid] = m?.yourScore ?? null
   }
 
-  // ── Focus areas — category lookup (all tiers) ──────────────────────────
-  const focusQuestionIds = [...new Set((recentAnswers ?? []).map(a => a.question_id).filter(Boolean))]
+  // ── Focus areas — most recent 5 sessions only (all tiers) ────────────
+  // recentSessions is newest-first; slice to 5 so focus areas reflect
+  // current performance rather than being diluted by old history.
+  const focusSessionIds = new Set((recentSessions ?? []).slice(0, 5).map(s => s.id))
+  const focusAnswers = (recentAnswers ?? []).filter(a => focusSessionIds.has(a.session_id))
+
+  const focusQuestionIds = [...new Set(focusAnswers.map(a => a.question_id).filter(Boolean))]
   const { data: focusQuestions } = focusQuestionIds.length > 0
     ? await supabase.from('questions').select('id, category_name').in('id', focusQuestionIds)
     : { data: [] as { id: number; category_name: string }[] }
@@ -220,7 +225,7 @@ export default async function DashboardPage({
     (focusQuestions ?? []).map(q => [String(q.id), q.category_name])
   )
   const focusResult = detectFocusAreas(
-    (recentAnswers ?? []).map(a => ({
+    focusAnswers.map(a => ({
       session_id: a.session_id,
       ai_feedback: a.ai_feedback as AiFeedback | null,
       filler_count: a.filler_count,
@@ -386,7 +391,7 @@ export default async function DashboardPage({
       <FadeIn delay={0.14}>
         <FocusAreasCard
           result={focusResult}
-          sessionCount={(recentSessions ?? []).length}
+          sessionCount={focusSessionIds.size}
         />
       </FadeIn>
 
