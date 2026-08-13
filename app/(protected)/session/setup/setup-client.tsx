@@ -1,13 +1,19 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { CheckCircle2, XCircle, Lock } from 'lucide-react'
+import { CheckCircle2, XCircle, Lock, AlertTriangle } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { FadeIn } from '@/components/ui/fade-in'
 import type { Difficulty } from '@/types/database'
 
 type PermState = 'idle' | 'granted' | 'denied' | 'requesting'
+type CheckState = 'idle' | 'requesting' | 'sampling' | 'pass' | 'warn' | 'skipped'
+
+// RMS thresholds (time-domain, 0–1 scale)
+const GOOD_THRESHOLD = 0.05         // sustained voice at normal volume
+const INSTANT_PASS_THRESHOLD = 0.08 // clearly audible — pass immediately
+const CHECK_DURATION_MS = 3500      // sampling window before auto-evaluating
 
 const ALL_DIFFICULTY_OPTIONS: { value: Difficulty; title: string; desc: string }[] = [
   { value: 'easy',   title: 'Easy',   desc: 'Common openers, strengths & weaknesses' },
@@ -53,7 +59,17 @@ export function SetupClient({ tier }: { tier: string }) {
 
   const [difficulty, setDifficulty] = useState<Difficulty | null>(null)
   const [micPerm, setMicPerm] = useState<PermState>('idle')
+  const [checkState, setCheckState] = useState<CheckState>('idle')
+  const [audioLevel, setAudioLevel] = useState(0)
 
+  const checkStreamRef   = useRef<MediaStream | null>(null)
+  const audioContextRef  = useRef<AudioContext | null>(null)
+  const animFrameRef     = useRef<number | null>(null)
+  const checkTimerRef    = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const peakLevelRef     = useRef(0)
+  const evaluatedRef     = useRef(false)
+
+  // Check if permission already granted (e.g. return visit)
   useEffect(() => {
     if (typeof navigator === 'undefined' || !navigator.permissions) return
     navigator.permissions.query({ name: 'microphone' as PermissionName }).then(r => {
@@ -61,29 +77,125 @@ export function SetupClient({ tier }: { tier: string }) {
     }).catch(() => {})
   }, [])
 
-  async function requestMic() {
-    setMicPerm('requesting')
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      stopCheck()
+      checkStreamRef.current?.getTracks().forEach(t => t.stop())
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  function stopCheck() {
+    if (animFrameRef.current !== null) cancelAnimationFrame(animFrameRef.current)
+    if (checkTimerRef.current !== null) clearTimeout(checkTimerRef.current)
+    audioContextRef.current?.close().catch(() => {})
+    audioContextRef.current = null
+    animFrameRef.current = null
+    checkTimerRef.current = null
+  }
+
+  function runSampling(stream: MediaStream) {
+    peakLevelRef.current = 0
+    evaluatedRef.current = false
+
+    const ctx = new AudioContext()
+    audioContextRef.current = ctx
+    const analyser = ctx.createAnalyser()
+    analyser.fftSize = 512
+    analyser.smoothingTimeConstant = 0.3
+    ctx.createMediaStreamSource(stream).connect(analyser)
+
+    const data = new Uint8Array(analyser.fftSize)
+
+    function tick() {
+      analyser.getByteTimeDomainData(data)
+      // RMS of deviation from silence (128 = zero crossing in time-domain data)
+      let sum = 0
+      for (let i = 0; i < data.length; i++) {
+        const v = (data[i] - 128) / 128
+        sum += v * v
+      }
+      const rms = Math.sqrt(sum / data.length)
+      setAudioLevel(rms)
+      if (rms > peakLevelRef.current) peakLevelRef.current = rms
+
+      // Strong voice detected — pass immediately without waiting for the full window
+      if (!evaluatedRef.current && rms > INSTANT_PASS_THRESHOLD) {
+        evaluatedRef.current = true
+        stopCheck()
+        stream.getTracks().forEach(t => t.stop())
+        checkStreamRef.current = null
+        setCheckState('pass')
+        return
+      }
+
+      animFrameRef.current = requestAnimationFrame(tick)
+    }
+
+    animFrameRef.current = requestAnimationFrame(tick)
+
+    // Auto-evaluate after the sampling window ends
+    checkTimerRef.current = setTimeout(() => {
+      if (evaluatedRef.current) return
+      evaluatedRef.current = true
+      stopCheck()
+      stream.getTracks().forEach(t => t.stop())
+      checkStreamRef.current = null
+      setAudioLevel(0)
+      setCheckState(peakLevelRef.current >= GOOD_THRESHOLD ? 'pass' : 'warn')
+    }, CHECK_DURATION_MS)
+  }
+
+  async function startMicCheck() {
+    setCheckState('requesting')
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      stream.getTracks().forEach((t) => t.stop())
       setMicPerm('granted')
+      checkStreamRef.current = stream
+      setCheckState('sampling')
+      runSampling(stream)
     } catch {
       setMicPerm('denied')
+      setCheckState('idle')
     }
   }
 
+  async function retryCheck() {
+    stopCheck()
+    checkStreamRef.current?.getTracks().forEach(t => t.stop())
+    checkStreamRef.current = null
+    setAudioLevel(0)
+    setCheckState('requesting')
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      checkStreamRef.current = stream
+      setCheckState('sampling')
+      runSampling(stream)
+    } catch {
+      setCheckState('idle')
+    }
+  }
+
+  function skipCheck() {
+    stopCheck()
+    checkStreamRef.current?.getTracks().forEach(t => t.stop())
+    checkStreamRef.current = null
+    setAudioLevel(0)
+    setCheckState('skipped')
+  }
+
   function handleStart() {
-    if (!difficulty || micPerm !== 'granted') return
+    if (!canStart) return
     router.push(`/session/briefing?difficulty=${difficulty}`)
   }
 
-  const canStart = difficulty !== null && micPerm === 'granted'
+  // Start is enabled once the mic check is done (pass) or consciously skipped
+  const canStart = difficulty !== null && (checkState === 'pass' || checkState === 'skipped')
 
   return (
-    // Negate layout's px-6 py-8, lock to viewport height minus navbar
     <div className="-mx-6 -my-8 flex h-[calc(100dvh-4rem)] items-center justify-center overflow-hidden px-4">
       <div
-        className="w-full max-w-2xl rounded-2xl p-6 sm:p-8"
+        className="w-full max-w-2xl rounded-2xl p-6 sm:p-8 max-h-[calc(100dvh-5rem)] overflow-y-auto"
         style={{
           backgroundColor: 'rgba(8,13,26,0.75)',
           backdropFilter: 'blur(20px)',
@@ -95,7 +207,7 @@ export function SetupClient({ tier }: { tier: string }) {
         <FadeIn delay={0}>
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-white">Set up your session</h1>
-            <p className="mt-1 text-sm text-white/60">Choose difficulty and grant microphone access to begin.</p>
+            <p className="mt-1 text-sm text-white/60">Choose difficulty and check your mic before you begin.</p>
           </div>
         </FadeIn>
 
@@ -131,38 +243,135 @@ export function SetupClient({ tier }: { tier: string }) {
           </div>
         </FadeIn>
 
-        {/* Microphone */}
+        {/* Microphone / Audio Check */}
         <FadeIn delay={0.16}>
           <div className="mb-6">
-            <div className="mb-2 flex items-center gap-2">
+            <div className="mb-3 flex items-center gap-2">
               <h2 className="text-sm font-semibold uppercase tracking-widest text-white/50">Microphone</h2>
               <span className="text-[10px] font-bold uppercase tracking-wider text-red-400">Required</span>
             </div>
 
-            {micPerm === 'granted' ? (
-              <div className="flex items-center gap-2 text-green-300">
-                <CheckCircle2 className="h-4 w-4 shrink-0" />
-                <span className="text-sm font-medium">Access granted</span>
-              </div>
-            ) : micPerm === 'requesting' ? (
-              <button disabled className="rounded-xl border border-white/20 px-4 py-2 text-sm text-white/40 cursor-not-allowed">
-                Requesting...
-              </button>
-            ) : (
-              <>
+            {/* idle / requesting — show check button */}
+            {(checkState === 'idle' || checkState === 'requesting') && (
+              <div className="space-y-2">
                 <button
-                  onClick={requestMic}
-                  className="rounded-xl border border-white/40 px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors cursor-pointer"
+                  onClick={startMicCheck}
+                  disabled={checkState === 'requesting'}
+                  className="rounded-xl border border-white/40 px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  Grant Microphone Access
+                  {checkState === 'requesting'
+                    ? 'Checking...'
+                    : micPerm === 'granted'
+                    ? 'Test your microphone'
+                    : 'Check microphone'}
                 </button>
                 {micPerm === 'denied' && (
-                  <div className="mt-2 flex items-start gap-2 text-red-300">
+                  <div className="flex items-start gap-2 text-red-300">
                     <XCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                     <p className="text-xs">Permission denied. Allow microphone access in your browser settings.</p>
                   </div>
                 )}
-              </>
+              </div>
+            )}
+
+            {/* sampling — live volume meter */}
+            {checkState === 'sampling' && (
+              <div className="space-y-3">
+                {/* Guidance */}
+                <div
+                  className="rounded-xl px-4 py-3 text-xs text-white/50 leading-relaxed"
+                  style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+                >
+                  For accurate feedback, speak clearly at normal volume, sit close to your mic, and find a quiet room.
+                </div>
+
+                {/* Prompt */}
+                <div>
+                  <p className="text-xs text-white/50 mb-1.5">Read this out loud:</p>
+                  <p className="text-sm font-semibold text-white/90 italic">
+                    &ldquo;I&rsquo;m ready for my interview.&rdquo;
+                  </p>
+                </div>
+
+                {/* 10-bar volume meter: red → amber → green */}
+                <div>
+                  <div className="flex items-center gap-1 h-7">
+                    {Array.from({ length: 10 }, (_, i) => {
+                      const threshold = (i + 1) / 10
+                      const displayLevel = Math.min(audioLevel / 0.15, 1)
+                      const lit = displayLevel >= threshold
+                      const barColor =
+                        i < 4 ? 'rgba(239,68,68,0.85)'
+                        : i < 7 ? 'rgba(249,193,37,0.85)'
+                        : 'rgba(74,222,128,0.85)'
+                      return (
+                        <div
+                          key={i}
+                          className="flex-1 h-full rounded-sm transition-colors duration-75"
+                          style={{ backgroundColor: lit ? barColor : 'rgba(255,255,255,0.08)' }}
+                        />
+                      )
+                    })}
+                  </div>
+                  <p className="text-[10px] text-white/30 mt-1.5">Listening&hellip;</p>
+                </div>
+              </div>
+            )}
+
+            {/* pass */}
+            {checkState === 'pass' && (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-green-300">
+                  <CheckCircle2 className="h-4 w-4 shrink-0" />
+                  <span className="text-sm font-medium">Great, we can hear you clearly!</span>
+                </div>
+                <button
+                  onClick={retryCheck}
+                  className="text-[10px] text-white/30 hover:text-white/50 transition-colors underline underline-offset-2 cursor-pointer"
+                >
+                  Re-test microphone
+                </button>
+              </div>
+            )}
+
+            {/* warn — audio too quiet */}
+            {checkState === 'warn' && (
+              <div className="space-y-3">
+                <div className="flex items-start gap-2">
+                  <AlertTriangle className="h-4 w-4 shrink-0 text-amber-400 mt-0.5" />
+                  <p className="text-sm text-amber-300 leading-snug">
+                    We can barely hear you — move closer to your mic or speak up, then try again.
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={retryCheck}
+                    className="rounded-xl bg-[#F9C125] px-4 py-2 text-xs font-bold text-[#080d1a] hover:brightness-110 transition-all cursor-pointer"
+                  >
+                    Try again
+                  </button>
+                  <button
+                    onClick={skipCheck}
+                    className="rounded-xl border border-white/20 px-4 py-2 text-xs font-semibold text-white/50 hover:bg-white/5 hover:text-white/70 transition-all cursor-pointer"
+                  >
+                    Proceed anyway
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* skipped — user acknowledged the warning and continued */}
+            {checkState === 'skipped' && (
+              <div className="flex items-center gap-3 text-amber-400/70">
+                <AlertTriangle className="h-4 w-4 shrink-0" />
+                <span className="text-sm">Proceeding with caution — audio may be quiet.</span>
+                <button
+                  onClick={retryCheck}
+                  className="text-[10px] text-white/30 hover:text-white/50 transition-colors underline underline-offset-2 cursor-pointer shrink-0"
+                >
+                  Re-test
+                </button>
+              </div>
             )}
           </div>
         </FadeIn>

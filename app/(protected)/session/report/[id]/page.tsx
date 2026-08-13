@@ -400,14 +400,45 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
 
           {!showFullFeedback ? (
             <div className="relative rounded-xl overflow-hidden">
-              {/* Blurred placeholder image */}
+              {/* Blurred fake AI feedback preview */}
               <div style={{ filter: 'blur(6px)', userSelect: 'none', pointerEvents: 'none' }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/screenshots/ai-feedback.png"
-                  alt=""
-                  className="w-full rounded-xl object-cover"
-                />
+                <div className="space-y-3">
+                  <div className="p-5" style={INNER_CARD}>
+                    <div className="mb-4 h-3 rounded bg-white/10 w-3/4" />
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-green-400 mb-1">✓ Strong</p>
+                        <div className="h-2.5 rounded bg-white/10 w-2/3" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-1">↑ Improve</p>
+                        <div className="h-2.5 rounded bg-white/10 w-full" />
+                        <div className="h-2.5 rounded bg-white/10 w-4/5 mt-1" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-[#F9C125] mb-1">→ Try this</p>
+                        <div className="h-2.5 rounded bg-white/10 w-5/6" />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-5" style={INNER_CARD}>
+                    <div className="mb-4 h-3 rounded bg-white/10 w-1/2" />
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-green-400 mb-1">✓ Strong</p>
+                        <div className="h-2.5 rounded bg-white/10 w-1/2" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-1">↑ Improve</p>
+                        <div className="h-2.5 rounded bg-white/10 w-4/5" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-[#F9C125] mb-1">→ Try this</p>
+                        <div className="h-2.5 rounded bg-white/10 w-3/4" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
               {/* Lock overlay */}
               <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(8,13,26,0.55)' }}>
@@ -417,8 +448,8 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
                       <Lock className="h-6 w-6 text-[#F9C125]" />
                     </div>
                   </div>
-                  <p className="font-bold text-white mb-1">Your free trial is complete</p>
-                  <p className="text-sm text-white/60 mb-4">Your first session came with full AI feedback. Upgrade to Student to unlock it on every session going forward.</p>
+                  <p className="font-bold text-white mb-1">Unlock AI Feedback</p>
+                  <p className="text-sm text-white/60 mb-4">Score, key strengths &amp; one coaching tip per answer</p>
                   <Link href="/#pricing" className="rounded-xl bg-[#F9C125] px-5 py-2.5 text-sm font-bold text-[#080d1a] hover:brightness-110 transition-all inline-block">
                     Upgrade to Student →
                   </Link>
