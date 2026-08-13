@@ -1,4 +1,12 @@
-import type { FocusAreasResult, FocusArea } from '@/lib/focusareas'
+import Link from 'next/link'
+import type { FocusAreasResult, FocusArea, WeaknessKey } from '@/lib/focusareas'
+
+/** Guide URLs for each weakness key. Only keys with a published guide get a link. */
+const GUIDE_HREF: Partial<Record<WeaknessKey, string>> = {
+  skill: '/resources/star-method',
+  weak_category: '/resources/star-method',
+  fillers: '/resources/filler-words',
+}
 
 const OUTER_CARD = {
   backgroundColor: 'rgba(8,13,26,0.75)',
@@ -38,7 +46,20 @@ function PriorityBadge({ priority }: { priority: 'high' | 'medium' }) {
   )
 }
 
-function ComingSoonTag() {
+function ResourcesTag({ weaknessKey }: { weaknessKey: WeaknessKey }) {
+  const href = GUIDE_HREF[weaknessKey]
+  if (href) {
+    return (
+      <Link
+        href={href}
+        className="inline-flex items-center gap-1 text-[9px] font-medium tracking-wide text-[#F9C125]/50 hover:text-[#F9C125] transition-colors"
+      >
+        Resources &amp; guides
+        <span className="text-white/20">·</span>
+        <span>Read guide →</span>
+      </Link>
+    )
+  }
   return (
     <span className="inline-flex items-center gap-1 text-[9px] text-white/18 font-medium tracking-wide">
       Resources &amp; guides
@@ -68,8 +89,7 @@ function PrimaryCard({ area }: { area: FocusArea }) {
       {/* Advice */}
       <p className="text-sm text-white/80 leading-relaxed mb-5">{area.advice}</p>
 
-      {/* Coming-soon placeholder */}
-      <ComingSoonTag />
+      <ResourcesTag weaknessKey={area.key} />
     </div>
   )
 }
@@ -89,8 +109,7 @@ function SecondaryCard({ area }: { area: FocusArea }) {
       {/* Advice */}
       <p className="text-xs text-white/60 leading-relaxed mb-3">{area.advice}</p>
 
-      {/* Coming-soon placeholder */}
-      <ComingSoonTag />
+      <ResourcesTag weaknessKey={area.key} />
     </div>
   )
 }

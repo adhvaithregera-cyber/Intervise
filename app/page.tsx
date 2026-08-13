@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 
 export const metadata: Metadata = {
   title: 'Intervise – AI Interview Coaching',
@@ -7,7 +8,7 @@ export const metadata: Metadata = {
 }
 
 import { LandingShell } from '@/components/ui/landing-shell'
-import { Navbar } from '@/components/layout/navbar'
+import { Navbar, NavbarSkeleton } from '@/components/layout/navbar'
 import { createClient, getUser } from '@/lib/supabase/server'
 
 function getInitials(name?: string | null, email?: string | null): string {
@@ -36,26 +37,51 @@ const jsonLd = {
   ],
 }
 
-export default async function LandingPage() {
+// Neutral fallback — rendered immediately as the Suspense fallback so the
+// browser receives full HTML (including the LCP h1) without waiting on DB queries.
+// Uses NavbarSkeleton (no Login/Signup, no avatar) and LandingShell with isLoading
+// (skeleton CTA buttons) so logged-in users don't see a false logged-out state.
+const NEUTRAL_FALLBACK = (
+  <>
+    <NavbarSkeleton />
+    <LandingShell sessionHref="/signup" userTier={null} hasCompletedSession={false} isLoading />
+  </>
+)
+
+// Resolves auth state and swaps in the personalised Navbar + shell.
+// getUser() and createClient() are both React cache()-wrapped so they share
+// one network round-trip even if called from multiple server components.
+async function AuthenticatedContent() {
   const user = await getUser()
-  let tier: string | null = null
-  let hasCompletedSession = false
-  let prefetched: { initials: string; tier: string } | null = null
 
-  if (user) {
-    const supabase = await createClient()
-    const [profileResult, sessionResult] = await Promise.all([
-      supabase.from('profiles').select('full_name, tier').eq('id', user.id).single(),
-      supabase.from('sessions').select('id', { count: 'exact', head: true }).eq('user_id', user.id).eq('status', 'complete'),
-    ])
-    tier = profileResult.data?.tier ?? 'free'
-    hasCompletedSession = (sessionResult.count ?? 0) > 0
-    prefetched = {
-      initials: getInitials(profileResult.data?.full_name, user.email),
-      tier: tier,
-    }
-  }
+  if (!user) return NEUTRAL_FALLBACK
 
+  const supabase = await createClient()
+  const [profileResult, sessionResult] = await Promise.all([
+    supabase.from('profiles').select('full_name, tier').eq('id', user.id).single(),
+    supabase.from('sessions')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .eq('status', 'complete'),
+  ])
+
+  const tier = profileResult.data?.tier ?? 'free'
+  const hasCompletedSession = (sessionResult.count ?? 0) > 0
+  const initials = getInitials(profileResult.data?.full_name, user.email)
+
+  return (
+    <>
+      <Navbar prefetched={{ initials, tier }} />
+      <LandingShell
+        sessionHref="/session/setup"
+        userTier={tier}
+        hasCompletedSession={hasCompletedSession}
+      />
+    </>
+  )
+}
+
+export default function LandingPage() {
   return (
     <>
       <script
@@ -63,8 +89,9 @@ export default async function LandingPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="min-h-screen text-white">
-        <Navbar prefetched={prefetched} />
-        <LandingShell sessionHref={user ? '/session/setup' : '/signup'} userTier={tier} hasCompletedSession={hasCompletedSession} />
+        <Suspense fallback={NEUTRAL_FALLBACK}>
+          <AuthenticatedContent />
+        </Suspense>
       </div>
     </>
   )

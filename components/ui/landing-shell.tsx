@@ -9,13 +9,14 @@ interface LandingShellProps {
   sessionHref: string
   userTier: string | null
   hasCompletedSession?: boolean
+  isLoading?: boolean
   children?: never
 }
 
-export function LandingShell({ sessionHref, userTier, hasCompletedSession = false }: LandingShellProps) {
+export function LandingShell({ sessionHref, userTier, hasCompletedSession = false, isLoading = false }: LandingShellProps) {
   return (
     <>
-      <HeroSection sessionHref={sessionHref} hasCompletedSession={hasCompletedSession} />
+      <HeroSection sessionHref={sessionHref} hasCompletedSession={hasCompletedSession} isLoading={isLoading} />
       <CategoryStrip />
       <AppPreview />
       <PricingSection userTier={userTier} />

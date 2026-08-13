@@ -8,6 +8,7 @@ const NAV_LINKS = [
   { href: '/pricing', label: 'Pricing' },
   { href: '/', label: 'Home' },
   { href: '/session/setup', label: 'Practice' },
+  { href: '/resources', label: 'Resources' },
 ]
 
 export function NavCenterLinks() {
@@ -17,6 +18,7 @@ export function NavCenterLinks() {
     if (href === '/') return pathname === '/'
     // Treat the entire /session/* tree as active for the Practice link
     if (href === '/session/setup') return pathname.startsWith('/session/')
+    if (href === '/resources') return pathname.startsWith('/resources')
     return pathname === href || pathname.startsWith(href + '/')
   }
 

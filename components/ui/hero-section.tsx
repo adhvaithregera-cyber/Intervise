@@ -1,7 +1,16 @@
 import Link from 'next/link'
 import { ElegantShape } from '@/components/ui/shape-landing-hero'
 
-export function HeroSection({ sessionHref, hasCompletedSession = false }: { sessionHref: string; hasCompletedSession?: boolean }) {
+export function HeroSection({
+  sessionHref,
+  hasCompletedSession = false,
+  isLoading = false,
+}: {
+  sessionHref: string
+  hasCompletedSession?: boolean
+  /** When true, renders skeleton placeholders for the CTA — used during Suspense fallback */
+  isLoading?: boolean
+}) {
   return (
     <section
       className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center overflow-hidden px-4 sm:px-6"
@@ -44,11 +53,8 @@ export function HeroSection({ sessionHref, hasCompletedSession = false }: { sess
           </span>
         </div>
 
-        {/* Headline */}
-        <div
-          className="mt-8"
-          style={{ animation: 'hero-fade-up 0.6s ease-out 0.1s both' }}
-        >
+        {/* Headline — no animation so it paints immediately (LCP element) */}
+        <div className="mt-8">
           <h1 className="text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tight text-white leading-none">
             Ace your next<br />
             <span className="bg-gradient-to-r from-[#F9C125] to-amber-300 bg-clip-text text-transparent">
@@ -69,7 +75,13 @@ export function HeroSection({ sessionHref, hasCompletedSession = false }: { sess
           className="mt-8 flex flex-col items-center gap-3 sm:flex-row"
           style={{ animation: 'hero-fade-up 0.6s ease-out 0.3s both' }}
         >
-          {hasCompletedSession ? (
+          {isLoading ? (
+            /* Neutral skeleton — no auth-specific text/href during Suspense fallback */
+            <>
+              <div className="h-[52px] w-40 animate-pulse rounded-xl bg-white/10" />
+              <div className="h-[52px] w-36 animate-pulse rounded-xl bg-white/6" />
+            </>
+          ) : hasCompletedSession ? (
             <>
               <Link href="/dashboard" className="relative overflow-hidden rounded-xl bg-[#F9C125] px-8 py-4 text-base font-bold text-[#080d1a] shadow-lg shadow-[#F9C125]/25 transition-all hover:brightness-110 group">
                 <span className="relative z-10">Go to Dashboard</span>
@@ -92,8 +104,8 @@ export function HeroSection({ sessionHref, hasCompletedSession = false }: { sess
           )}
         </div>
 
-        {/* Trust pills */}
-        {!hasCompletedSession && (
+        {/* Trust pills — hidden during loading so we don't flash logged-out state */}
+        {!isLoading && !hasCompletedSession && (
           <div style={{ animation: 'hero-fade-up 0.6s ease-out 0.35s both' }}>
             <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-6">
               {['No card needed', '2 free sessions', 'Works in your browser'].map(t => (

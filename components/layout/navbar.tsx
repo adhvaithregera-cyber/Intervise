@@ -7,6 +7,27 @@ import { NavGuestLinks } from './nav-guest-links'
 import { ScrollNav } from './scroll-nav'
 import { Home, Tag, LogIn } from 'lucide-react'
 
+/**
+ * Neutral navbar skeleton — used as the Suspense fallback on the landing page.
+ * Shows logo + guest nav links but NO auth-specific elements (no Login/Signup,
+ * no avatar) so logged-in users don't see a false logged-out state while auth resolves.
+ */
+export function NavbarSkeleton() {
+  return (
+    <ScrollNav>
+      <div className="relative mx-auto flex h-16 max-w-7xl items-center px-4 sm:px-6">
+        <Link href="/" className="flex items-center gap-2.5 shrink-0">
+          <Image src="/logo.png" alt="Intervise" width={30} height={30} priority />
+          <span className="text-base font-bold tracking-widest text-[#F9C125]">INTERVISE</span>
+        </Link>
+        <NavGuestLinks />
+        {/* Auth area placeholder — neutral pulse, commits to neither state */}
+        <div className="ml-auto h-8 w-24 animate-pulse rounded-full bg-white/10" />
+      </div>
+    </ScrollNav>
+  )
+}
+
 function getInitials(name?: string | null, email?: string | null): string {
   if (name) {
     const parts = name.trim().split(' ')

@@ -113,6 +113,7 @@ export function NavAuthLinks({ initials, tier }: Props) {
               {[
                 { label: 'Dashboard', href: '/dashboard' },
                 { label: 'Practice', href: '/session/setup' },
+                { label: 'Resources', href: '/resources' },
                 { label: 'Profile', href: '/profile' },
               ].map((item) => (
                 <Link
