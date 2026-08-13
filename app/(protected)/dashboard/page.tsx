@@ -11,6 +11,8 @@ import { computeSessionMetrics } from '@/lib/scorecard'
 import { FirstSessionPanel } from './first-session-panel'
 import { DashboardRefresher } from '@/components/dashboard/dashboard-refresher'
 import type { Answer, AiFeedback } from '@/types/database'
+import { detectFocusAreas } from '@/lib/focusareas'
+import { FocusAreasCard } from './focus-areas-card'
 
 const QUICK_TIPS = [
   'Use the STAR format — Situation, Task, Action, Result — to keep answers concise and structured.',
@@ -187,11 +189,15 @@ export default async function DashboardPage({
     }
   }
 
-  // ── Your Score per recent session ──────────────────────────────────────
+  // ── Your Score per recent session + focus-area raw data ───────────────
   const recentSessionIds = (recentSessions ?? []).map(s => s.id)
   const { data: recentAnswers } = recentSessionIds.length > 0
-    ? await supabase.from('answers').select('session_id, ai_feedback').in('session_id', recentSessionIds).not('transcription_failed', 'is', true)
-    : { data: [] as { session_id: string; ai_feedback: unknown }[] }
+    ? await supabase
+        .from('answers')
+        .select('session_id, ai_feedback, filler_count, wpm, question_id')
+        .in('session_id', recentSessionIds)
+        .not('transcription_failed', 'is', true)
+    : { data: [] as { session_id: string; ai_feedback: unknown; filler_count: number | null; wpm: number | null; question_id: number }[] }
 
   const sessionScores: Record<string, number | null> = {}
   const recentBySession: Record<string, { ai_feedback: unknown }[]> = {}
@@ -203,6 +209,26 @@ export default async function DashboardPage({
     const m = computeSessionMetrics(ans.map(a => ({ ai_feedback: a.ai_feedback as AiFeedback | null })))
     sessionScores[sid] = m?.yourScore ?? null
   }
+
+  // ── Focus areas — category lookup (all tiers) ──────────────────────────
+  const focusQuestionIds = [...new Set((recentAnswers ?? []).map(a => a.question_id).filter(Boolean))]
+  const { data: focusQuestions } = focusQuestionIds.length > 0
+    ? await supabase.from('questions').select('id, category_name').in('id', focusQuestionIds)
+    : { data: [] as { id: number; category_name: string }[] }
+
+  const focusCategoryMap: Record<string, string> = Object.fromEntries(
+    (focusQuestions ?? []).map(q => [String(q.id), q.category_name])
+  )
+  const focusResult = detectFocusAreas(
+    (recentAnswers ?? []).map(a => ({
+      session_id: a.session_id,
+      ai_feedback: a.ai_feedback as AiFeedback | null,
+      filler_count: a.filler_count,
+      wpm: a.wpm,
+      question_id: a.question_id,
+    })),
+    focusCategoryMap,
+  )
 
   const sessionsLimit = TIER_SESSION_LIMITS[profile.tier] ?? 2
   const sessionsLeft = Math.max(0, sessionsLimit - profile.sessions_used_this_month)
@@ -356,7 +382,15 @@ export default async function DashboardPage({
         </FadeIn>
       </div>
 
-      {/* ── Row 3: Full-width Progress section ── */}
+      {/* ── Row 3: Focus Areas ─────────────────────────────────────── */}
+      <FadeIn delay={0.14}>
+        <FocusAreasCard
+          result={focusResult}
+          sessionCount={(recentSessions ?? []).length}
+        />
+      </FadeIn>
+
+      {/* ── Row 4: Full-width Progress section ── */}
       <FadeIn delay={0.16}>
         <div id="progress" className="p-6" style={CARD_STYLE}>
           <div className="flex items-center justify-between mb-5">

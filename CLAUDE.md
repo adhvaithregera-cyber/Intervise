@@ -28,25 +28,27 @@ HCAPTCHA_SECRET_KEY=
 
 ## Key files
 ```
-middleware.ts                              Auth guard
-app/page.tsx                               Landing page
-app/(protected)/dashboard/page.tsx         Session quota, CTA, progress charts
-app/(protected)/session/setup/             Difficulty selector + mic permissions
-app/(protected)/session/briefing/          Format briefing + session creation
-app/(protected)/session/live/              Recorder + countdown timer + question loop
-app/(protected)/session/report/[id]/       Full report (grade, WPM, fillers, AI feedback)
-app/api/session/transcribe/route.ts        Audio → AssemblyAI → AI feedback → store
-app/api/session/complete/route.ts          Marks session complete, sets overall_grade
-lib/aifeedback.ts                          generateAnswerFeedback() — OpenAI, 8-category rubric
-lib/weaknesssummary.ts                     generateWeaknessSummary() — Gemini 2.5 Flash
-lib/session.ts                             createSession() — question selection + RPC call
-lib/questions.ts                           selectAdaptiveQuestions() — TDD'd
-lib/analysis.ts                            Filler detection + WPM calculation — TDD'd
-lib/scorecard.ts                           Grade styles + computeScorecardStats()
-lib/validation.ts                          Zod schemas for all API inputs
-types/database.ts                          Profile, Question, Session, Answer, AiFeedback types
-supabase/migrations/                       Schema migrations (001–015)
-docs/GRADING.md                            Full grading rubric + AI feedback schema
+middleware.ts                                        Auth guard
+app/page.tsx                                         Landing page
+app/(protected)/dashboard/page.tsx                   Session quota, CTA, focus areas, progress charts
+app/(protected)/dashboard/focus-areas-card.tsx       Focus Areas display component (all tiers)
+app/(protected)/session/setup/setup-client.tsx       Difficulty selector + two-step mic check
+app/(protected)/session/briefing/page.tsx            Format briefing + session creation (server)
+app/(protected)/session/live/page.tsx                Recorder + countdown timer + question loop
+app/(protected)/session/report/[id]/page.tsx         Full report (grade, WPM, fillers, AI feedback)
+app/api/session/transcribe/route.ts                  Audio → AssemblyAI → AI feedback → store
+app/api/session/complete/route.ts                    Marks session complete, sets overall_grade
+lib/aifeedback.ts                                    generateAnswerFeedback() — OpenAI, 8-category rubric
+lib/weaknesssummary.ts                               generateWeaknessSummary() — Gemini 2.5 Flash
+lib/focusareas.ts                                    detectFocusAreas() — rule-based, no AI
+lib/session.ts                                       createSession() — question selection + RPC call
+lib/questions.ts                                     selectAdaptiveQuestions() — TDD'd
+lib/analysis.ts                                      Filler detection + WPM calculation — TDD'd
+lib/scorecard.ts                                     Grade styles + computeScorecardStats()
+lib/validation.ts                                    Zod schemas for all API inputs
+types/database.ts                                    Profile, Question, Session, Answer, AiFeedback types
+supabase/migrations/                                 Schema migrations (001–022)
+docs/GRADING.md                                      Full grading rubric + AI feedback schema
 ```
 
 ## DB summary
@@ -61,7 +63,7 @@ Tables: `profiles`, `questions`, `sessions`, `answers`, `question_history`
 ## Pricing
 | Plan | Price | Sessions/mo | Key features |
 |---|---|---|---|
-| Free | ₹0 | 2 | Grade, WPM, fillers, blurred AI feedback |
+| Free | ₹0 | 2 | Grade, WPM, fillers, blurred AI feedback (first session shown in full as trial) |
 | Student | ₹199/mo or ₹499/qtr | 12 | Full AI feedback, progress charts, shareable scorecard |
 | Pro | ₹349/mo or ₹999/qtr | 30 | Hard+Mixed difficulty, resume-based Qs, weekly plan |
 
@@ -69,22 +71,79 @@ Tables: `profiles`, `questions`, `sessions`, `answers`, `question_history`
 - AssemblyAI (`universal-2`): ~$0.04 (6 min audio @ $0.37/hr)
 - OpenAI (answer feedback): ~$0.01 (5 answers × ~700 tokens, GPT-4o-mini class)
 - Gemini 2.5 Flash (weakness summary): ~$0.001 (single call per session)
-- **Total: ~$0.051/session**
-- Student margin at full utilisation: ~79% | Pro: ~70%
+- **Total: ~$0.051/session (~₹4.28 at ₹84/$)**
+- Student monthly margin at full utilisation: ~74% | Pro monthly: ~63%
+- (Older figures of ~79%/~70% were calculated at ₹68/$ — now stale)
 - ElevenLabs TTS considered and rejected — adds ~$0.13/session, makes Pro unprofitable at full utilisation. Revisit when revenue supports it.
 
 ## Tier rules
-- AI feedback always runs; Free users see it with CSS blur overlay
-- Progress charts (WPM, fillers): Student+ only
+- AI feedback always runs for all tiers; Free users see it blurred after their first session
+- First session (all tiers): free users see full AI feedback as a one-time trial; a banner explains this and links to upgrade
+- Progress charts (WPM, fillers, score trends): Student+ only — blurred teaser shown to Free users
+- Focus Areas (weakness detection + advice): **all tiers** — not gated
 - Shareable PNG scorecard: all tiers
 - Hard + Mixed difficulty: Pro only
 
-## Live session flow (current)
+## Session setup flow
+1. `/session/setup` — difficulty selector + **two-step mic check**:
+   - Step 1: "Allow Microphone" button — requests browser permission, marks complete with ✓
+   - Step 2: Persistent audio level check — keeps stream alive after permission, shows a live 10-bar volume meter (red → amber → green). Auto-evaluates after 3.5s (or instantly if RMS > 0.08). Result: "Great, we can hear you!" (green) or "We can barely hear you" (amber) + "Try again" / "Proceed anyway". Bar stays visible continuously — never disappears on sound detection.
+   - Check stream is stopped in `handleStart()` before navigation; `live/page.tsx` re-acquires a fresh stream independently.
+   - `canStart` requires difficulty selected + check state is `pass` or `skipped`.
+2. `/session/briefing` — session created server-side here (quota consumed); format briefing shown; "Start Interview" navigates to live.
+3. `/session/live` — acquires mic stream fresh, runs session.
+
+## Live session flow
 - 3-second blank prep countdown ("Take a breath...") — no question shown
-- Question appears clearly for 10 seconds after recording starts
-- After 10s the question blurs automatically; "Reveal question" button to unblur
+- 8-second reading phase — question shown clearly before recording starts
+- Recording begins: question blurs immediately; "Reveal question" button to unblur
+- Timer bar counts down; "Done" ends answer early; "End Session" exits after current answer
 - No TTS — text only
-- Exit session button visible for first 10s of Q1 only (accidental start escape hatch); calls `/api/session/abandon` which marks session failed + restores quota
+- Exit session button visible for first 10s of Q1 only (accidental-start escape hatch); calls `/api/session/abandon` which marks session failed + restores quota
+
+## Report page — locked state design
+Both gated sections use the same visual pattern: blurred inline preview + absolute overlay (lock icon in gold circle → heading → short descriptor → upgrade button).
+
+- **AI Feedback** (Student gate): blurred skeleton cards showing "✓ Strong / ↑ Improve / → Try this" rows → "Unlock AI Feedback" overlay → "Upgrade to Student →". Free users who haven't used their trial see full feedback instead (first-session logic in `showFullFeedback = isStudent || isFirstCompletedSession`).
+- **Progress & Trends** (Pro gate): blurred fake bar chart → "Unlock Progress Tracking" overlay → "Upgrade to Pro →".
+
+## Focus Areas section (dashboard)
+Placed between the Recent Sessions grid and the Progress charts. Visible to **all tiers**.
+
+**Detection** (`lib/focusareas.ts`) — rule-based only, no AI:
+- Gate: requires ≥ 2 sessions with ≥ 3 answers that have `ai_feedback`
+- Computes from `recentAnswers` (last 20 sessions within tier's history window):
+  - `avgSkill`, `avgFluency` — from `computeThreeMetrics(fb)` per answer
+  - `avgWpm`, `avgFillers` — direct from answer columns (require ≥ 3 samples)
+  - Per-category skill avg — requires ≥ 2 categories each with ≥ 2 answers; flags weakest if ≥ 20 pts below overall avg
+
+**Thresholds:**
+| Weakness | Condition | Priority |
+|---|---|---|
+| Skill / structure | avg skill < 40 | HIGH |
+| Weak category | weakest category ≥ 20 pts below avg | HIGH |
+| Fluency low | avg fluency < 60 | MEDIUM |
+| Fillers high | avg fillers > 3 per answer | MEDIUM |
+| Pace too fast | avg WPM > 165 | MEDIUM |
+| Pace too slow | avg WPM < 110 | MEDIUM |
+
+**Ranking weights (impactScore):**
+- Skill: `(40 − avg) × 5`
+- Weak category: `gap × 2`
+- Fluency: `(60 − avg) × 1.5`
+- Fillers: `(avg − 3) × 7`
+- Pace: `delta × 0.5`
+
+Skill generally outranks fillers in typical cases (e.g. skill=32 + fillers=6 → skill #1). Top 3 by impactScore are shown.
+
+**Display** (`focus-areas-card.tsx`):
+- #1 weakness: large gold-bordered primary card ("Priority Focus" label)
+- #2–#3: smaller secondary cards, side-by-side on sm+ screens
+- Each card: weakness name, user's actual number, specific advice text
+- "Resources & guides · coming soon" placeholder on every card (non-functional)
+- Fallbacks: `not_enough_data` (< 2 sessions) / `all_good` (no thresholds triggered)
+
+**Data fetch:** `recentAnswers` query augmented to include `filler_count, wpm, question_id` for all tiers (was previously `session_id, ai_feedback` only). One extra category lookup query runs for all users.
 
 ## Conventions
 - Server Components for data fetching, Client Components for interactivity
@@ -132,6 +191,7 @@ Prioritised list — build in roughly this order:
 - Model answer / answer rewrite: AI generates ideal version of your answer side-by-side after submission. Student+.
 - Streaks + email reminders: daily streak counter + inactivity email after 2 days. Strong retention mechanic.
 - Post-session coaching chat: chat with AI about your specific answers after viewing report. Pro.
+- Focus Areas "Resources & guides" links: wire up real guides/targeted-practice once content exists (currently "coming soon" placeholders on every focus-area card).
 
 **Growth / viral**
 - Enhanced share card: add company name + QR code to existing shareable PNG.
