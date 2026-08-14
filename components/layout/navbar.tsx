@@ -18,7 +18,7 @@ export function NavbarSkeleton() {
       <div className="relative mx-auto flex h-16 max-w-7xl items-center px-4 sm:px-6">
         <Link href="/" className="flex items-center gap-2.5 shrink-0">
           <Image src="/logo.png" alt="Intervise" width={30} height={30} priority />
-          <span className="text-base font-bold tracking-widest text-[#F9C125]">INTERVISE</span>
+          <span className="hidden sm:inline text-base font-bold tracking-widest text-[#F9C125]">INTERVISE</span>
         </Link>
         <NavGuestLinks />
         {/* Auth area placeholder — neutral pulse, commits to neither state */}
@@ -81,7 +81,7 @@ export async function Navbar({ prefetched }: NavbarProps = {}) {
             height={30}
             priority
           />
-          <span className="text-base font-bold tracking-widest text-[#F9C125] hover:text-white transition-colors">
+          <span className="hidden sm:inline text-base font-bold tracking-widest text-[#F9C125] hover:text-white transition-colors">
             INTERVISE
           </span>
         </Link>
