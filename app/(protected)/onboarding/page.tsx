@@ -113,7 +113,7 @@ export default function OnboardingPage() {
         : 'border-white/[0.14] bg-transparent text-white/60 hover:border-white/30 hover:text-white/85'
     }`
 
-  const inputCls = 'w-full rounded-xl px-4 py-3 text-sm text-white/90 placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#F9C125]/50 transition-colors'
+  const inputCls = 'w-full max-w-full rounded-xl px-4 py-3 text-sm text-white/90 placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#F9C125]/50 transition-colors'
   const inputStyle: React.CSSProperties = { backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }
 
   const variants = {
@@ -143,13 +143,19 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="fixed inset-x-0 flex flex-col p-3" style={{ top: '4rem', height: 'calc(100dvh - 4rem)', backgroundColor: '#080d1a', zIndex: 20 }}>
+    // overflow-x-hidden prevents any child (e.g. date input) from causing horizontal scroll
+    <div
+      className="fixed inset-x-0 flex flex-col overflow-x-hidden p-3"
+      style={{ top: '4rem', height: 'calc(100dvh - 4rem)', backgroundColor: '#080d1a', zIndex: 20 }}
+    >
 
       {/* ── Main content (bordered box) ── */}
-      <div className="flex flex-1 flex-col overflow-hidden rounded-2xl"
-        style={{ border: '1px solid rgba(249,193,37,0.22)', backgroundColor: 'rgba(255,255,255,0.015)' }}>
+      <div
+        className="flex flex-1 flex-col overflow-hidden rounded-2xl min-h-0"
+        style={{ border: '1px solid rgba(249,193,37,0.22)', backgroundColor: 'rgba(255,255,255,0.015)' }}
+      >
 
-        {/* ── Thin gold progress bar inside box ── */}
+        {/* ── Thin gold progress bar ── */}
         <div className="h-[2px] w-full shrink-0 rounded-t-2xl overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }}>
           <motion.div
             className="h-full"
@@ -160,7 +166,7 @@ export default function OnboardingPage() {
         </div>
 
         {/* Top nav row */}
-        <div className="flex shrink-0 items-center justify-between px-10 py-5 sm:px-16">
+        <div className="flex shrink-0 items-center justify-between px-5 py-4 sm:px-10 sm:py-5">
           {step > 1 ? (
             <button
               onClick={() => go(step - 1)}
@@ -176,6 +182,13 @@ export default function OnboardingPage() {
             STEP {String(step).padStart(2, '0')} / {String(TOTAL_STEPS).padStart(2, '0')}
           </span>
         </div>
+
+        {/*
+          AnimatePresence renders no DOM node — motion.div is effectively a direct
+          flex child of the bordered box. flex-1 min-h-0 makes it fill remaining
+          height. No justify-center: instead heading + button are shrink-0 and the
+          content area between them is flex-1 overflow-y-auto (scrollable middle).
+        */}
         <AnimatePresence mode="wait" custom={dir}>
           <motion.div
             key={step}
@@ -185,21 +198,22 @@ export default function OnboardingPage() {
             animate="center"
             exit="exit"
             transition={{ duration: 0.22, ease: 'easeInOut' }}
-            className="flex h-full flex-col items-center justify-center px-10 sm:px-16 lg:px-24"
+            className="flex-1 flex flex-col items-center min-h-0 px-4 sm:px-10 lg:px-24"
           >
-            {/* Category + heading */}
-            <div className="mt-8 mb-7 text-center">
-              <p className="mb-3 text-[11px] font-semibold tracking-[0.18em] text-[#F9C125]/70">
+
+            {/* ── Heading — always visible, never scrolls away ── */}
+            <div className="shrink-0 mt-4 mb-4 text-center sm:mt-8 sm:mb-7">
+              <p className="mb-2 text-[11px] font-semibold tracking-[0.18em] text-[#F9C125]/70">
                 {meta.category}
               </p>
-              <h1 className="text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl">
+              <h1 className="text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl lg:text-5xl">
                 {meta.heading}
               </h1>
-              <p className="mt-3 text-base text-white/45">{meta.sub}</p>
+              <p className="mt-2 text-sm text-white/45 sm:text-base sm:mt-3">{meta.sub}</p>
             </div>
 
-            {/* Step content */}
-            <div className="flex-1 overflow-y-auto flex flex-col items-center w-full">
+            {/* ── Scrollable content area — grows to fill space between heading and button ── */}
+            <div className="flex-1 min-h-0 overflow-y-auto w-full flex flex-col items-center pb-2">
 
               {/* Step 1 */}
               {step === 1 && (
@@ -244,14 +258,20 @@ export default function OnboardingPage() {
 
               {/* Step 3 */}
               {step === 3 && (
-                <div className="w-full max-w-lg space-y-4">
-                  <button onClick={() => { setJustPracticing(!justPracticing); setInterviewDate('') }}
-                    className={chip(justPracticing)}>
+                <div className="w-full max-w-lg space-y-4 overflow-x-hidden">
+                  <button
+                    onClick={() => { setJustPracticing(!justPracticing); setInterviewDate('') }}
+                    className={`flex w-full items-center justify-center gap-1.5 rounded-full border px-4 py-2 text-sm font-medium transition-all duration-150 cursor-pointer select-none ${
+                      justPracticing
+                        ? 'border-[#F9C125] bg-[#F9C125]/10 text-[#F9C125]'
+                        : 'border-white/[0.14] bg-transparent text-white/60 hover:border-white/30 hover:text-white/85'
+                    }`}
+                  >
                     {justPracticing && <Check size={12} strokeWidth={3} />}
                     I&apos;m just practising — no upcoming interview
                   </button>
                   {!justPracticing && (
-                    <div>
+                    <div className="overflow-x-hidden">
                       <label className="mb-2 block text-[11px] font-semibold uppercase tracking-widest text-white/35">Interview date</label>
                       <input type="date" value={interviewDate} min={new Date().toISOString().split('T')[0]}
                         onChange={e => setInterviewDate(e.target.value)} className={inputCls} style={inputStyle} />
@@ -356,8 +376,8 @@ export default function OnboardingPage() {
 
             </div>
 
-            {/* ── Continue button — centred, close to content ── */}
-            <div className="flex shrink-0 justify-center pt-3 pb-5">
+            {/* ── Continue button — shrink-0 so it's always pinned at bottom ── */}
+            <div className="shrink-0 flex justify-center py-3 sm:py-5">
               <button
                 disabled={continueDisabled[step]}
                 onClick={handleContinue}
