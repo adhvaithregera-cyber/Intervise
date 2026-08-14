@@ -144,6 +144,11 @@ export async function POST(request: Request) {
 }
 
 async function refreshWeaknessSummary(userId: string) {
+  // Guard against 25 Gemini calls/hour when the complete endpoint is hit at its rate limit.
+  // Uses the same key as /api/dashboard/weakness-summary so the two paths share one budget.
+  const rl = checkRateLimit(`${userId}:weakness-summary`, RATE_LIMITS.weaknessSummary)
+  if (!rl.allowed) return
+
   const service = createServiceClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,

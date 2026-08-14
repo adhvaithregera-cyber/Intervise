@@ -33,8 +33,9 @@ export async function POST(request: Request) {
 
   // Restore quota atomically — single UPDATE avoids TOCTOU race between
   // concurrent requests reading and writing the same counter value.
+  // Function uses auth.uid() internally so no user-id parameter is passed.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await (supabase as any).rpc('decrement_sessions_used', { p_user_id: user.id })
+  await (supabase as any).rpc('decrement_sessions_used')
 
   return NextResponse.json({ ok: true })
 }

@@ -67,19 +67,44 @@ describe('analyzeAnswer', () => {
   })
 
   // --- Individual filler tests ---
-  it('detects filler: um', () => {
+  it('detects filler: um (matches "um")', () => {
     const result = analyzeAnswer({ transcript: 'I um said um it', durationSeconds: 10 })
     expect(result.fillerBreakdown['um']).toBe(2)
   })
 
-  it('detects filler: uh', () => {
+  it('detects filler: um (also matches "umm")', () => {
+    const result = analyzeAnswer({ transcript: 'I umm said umm it', durationSeconds: 10 })
+    expect(result.fillerBreakdown['um']).toBe(2)
+  })
+
+  it('detects filler: uh (matches "uh")', () => {
     const result = analyzeAnswer({ transcript: 'uh I think uh yes', durationSeconds: 10 })
     expect(result.fillerBreakdown['uh']).toBe(2)
   })
 
-  it('detects filler: like', () => {
-    const result = analyzeAnswer({ transcript: 'it was like totally like fine', durationSeconds: 10 })
-    expect(result.fillerBreakdown['like']).toBe(2)
+  it('detects filler: uh (also matches "uhh")', () => {
+    const result = analyzeAnswer({ transcript: 'uhh I think uhh yes', durationSeconds: 10 })
+    expect(result.fillerBreakdown['uh']).toBe(2)
+  })
+
+  it('detects filler: er (matches "er")', () => {
+    const result = analyzeAnswer({ transcript: 'I er think er yes', durationSeconds: 10 })
+    expect(result.fillerBreakdown['er']).toBe(2)
+  })
+
+  it('detects filler: er (also matches "erm")', () => {
+    const result = analyzeAnswer({ transcript: 'I erm think erm yes', durationSeconds: 10 })
+    expect(result.fillerBreakdown['er']).toBe(2)
+  })
+
+  it('detects filler: hmm', () => {
+    const result = analyzeAnswer({ transcript: 'hmm I think hmm yes', durationSeconds: 10 })
+    expect(result.fillerBreakdown['hmm']).toBe(2)
+  })
+
+  it('detects filler: mm', () => {
+    const result = analyzeAnswer({ transcript: 'mm I think mm yes', durationSeconds: 10 })
+    expect(result.fillerBreakdown['mm']).toBe(2)
   })
 
   it('detects filler: you know', () => {
@@ -87,48 +112,50 @@ describe('analyzeAnswer', () => {
     expect(result.fillerBreakdown['you know']).toBe(1)
   })
 
-  it('detects filler: basically', () => {
+  it('detects filler: sort of', () => {
+    const result = analyzeAnswer({ transcript: 'it was sort of good sort of bad', durationSeconds: 10 })
+    expect(result.fillerBreakdown['sort of']).toBe(2)
+  })
+
+  it('detects filler: kind of', () => {
+    const result = analyzeAnswer({ transcript: 'it was kind of good kind of bad', durationSeconds: 10 })
+    expect(result.fillerBreakdown['kind of']).toBe(2)
+  })
+
+  // --- Words removed from filler list should NOT be detected ---
+  it('does not count "like" as a filler', () => {
+    const result = analyzeAnswer({ transcript: 'it was like totally like fine', durationSeconds: 10 })
+    expect(result.fillerBreakdown['like']).toBeUndefined()
+  })
+
+  it('does not count "basically" as a filler', () => {
     const result = analyzeAnswer({ transcript: 'basically I basically did it', durationSeconds: 10 })
-    expect(result.fillerBreakdown['basically']).toBe(2)
+    expect(result.fillerBreakdown['basically']).toBeUndefined()
   })
 
-  it('detects filler: literally', () => {
-    const result = analyzeAnswer({ transcript: 'I literally literally did it', durationSeconds: 10 })
-    expect(result.fillerBreakdown['literally']).toBe(2)
-  })
-
-  it('detects filler: actually', () => {
+  it('does not count "actually" as a filler', () => {
     const result = analyzeAnswer({ transcript: 'actually I actually think so', durationSeconds: 10 })
-    expect(result.fillerBreakdown['actually']).toBe(2)
+    expect(result.fillerBreakdown['actually']).toBeUndefined()
   })
 
-  it('detects filler: right', () => {
-    const result = analyzeAnswer({ transcript: 'right so right we did it', durationSeconds: 10 })
-    expect(result.fillerBreakdown['right']).toBe(2)
-  })
-
-  it('detects filler: so', () => {
+  it('does not count "so" as a filler', () => {
     const result = analyzeAnswer({ transcript: 'so I went so far', durationSeconds: 10 })
-    expect(result.fillerBreakdown['so']).toBe(2)
-  })
-
-  it('detects filler: well', () => {
-    const result = analyzeAnswer({ transcript: 'well I think well maybe', durationSeconds: 10 })
-    expect(result.fillerBreakdown['well']).toBe(2)
+    expect(result.fillerBreakdown['so']).toBeUndefined()
   })
 
   // --- Mixed sentence test ---
   it('correctly counts fillers in mixed sentence', () => {
-    const transcript = 'So I was like, um, you know, basically trying to, uh, well...'
+    const transcript = 'Um you know I erm kind of think uhh mm hmm sort of yes'
     const result = analyzeAnswer({ transcript, durationSeconds: 30 })
-    expect(result.fillerBreakdown['so']).toBe(1)
-    expect(result.fillerBreakdown['like']).toBe(1)
     expect(result.fillerBreakdown['um']).toBe(1)
     expect(result.fillerBreakdown['you know']).toBe(1)
-    expect(result.fillerBreakdown['basically']).toBe(1)
+    expect(result.fillerBreakdown['er']).toBe(1)
+    expect(result.fillerBreakdown['kind of']).toBe(1)
     expect(result.fillerBreakdown['uh']).toBe(1)
-    expect(result.fillerBreakdown['well']).toBe(1)
-    expect(result.fillerCount).toBe(7)
+    expect(result.fillerBreakdown['mm']).toBe(1)
+    expect(result.fillerBreakdown['hmm']).toBe(1)
+    expect(result.fillerBreakdown['sort of']).toBe(1)
+    expect(result.fillerCount).toBe(8)
   })
 
   // --- fillerBreakdown is sparse (no zero-count entries) ---
@@ -136,12 +163,12 @@ describe('analyzeAnswer', () => {
     const result = analyzeAnswer({ transcript: 'um um um', durationSeconds: 10 })
     expect(Object.keys(result.fillerBreakdown)).toEqual(['um'])
     expect(result.fillerBreakdown['uh']).toBeUndefined()
-    expect(result.fillerBreakdown['like']).toBeUndefined()
+    expect(result.fillerBreakdown['er']).toBeUndefined()
   })
 
   // --- fillerCount is sum of all breakdown values ---
   it('fillerCount equals sum of all fillerBreakdown values', () => {
-    const transcript = 'um uh like basically'
+    const transcript = 'um uh er hmm'
     const result = analyzeAnswer({ transcript, durationSeconds: 10 })
     const sum = Object.values(result.fillerBreakdown).reduce((a, b) => a + b, 0)
     expect(result.fillerCount).toBe(sum)

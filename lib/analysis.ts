@@ -17,15 +17,13 @@ const MIN_WORDS_FOR_WPM = 5
 // so that "you know" is matched as a phrase before individual word patterns.
 export const FILLER_PATTERNS: Array<{ key: string; regex: RegExp }> = [
   { key: 'you know', regex: /\byou\s+know\b/gi },
-  { key: 'um', regex: /\bum\b/gi },
-  { key: 'uh', regex: /\buh\b/gi },
-  { key: 'like', regex: /\blike\b/gi },
-  { key: 'basically', regex: /\bbasically\b/gi },
-  { key: 'literally', regex: /\bliterally\b/gi },
-  { key: 'actually', regex: /\bactually\b/gi },
-  { key: 'right', regex: /\bright\b/gi },
-  { key: 'so', regex: /\bso\b/gi },
-  { key: 'well', regex: /\bwell\b/gi },
+  { key: 'sort of', regex: /\bsort\s+of\b/gi },
+  { key: 'kind of', regex: /\bkind\s+of\b/gi },
+  { key: 'um', regex: /\bumm?\b/gi },
+  { key: 'uh', regex: /\buhh?\b/gi },
+  { key: 'er', regex: /\berm?\b/gi },
+  { key: 'hmm', regex: /\bhmm\b/gi },
+  { key: 'mm', regex: /\bmm\b/gi },
 ]
 
 export function analyzeAnswer(input: AnalysisInput): AnalysisResult {

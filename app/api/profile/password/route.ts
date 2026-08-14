@@ -4,7 +4,7 @@ import { checkRateLimit, RATE_LIMITS } from '@/lib/ratelimit'
 import { z } from 'zod'
 
 const passwordSchema = z.object({
-  password: z.string().min(6, 'Password must be at least 6 characters').max(128),
+  password: z.string().min(8, 'Password must be at least 8 characters').max(128),
 })
 
 export async function POST(request: Request) {

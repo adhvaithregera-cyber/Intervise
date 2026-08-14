@@ -14,6 +14,16 @@ export async function POST(request: Request) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+  // TTS is a Pro-only feature due to per-call cost ($0.13/session).
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('tier')
+    .eq('id', user.id)
+    .single()
+  if (!profile || profile.tier !== 'pro') {
+    return NextResponse.json({ error: 'Pro subscription required' }, { status: 403 })
+  }
+
   const rl = checkRateLimit(`${user.id}:tts`, RATE_LIMITS.tts)
   if (!rl.allowed) return NextResponse.json({ error: 'Rate limited' }, { status: 429 })
 
