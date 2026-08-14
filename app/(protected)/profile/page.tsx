@@ -17,7 +17,7 @@ export default async function ProfilePage() {
   if (!profile) notFound()
 
   return (
-    <div className="flex flex-col" style={{ height: 'calc(100vh - 8rem)' }}>
+    <div className="flex flex-col" style={{ height: 'calc(100dvh - 8rem)' }}>
       <FadeIn delay={0}>
         <h1 className="mb-3 shrink-0 text-xl font-bold text-white">Profile</h1>
       </FadeIn>

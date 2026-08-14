@@ -143,7 +143,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="fixed inset-x-0 flex flex-col p-3" style={{ top: '4rem', bottom: 0, backgroundColor: '#080d1a', zIndex: 20 }}>
+    <div className="fixed inset-x-0 flex flex-col p-3" style={{ top: '4rem', height: 'calc(100dvh - 4rem)', backgroundColor: '#080d1a', zIndex: 20 }}>
 
       {/* ── Main content (bordered box) ── */}
       <div className="flex flex-1 flex-col overflow-hidden rounded-2xl"
@@ -199,7 +199,7 @@ export default function OnboardingPage() {
             </div>
 
             {/* Step content */}
-            <div className="flex-1 overflow-hidden flex flex-col items-center w-full">
+            <div className="flex-1 overflow-y-auto flex flex-col items-center w-full">
 
               {/* Step 1 */}
               {step === 1 && (

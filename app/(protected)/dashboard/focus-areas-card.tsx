@@ -6,6 +6,9 @@ const GUIDE_HREF: Partial<Record<WeaknessKey, string>> = {
   skill: '/resources/star-method',
   weak_category: '/resources/star-method',
   fillers: '/resources/filler-words',
+  pace_fast: '/resources/speaking-pace',
+  pace_slow: '/resources/speaking-pace',
+  fluency: '/resources/fluency',
 }
 
 const OUTER_CARD = {
@@ -50,14 +53,17 @@ function ResourcesTag({ weaknessKey }: { weaknessKey: WeaknessKey }) {
   const href = GUIDE_HREF[weaknessKey]
   if (href) {
     return (
-      <Link
-        href={href}
-        className="inline-flex items-center gap-1 text-[9px] font-medium tracking-wide text-[#F9C125]/50 hover:text-[#F9C125] transition-colors"
-      >
-        Resources &amp; guides
-        <span className="text-white/20">·</span>
-        <span>Read guide →</span>
-      </Link>
+      <div className="flex items-center gap-2">
+        <span className="text-[10px] text-white/30 font-medium tracking-wide">
+          Resources &amp; guides
+        </span>
+        <Link
+          href={href}
+          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-semibold text-[#F9C125] border border-[#F9C125]/35 hover:border-[#F9C125]/70 hover:bg-[#F9C125]/[0.08] transition-all"
+        >
+          Read guide →
+        </Link>
+      </div>
     )
   }
   return (

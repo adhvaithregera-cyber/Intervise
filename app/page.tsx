@@ -54,7 +54,17 @@ const NEUTRAL_FALLBACK = (
 async function AuthenticatedContent() {
   const user = await getUser()
 
-  if (!user) return NEUTRAL_FALLBACK
+  if (!user) {
+    // Not logged in — render real logged-out state (Login/Signup in navbar, public CTAs).
+    // NEUTRAL_FALLBACK (isLoading=true) is only for the initial Suspense shell before
+    // this component runs; returning it here would leave grey skeleton boxes permanently.
+    return (
+      <>
+        <Navbar prefetched={null} />
+        <LandingShell sessionHref="/signup" userTier={null} hasCompletedSession={false} />
+      </>
+    )
+  }
 
   const supabase = await createClient()
   const [profileResult, sessionResult] = await Promise.all([

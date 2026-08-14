@@ -25,10 +25,10 @@ export const EXAMPLE_BLOCK = {
 
 /* ─── Typography components ────────────────────────────────────────── */
 
-/** Top-level section heading — large gap above signals a new section */
+/** Top-level section heading — very large gap above signals a new section */
 export function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="text-3xl font-bold text-[#F9C125] mt-16 mb-8 first:mt-0 leading-snug underline underline-offset-[8px] decoration-[#F9C125]/35">
+    <h2 className="text-3xl font-bold text-[#F9C125] mt-28 mb-10 first:mt-0 leading-snug underline underline-offset-[8px] decoration-[#F9C125]/35">
       {children}
     </h2>
   )
@@ -37,16 +37,16 @@ export function SectionHeading({ children }: { children: React.ReactNode }) {
 /** Sub-section heading — clearly between section and body level */
 export function SubHeading({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="text-xl font-semibold text-white/85 mt-12 mb-5 leading-snug underline underline-offset-4 decoration-white/20">
+    <h3 className="text-xl font-semibold text-white/85 mt-16 mb-6 leading-snug underline underline-offset-4 decoration-white/20">
       {children}
     </h3>
   )
 }
 
-/** Body prose — tight to its heading, generous line height */
+/** Body prose — generous line height */
 export function Prose({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-sm text-white/65 leading-[1.75]">
+    <p className="text-sm text-white/65 leading-[1.9] mt-4">
       {children}
     </p>
   )
@@ -58,7 +58,7 @@ export function Prose({ children }: { children: React.ReactNode }) {
 export function Callout({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className="my-12 rounded-xl px-7 py-7"
+      className="my-16 rounded-xl px-7 py-8"
       style={{
         backgroundColor: 'rgba(249,193,37,0.06)',
         border: '1px solid rgba(249,193,37,0.18)',
@@ -72,18 +72,18 @@ export function Callout({ children }: { children: React.ReactNode }) {
 /** Inline weak / strong comparison pair */
 export function Comparison({ weak, strong }: { weak: string; strong: string }) {
   return (
-    <div className="mt-5 space-y-3">
+    <div className="mt-8 mb-6 space-y-4">
       <div className="flex gap-2.5 items-start">
         <span className="shrink-0 mt-0.5 text-[10px] font-bold uppercase tracking-widest text-red-400 bg-red-400/10 border border-red-400/20 rounded px-1.5 py-0.5">
           Weak
         </span>
-        <p className="text-sm text-white/45 italic leading-[1.75]">{weak}</p>
+        <p className="text-sm text-white/45 italic leading-[1.9]">{weak}</p>
       </div>
       <div className="flex gap-2.5 items-start">
         <span className="shrink-0 mt-0.5 text-[10px] font-bold uppercase tracking-widest text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 rounded px-1.5 py-0.5">
           Strong
         </span>
-        <p className="text-sm text-white/80 leading-[1.75]">{strong}</p>
+        <p className="text-sm text-white/80 leading-[1.9]">{strong}</p>
       </div>
     </div>
   )
@@ -110,20 +110,20 @@ export function WorkedExample({
     { label: 'Result', text: result },
   ]
   return (
-    <div className="mt-12 mb-4" style={EXAMPLE_BLOCK}>
-      <div className="px-7 pt-7 pb-3">
+    <div className="mt-16 mb-8" style={EXAMPLE_BLOCK}>
+      <div className="px-7 pt-8 pb-4">
         <p className="text-[10px] font-bold uppercase tracking-widest text-[#F9C125]/70 mb-3">
           Question
         </p>
-        <p className="text-sm font-medium text-white/80 italic mb-5 leading-[1.75]">{question}</p>
+        <p className="text-sm font-medium text-white/80 italic mb-5 leading-[1.9]">{question}</p>
       </div>
       <div className="divide-y" style={{ borderColor: 'rgba(249,193,37,0.10)' }}>
         {rows.map(({ label, text }) => (
-          <div key={label} className="px-7 py-5 flex gap-5 items-start">
+          <div key={label} className="px-7 py-6 flex gap-5 items-start">
             <span className="shrink-0 w-20 text-[10px] font-bold uppercase tracking-widest text-[#F9C125]/60 pt-0.5">
               {label}
             </span>
-            <p className="text-sm text-white/75 leading-[1.75]">{text}</p>
+            <p className="text-sm text-white/75 leading-[1.9]">{text}</p>
           </div>
         ))}
       </div>

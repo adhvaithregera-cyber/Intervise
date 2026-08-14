@@ -25,6 +25,24 @@ const GUIDES = [
     tagColor: 'text-[#F9C125] bg-[#F9C125]/10 border-[#F9C125]/20',
     readTime: '4 min read',
   },
+  {
+    href: '/resources/speaking-pace',
+    title: 'Mastering Your Speaking Pace',
+    description:
+      'Find the confident middle — not too fast, not too slow. Learn why pace signals confidence, and how to hit the 140–150 wpm sweet spot.',
+    tag: 'Speaking pace',
+    tagColor: 'text-[#F9C125] bg-[#F9C125]/10 border-[#F9C125]/20',
+    readTime: '4 min read',
+  },
+  {
+    href: '/resources/fluency',
+    title: 'Improving Your Delivery Fluency',
+    description:
+      'Sound smooth and sure by speaking in complete thoughts. Fix the habits behind choppy delivery — incomplete sentences, uneven pace, and hesitation.',
+    tag: 'Fluency',
+    tagColor: 'text-[#F9C125] bg-[#F9C125]/10 border-[#F9C125]/20',
+    readTime: '4 min read',
+  },
 ]
 
 const OUTER_CARD = {
@@ -88,7 +106,7 @@ export default function ResourcesPage() {
 
       {/* Coming soon footer */}
       <p className="text-xs text-white/25 text-center pb-4">
-        More guides coming — filler words, speaking pace, fluency, and more.
+        More guides coming soon.
       </p>
     </div>
   )

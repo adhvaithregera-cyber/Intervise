@@ -39,13 +39,13 @@ export default function FillerWordsPage() {
         {/* Why fillers happen */}
         <SectionHeading>Why fillers happen</SectionHeading>
         <Prose>Fillers aren&apos;t a vocabulary problem. They&apos;re a timing problem.</Prose>
-        <p className="mt-4 text-sm text-white/65 leading-[1.75]">
+        <p className="mt-6 text-sm text-white/65 leading-[1.9]">
           When you speak faster than you can think, your mouth runs ahead of your brain. To avoid
           a moment of silence, you fill the gap with &ldquo;um&rdquo; or &ldquo;like&rdquo; while
           you figure out your next word. The filler is a placeholder — it buys you a split second
           of thinking time.
         </p>
-        <p className="mt-4 text-sm text-white/65 leading-[1.75]">
+        <p className="mt-6 text-sm text-white/65 leading-[1.9]">
           That&apos;s the key insight: you don&apos;t use fillers because you lack words. You use
           them because you&apos;re afraid of silence.
         </p>
@@ -57,14 +57,14 @@ export default function FillerWordsPage() {
           &ldquo;so&rdquo; or &ldquo;basically.&rdquo; That doesn&apos;t work, because the habit
           underneath is the same: filling silence.
         </Prose>
-        <p className="mt-4 text-sm text-white/65 leading-[1.75]">
+        <p className="mt-6 text-sm text-white/65 leading-[1.9]">
           The real fix is to get comfortable with the pause.
         </p>
-        <p className="mt-4 text-sm text-white/65 leading-[1.75]">
+        <p className="mt-6 text-sm text-white/65 leading-[1.9]">
           When you feel a filler coming, stop. Say nothing. Let there be a beat of silence while
           you gather your next thought, then continue.
         </p>
-        <p className="mt-4 text-sm text-white/65 leading-[1.75]">
+        <p className="mt-6 text-sm text-white/65 leading-[1.9]">
           Here&apos;s why this works: a pause feels much longer to{' '}
           <em className="text-white/80 not-italic font-medium">you</em> (the speaker) than it does
           to the listener. A one-second silence feels like an eternity when you&apos;re talking,
@@ -76,12 +76,12 @@ export default function FillerWordsPage() {
 
         {/* Filler vs pause contrast callout */}
         <Callout>
-          <div className="space-y-4">
+          <div className="space-y-5">
             <div className="flex gap-3 items-start">
               <span className="shrink-0 mt-0.5 text-[10px] font-bold uppercase tracking-widest text-red-400 bg-red-400/10 border border-red-400/20 rounded px-1.5 py-0.5">
                 Filler says
               </span>
-              <p className="text-sm text-white/60 leading-[1.75] italic">
+              <p className="text-sm text-white/60 leading-[1.9] italic">
                 &ldquo;I&apos;m not sure what to say next.&rdquo;
               </p>
             </div>
@@ -89,11 +89,11 @@ export default function FillerWordsPage() {
               <span className="shrink-0 mt-0.5 text-[10px] font-bold uppercase tracking-widest text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 rounded px-1.5 py-0.5">
                 Pause says
               </span>
-              <p className="text-sm text-white/80 leading-[1.75]">
+              <p className="text-sm text-white/80 leading-[1.9]">
                 &ldquo;I&apos;m choosing my words carefully.&rdquo;
               </p>
             </div>
-            <p className="text-xs text-white/40 leading-[1.75] mt-2">
+            <p className="text-xs text-white/40 leading-[1.9] mt-4">
               Same gap. Completely different impression.
             </p>
           </div>
@@ -105,7 +105,7 @@ export default function FillerWordsPage() {
           Some words are pure filler — they have no real meaning and only fill silence. These are
           the ones to eliminate entirely:
         </Prose>
-        <ul className="mt-5 space-y-3">
+        <ul className="mt-8 space-y-4">
           {[
             'um, uh, er, erm',
             'hmm, mm',
@@ -114,11 +114,11 @@ export default function FillerWordsPage() {
           ].map((item) => (
             <li key={item} className="flex gap-3 items-start">
               <span className="shrink-0 mt-[9px] h-1.5 w-1.5 rounded-full bg-[#F9C125]/50" />
-              <p className="text-sm text-white/65 leading-[1.75]">{item}</p>
+              <p className="text-sm text-white/65 leading-[1.9]">{item}</p>
             </li>
           ))}
         </ul>
-        <p className="mt-5 text-sm text-white/50 leading-[1.75]">
+        <p className="mt-8 text-sm text-white/50 leading-[1.9]">
           These add nothing. Every one you cut makes you sound sharper.
         </p>
 
@@ -127,7 +127,7 @@ export default function FillerWordsPage() {
         <Prose>
           Some words are fine in moderation but become filler when overused:
         </Prose>
-        <ul className="mt-5 space-y-4">
+        <ul className="mt-8 space-y-5">
           {[
             { word: 'so', fine: 'as a genuine transition ("So, here\'s what I did")', filler: 'when it opens every single sentence' },
             { word: 'actually', fine: 'when you\'re correcting something', filler: 'as reflexive padding' },
@@ -136,14 +136,14 @@ export default function FillerWordsPage() {
           ].map(({ word, fine, filler }) => (
             <li key={word} className="flex gap-3 items-start">
               <span className="shrink-0 mt-[9px] h-1.5 w-1.5 rounded-full bg-[#F9C125]/50" />
-              <p className="text-sm text-white/65 leading-[1.75]">
+              <p className="text-sm text-white/65 leading-[1.9]">
                 <span className="font-semibold text-white/85">{word}</span>{' '}
                 — fine {fine}; filler {filler}.
               </p>
             </li>
           ))}
         </ul>
-        <p className="mt-5 text-sm text-white/50 leading-[1.75]">
+        <p className="mt-8 text-sm text-white/50 leading-[1.9]">
           You don&apos;t need to eliminate these completely — that would sound robotic. Just notice
           if you&apos;re leaning on them out of habit.
         </p>
@@ -156,12 +156,12 @@ export default function FillerWordsPage() {
         </Prose>
 
         <Callout>
-          <p className="text-xs font-bold uppercase tracking-widest text-[#F9C125]/70 mb-7">
+          <p className="text-xs font-bold uppercase tracking-widest text-[#F9C125]/70 mb-8">
             The removal test
           </p>
-          <div className="space-y-6">
+          <div className="space-y-8">
             <div>
-              <p className="text-sm text-white/50 leading-[1.75] mb-2">
+              <p className="text-sm text-white/50 leading-[1.9] mb-3">
                 <span className="italic">&ldquo;Could you just send me the file?&rdquo;</span>
                 {' → '}
                 <span className="italic">&ldquo;Could you send me the file?&rdquo;</span>
@@ -170,13 +170,13 @@ export default function FillerWordsPage() {
                 <span className="shrink-0 mt-0.5 text-[10px] font-bold uppercase tracking-widest text-red-400 bg-red-400/10 border border-red-400/20 rounded px-1.5 py-0.5">
                   Cut it
                 </span>
-                <p className="text-sm text-white/60 leading-[1.75]">
+                <p className="text-sm text-white/60 leading-[1.9]">
                   Meaning is identical — &ldquo;just&rdquo; is filler here.
                 </p>
               </div>
             </div>
             <div>
-              <p className="text-sm text-white/50 leading-[1.75] mb-2">
+              <p className="text-sm text-white/50 leading-[1.9] mb-3">
                 <span className="italic">&ldquo;I just got out of the shower.&rdquo;</span>
                 {' → '}
                 <span className="italic">&ldquo;I got out of the shower.&rdquo;</span>
@@ -185,14 +185,14 @@ export default function FillerWordsPage() {
                 <span className="shrink-0 mt-0.5 text-[10px] font-bold uppercase tracking-widest text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 rounded px-1.5 py-0.5">
                   Keep it
                 </span>
-                <p className="text-sm text-white/60 leading-[1.75]">
+                <p className="text-sm text-white/60 leading-[1.9]">
                   You&apos;ve lost the &ldquo;a moment ago&rdquo; meaning — &ldquo;just&rdquo; is
                   doing real work here.
                 </p>
               </div>
             </div>
           </div>
-          <p className="mt-5 text-xs text-white/40 leading-[1.75]">
+          <p className="mt-8 text-xs text-white/40 leading-[1.9]">
             The rule: if removing the word changes nothing, it&apos;s filler. If it changes the
             meaning, it stays.
           </p>

@@ -58,7 +58,7 @@ export default function StarMethodPage() {
             </li>
           ))}
         </ul>
-        <p className="mt-5 text-sm text-white/55 leading-[1.75]">
+        <p className="mt-8 text-sm text-white/55 leading-[1.9]">
           That&apos;s the whole framework. Every strong behavioural answer moves through these
           four stages in order.
         </p>
@@ -118,7 +118,7 @@ export default function StarMethodPage() {
           weak="So this was back when I was working at a company, and there were a lot of things going on, and it was a busy time, and we had this project..."
           strong="In my last role, our team's biggest project was two weeks behind deadline and the client was losing confidence."
         />
-        <p className="mt-4 text-sm text-white/50 leading-[1.75]">
+        <p className="mt-6 text-sm text-white/50 leading-[1.9]">
           The strong version sets up the whole story in one sentence. Don&apos;t over-explain.
         </p>
 
@@ -128,15 +128,15 @@ export default function StarMethodPage() {
           <em className="text-white/80 not-italic font-medium">you</em> on the hook for? One or
           two sentences.
         </Prose>
-        <div className="mt-4 flex gap-2.5 items-start">
+        <div className="mt-8 flex gap-2.5 items-start">
           <span className="shrink-0 mt-0.5 text-[10px] font-bold uppercase tracking-widest text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 rounded px-1.5 py-0.5">
             Strong
           </span>
-          <p className="text-sm text-white/80 leading-[1.75]">
+          <p className="text-sm text-white/80 leading-[1.9]">
             &ldquo;I was responsible for getting us back on track without cutting quality.&rdquo;
           </p>
         </div>
-        <p className="mt-4 text-sm text-white/50 leading-[1.75]">
+        <p className="mt-6 text-sm text-white/50 leading-[1.9]">
           This tells the interviewer exactly what you were trying to achieve, so your actions have
           a clear purpose.
         </p>
@@ -146,8 +146,8 @@ export default function StarMethodPage() {
           This is 60% of your answer. Spend the most time here. Two rules matter most:
         </Prose>
 
-        <p className="mt-8 text-base font-semibold text-white/85">1. Say &ldquo;I,&rdquo; not &ldquo;we.&rdquo;</p>
-        <p className="mt-3 text-sm text-white/60 leading-[1.75]">
+        <p className="mt-12 text-base font-semibold text-white/85">1. Say &ldquo;I,&rdquo; not &ldquo;we.&rdquo;</p>
+        <p className="mt-4 text-sm text-white/60 leading-[1.9]">
           The interviewer is evaluating{' '}
           <em className="text-white/80 not-italic font-medium">you</em>, not your team. If
           everything is &ldquo;we did this, we did that,&rdquo; they can&apos;t tell what you
@@ -159,49 +159,49 @@ export default function StarMethodPage() {
           strong="I identified the bottleneck, then I reassigned the tasks, and I built a tracking sheet to catch delays early."
         />
 
-        <p className="mt-10 text-base font-semibold text-white/85">
+        <p className="mt-14 text-base font-semibold text-white/85">
           2. Give at least three concrete, specific steps.
         </p>
-        <p className="mt-3 text-sm text-white/60 leading-[1.75]">
+        <p className="mt-4 text-sm text-white/60 leading-[1.9]">
           Vague actions (&ldquo;I worked hard,&rdquo; &ldquo;I communicated well&rdquo;) tell
           the interviewer nothing. Specific steps prove you actually did something.
         </p>
-        <div className="mt-4 flex gap-2.5 items-start">
+        <div className="mt-8 flex gap-2.5 items-start">
           <span className="shrink-0 mt-0.5 text-[10px] font-bold uppercase tracking-widest text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 rounded px-1.5 py-0.5">
             Strong
           </span>
-          <p className="text-sm text-white/80 leading-[1.75]">
+          <p className="text-sm text-white/80 leading-[1.9]">
             &ldquo;I broke the remaining work into daily targets, reassigned tasks based on each
             person&apos;s strengths, set up a short daily check-in to catch blockers early, and
             personally took on the most technical piece myself.&rdquo;
           </p>
         </div>
-        <p className="mt-3 text-sm text-white/45 leading-[1.75]">
+        <p className="mt-6 text-sm text-white/45 leading-[1.9]">
           Four specific &ldquo;I&rdquo; actions. That&apos;s what a strong Action section looks like.
         </p>
 
         <SubHeading>Result — what happened</SubHeading>
         <Prose>End with the outcome. This is what makes your story land. Two levels:</Prose>
 
-        <p className="mt-8 text-base font-semibold text-white/85">Best: quantify it.</p>
-        <p className="mt-3 text-sm text-white/60 leading-[1.75]">
+        <p className="mt-12 text-base font-semibold text-white/85">Best: quantify it.</p>
+        <p className="mt-4 text-sm text-white/60 leading-[1.9]">
           A number, a percentage, time saved, money made, a ranking. Numbers are concrete and
           memorable.
         </p>
-        <div className="mt-3 flex gap-2.5 items-start">
+        <div className="mt-6 flex gap-2.5 items-start">
           <span className="shrink-0 mt-0.5 text-[10px] font-bold uppercase tracking-widest text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 rounded px-1.5 py-0.5">
             Strong
           </span>
-          <p className="text-sm text-white/80 leading-[1.75]">
+          <p className="text-sm text-white/80 leading-[1.9]">
             &ldquo;We delivered on time, and the client signed a second project worth 30% more
             than the first.&rdquo;
           </p>
         </div>
 
-        <p className="mt-10 text-base font-semibold text-white/85">
+        <p className="mt-14 text-base font-semibold text-white/85">
           Good: a clear, specific outcome.
         </p>
-        <p className="mt-3 text-sm text-white/60 leading-[1.75]">
+        <p className="mt-4 text-sm text-white/60 leading-[1.9]">
           If you genuinely can&apos;t put a number on it, describe a real, specific result — not
           a throwaway phrase.
         </p>
@@ -209,7 +209,7 @@ export default function StarMethodPage() {
           weak="It went well and everyone was happy."
           strong="The client renewed the contract and specifically asked to work with me again."
         />
-        <p className="mt-4 text-sm text-white/45 leading-[1.75]">
+        <p className="mt-6 text-sm text-white/45 leading-[1.9]">
           &ldquo;It went well&rdquo; tells the interviewer nothing. Always reach for something
           specific, and quantify whenever you can.
         </p>
@@ -223,7 +223,7 @@ export default function StarMethodPage() {
           action="I broke the remaining work into clear daily targets so progress was visible. I reassigned tasks based on each person's strengths instead of how they'd been split before. I set up a five-minute daily check-in to catch blockers early. And I took on the most technical piece myself, since I was best placed to move it fast."
           result="We delivered the project on time, and the client was impressed enough to sign a second contract worth 30% more than the original."
         />
-        <p className="mt-5 text-sm text-white/45 leading-[1.75]">
+        <p className="mt-8 text-sm text-white/45 leading-[1.9]">
           Notice how it moves: quick setup, clear responsibility, four specific &ldquo;I&rdquo;
           actions, and a quantified result. The interviewer can follow every step and see exactly
           what this person brought.
@@ -237,14 +237,14 @@ export default function StarMethodPage() {
           action="I immediately told my manager rather than hiding it. I called both venues to confirm where the flowers were. I used my lunch break to drive across town, collect them, and deliver them to the correct venue myself."
           result="The flowers were in place an hour before guests arrived. The client never knew anything had gone wrong, and my manager trusted me with bigger responsibilities afterwards because I'd owned the mistake instead of covering it."
         />
-        <p className="mt-5 text-sm text-white/45 leading-[1.75]">
+        <p className="mt-8 text-sm text-white/45 leading-[1.9]">
           Even a story about failure becomes a strength with STAR — it shows honesty, quick
           thinking, and ownership.
         </p>
 
         {/* Common mistakes */}
         <SectionHeading>Common mistakes to avoid</SectionHeading>
-        <ul className="space-y-4 mt-2">
+        <ul className="space-y-6 mt-8">
           {[
             { mistake: 'Living in the Situation.', detail: 'Spending half your answer on backstory. Set the scene fast and move on.' },
             { mistake: 'Saying "we" instead of "I."', detail: 'The single most common thing that hides your real contribution. Catch yourself.' },
@@ -254,7 +254,7 @@ export default function StarMethodPage() {
           ].map(({ mistake, detail }) => (
             <li key={mistake} className="flex gap-3 items-start">
               <span className="shrink-0 mt-[9px] h-1.5 w-1.5 rounded-full bg-[#F9C125]/50" />
-              <p className="text-sm text-white/65 leading-[1.75]">
+              <p className="text-sm text-white/65 leading-[1.9]">
                 <span className="font-semibold text-white/80">{mistake}</span>{' '}
                 {detail}
               </p>
@@ -265,7 +265,7 @@ export default function StarMethodPage() {
         {/* Checklist */}
         <SectionHeading>Your quick checklist</SectionHeading>
         <Prose>Before any behavioural answer, run through this:</Prose>
-        <ul className="mt-5 space-y-4">
+        <ul className="mt-8 space-y-5">
           {[
             'Did I set the scene in one or two sentences?',
             'Did I state clearly what I was responsible for?',
@@ -280,11 +280,11 @@ export default function StarMethodPage() {
               >
                 <span className="text-[#F9C125]/40 text-[10px]">☐</span>
               </span>
-              <span className="text-sm text-white/70 leading-[1.75]">{item}</span>
+              <span className="text-sm text-white/70 leading-[1.9]">{item}</span>
             </li>
           ))}
         </ul>
-        <p className="mt-5 text-sm text-white/45 leading-[1.75]">
+        <p className="mt-8 text-sm text-white/45 leading-[1.9]">
           If you can tick all five, you have a strong answer.
         </p>
 
