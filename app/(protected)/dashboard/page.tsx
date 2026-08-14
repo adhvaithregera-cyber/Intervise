@@ -14,32 +14,18 @@ import type { Answer, AiFeedback } from '@/types/database'
 import { detectFocusAreas } from '@/lib/focusareas'
 import { FocusAreasCard } from './focus-areas-card'
 
+// Add more tips here — one per line, same concise style.
 const QUICK_TIPS = [
-  'Use the STAR format — Situation, Task, Action, Result — to keep answers concise and structured.',
-  'Keep answers between 60 and 90 seconds — long enough to show depth, short enough to hold attention.',
-  'Say "I" instead of "we" when describing your contribution — interviewers are assessing you, not your team.',
-  'Spend half your answer on the Action step — that\'s where your actual skill shows.',
-  'End every story with a measurable result — numbers make your impact real.',
-  'Answer the question first, then add context — never build up to your point.',
-  'Pause for two seconds before answering — it reads as considered, not slow.',
-  'Prepare five flexible stories instead of fifty scripted answers — stories adapt to any question.',
-  'Practise your answers out loud, not in your head — they sound completely different when spoken.',
-  'Research the company\'s recent announcements, not just their About page — specificity signals genuine interest.',
-  'Replace "I\'m a perfectionist" with a real weakness and a real fix — every interviewer has heard the perfectionist line.',
-  'Structure weakness answers as Name, Own, Act, Progress — it shows self-awareness rather than deflection.',
-  'Give one specific reason for wanting the role that only you could give — generic praise sounds rehearsed.',
-  'Slow your speech down deliberately — nerves make you talk faster than you realise.',
-  'Cut filler words by preparing for the questions you\'re avoiding — fillers spike on unprepared topics.',
-  'Use numbers over adjectives — "reduced processing time by 30%" beats "improved efficiency."',
-  'Close your answer with a clear final sentence — trailing off undoes an otherwise strong response.',
-  'Say "I don\'t know, but here\'s how I\'d find out" when stuck — honesty plus method beats guessing.',
-  'Never criticise a former employer — it reflects on your judgment, not theirs.',
-  'Prepare three questions you genuinely want answered — it turns the interview into a conversation.',
-  'Match the interviewer\'s energy and formality — reading the room is itself a skill.',
-  'Rehearse under time pressure, not just at your desk — freezing comes from unfamiliar conditions, not lack of knowledge.',
-  'Record yourself once and watch it back — you\'ll catch habits you didn\'t know you had.',
-  'Frame every story around a decision you made — interviewers hire decision-makers, not participants.',
-  'Treat the interview as a mutual assessment — you\'re evaluating them too, and that mindset steadies your nerves.',
+  'Keep answers between 60 and 90 seconds. Long enough to show depth, short enough to hold attention.',
+  'Use "I" not "we." Interviewers want to know what you did, not your team.',
+  'End every answer with a result. A specific outcome beats "it went well."',
+  'Pause instead of saying "um." Silence sounds thoughtful; fillers sound unsure.',
+  'Structure behavioural answers with STAR: Situation, Task, Action, Result.',
+  'Quantify when you can. "30% faster" lands harder than "much faster."',
+  'Speak at 140 to 150 words per minute. Calm and clear beats fast and nervous.',
+  'Prepare 3 to 4 strong stories you can adapt to many different questions.',
+  'Research the company and tie your answers to what they actually do.',
+  'Take a breath before answering. Composure reads as confidence.',
 ]
 
 const TIER_LABELS: Record<string, string> = { free: 'Free', student: 'Student', pro: 'Pro' }
@@ -381,7 +367,7 @@ export default async function DashboardPage({
           <div className="p-5" style={CARD_STYLE}>
             <p className="text-[10px] font-semibold uppercase tracking-widest text-white/40 mb-3">Quick Tip</p>
             <p className="text-sm text-white/85 leading-relaxed">
-              {QUICK_TIPS[user.id.charCodeAt(0) % QUICK_TIPS.length]}
+              {QUICK_TIPS[Math.floor(Math.random() * QUICK_TIPS.length)]}
             </p>
           </div>
         </FadeIn>
