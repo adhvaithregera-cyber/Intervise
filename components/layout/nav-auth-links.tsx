@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState, useRef, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Home, Tag, BookOpen } from 'lucide-react'
 
 const TIER_LABEL: Record<string, string> = {
   free: 'Free',
@@ -50,17 +49,6 @@ export function NavAuthLinks({ initials, tier }: Props) {
 
   return (
     <div className="flex items-center gap-4">
-      {/* Mobile only: Home + Pricing icons */}
-      <Link href="/" className="text-white/65 hover:text-white transition-colors sm:hidden" aria-label="Home">
-        <Home className="h-5 w-5" />
-      </Link>
-      <Link href="/pricing" className="text-white/65 hover:text-white transition-colors sm:hidden" aria-label="Pricing">
-        <Tag className="h-5 w-5" />
-      </Link>
-      <Link href="/resources" className="text-white/65 hover:text-white transition-colors sm:hidden" aria-label="Resources">
-        <BookOpen className="h-5 w-5" />
-      </Link>
-
       {/* Mobile only: Dashboard pill */}
       {!isOnDashboard && (
         <Link

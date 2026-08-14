@@ -5,18 +5,16 @@ import { NavAuthLinks } from './nav-auth-links'
 import { NavCenterLinks } from './nav-center-links'
 import { NavGuestLinks } from './nav-guest-links'
 import { ScrollNav } from './scroll-nav'
-import { Home, Tag, LogIn } from 'lucide-react'
+import { Home, Tag, BookOpen, LogIn } from 'lucide-react'
 
 /**
  * Neutral navbar skeleton — used as the Suspense fallback on the landing page.
- * Shows logo + guest nav links but NO auth-specific elements (no Login/Signup,
- * no avatar) so logged-in users don't see a false logged-out state while auth resolves.
  */
 export function NavbarSkeleton() {
   return (
     <ScrollNav>
       <div className="relative mx-auto flex h-16 max-w-7xl items-center px-4 sm:px-6">
-        <Link href="/" className="flex items-center gap-2.5 shrink-0">
+        <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2.5 shrink-0 sm:static sm:translate-x-0">
           <Image src="/logo.png" alt="Intervise" width={30} height={30} priority />
           <span className="hidden sm:inline text-base font-bold tracking-widest text-[#F9C125]">INTERVISE</span>
         </Link>
@@ -69,11 +67,25 @@ export async function Navbar({ prefetched }: NavbarProps = {}) {
 
   return (
     <ScrollNav>
-      {/* relative so the absolutely-positioned center cluster anchors here */}
       <div className="relative mx-auto flex h-16 max-w-7xl items-center px-4 sm:px-6">
 
-        {/* Left: logo + wordmark */}
-        <Link href="/" className="flex items-center gap-2.5 shrink-0">
+        {/* Mobile left icons — logged-in only. On desktop these are in the center nav. */}
+        {tier !== null && (
+          <div className="flex items-center gap-4 sm:hidden">
+            <Link href="/" className="text-white/65 hover:text-white transition-colors" aria-label="Home">
+              <Home className="h-5 w-5" />
+            </Link>
+            <Link href="/pricing" className="text-white/65 hover:text-white transition-colors" aria-label="Pricing">
+              <Tag className="h-5 w-5" />
+            </Link>
+            <Link href="/resources" className="text-white/65 hover:text-white transition-colors" aria-label="Resources">
+              <BookOpen className="h-5 w-5" />
+            </Link>
+          </div>
+        )}
+
+        {/* Logo — absolutely centered on mobile, static left in flow on desktop */}
+        <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2.5 shrink-0 sm:static sm:translate-x-0">
           <Image
             src="/logo.png"
             alt="Intervise"
@@ -95,7 +107,7 @@ export async function Navbar({ prefetched }: NavbarProps = {}) {
             <NavAuthLinks initials={initials} tier={tier} />
           ) : (
             <>
-              {/* Mobile only: icon links */}
+              {/* Mobile only: icon links for guests */}
               <Link
                 href="/"
                 className="text-white/65 hover:text-white transition-colors sm:hidden"
