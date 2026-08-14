@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import { createClient, getUser } from '@/lib/supabase/server'
 import { NavAuthLinks } from './nav-auth-links'
 import { NavCenterLinks } from './nav-center-links'
@@ -14,8 +13,7 @@ export function NavbarSkeleton() {
   return (
     <ScrollNav>
       <div className="relative mx-auto flex h-16 max-w-7xl items-center px-4 sm:px-6">
-        <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2.5 shrink-0 sm:static sm:translate-x-0">
-          <Image src="/logo.png" alt="Intervise" width={30} height={30} priority />
+        <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex items-center shrink-0 sm:static sm:translate-x-0">
           <span className="hidden sm:inline text-base font-bold tracking-widest text-[#F9C125]">INTERVISE</span>
         </Link>
         <NavGuestLinks />
@@ -84,15 +82,8 @@ export async function Navbar({ prefetched }: NavbarProps = {}) {
           </div>
         )}
 
-        {/* Logo — absolutely centered on mobile, static left in flow on desktop */}
-        <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2.5 shrink-0 sm:static sm:translate-x-0">
-          <Image
-            src="/logo.png"
-            alt="Intervise"
-            width={30}
-            height={30}
-            priority
-          />
+        {/* Logo — text only, centered on mobile, static left in flow on desktop */}
+        <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex items-center shrink-0 sm:static sm:translate-x-0">
           <span className="hidden sm:inline text-base font-bold tracking-widest text-[#F9C125] hover:text-white transition-colors">
             INTERVISE
           </span>

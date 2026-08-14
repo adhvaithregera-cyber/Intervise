@@ -46,13 +46,6 @@ export function HeroSection({
       {/* Hero content */}
       <div className="relative z-10 flex flex-col items-center text-center pt-24 sm:pt-32 pb-32 gap-0">
 
-        {/* Badge */}
-        <div style={{ animation: 'hero-fade-down 0.5s ease-out both' }}>
-          <span className="inline-flex items-center gap-2 rounded-full border border-[#F9C125]/20 bg-[#F9C125]/[0.08] px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-[#F9C125]">
-            AI Interview Coach
-          </span>
-        </div>
-
         {/* Headline — no animation so it paints immediately (LCP element) */}
         <div className="mt-8">
           <h1 className="text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tight text-white leading-none">
