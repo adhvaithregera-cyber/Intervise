@@ -72,7 +72,7 @@ export default function AuthSectionOne({
 
         {/* ── Left: dark blue liquid glass form panel ── */}
         <div
-          className="relative flex h-full items-center overflow-hidden rounded-2xl px-6 sm:px-10 lg:px-14 xl:px-20"
+          className="relative flex h-full items-start overflow-y-auto py-8 rounded-2xl px-6 sm:px-10 lg:items-center lg:overflow-hidden lg:py-0 lg:px-14 xl:px-20"
           style={{
             background: 'linear-gradient(145deg, rgba(8,14,36,0.97) 0%, rgba(5,9,20,0.95) 55%, rgba(7,12,30,0.96) 100%)',
             backdropFilter: 'blur(56px) saturate(200%) brightness(1.10)',
@@ -159,7 +159,7 @@ export default function AuthSectionOne({
 
         {/* ── Right: gradient visual panel ── */}
         <div
-          className="relative flex h-full overflow-hidden rounded-2xl p-8 text-white sm:p-12"
+          className="relative hidden h-full overflow-hidden rounded-2xl p-8 text-white sm:p-12 lg:flex"
           style={{ backgroundColor: NAVY }}
         >
           {/* Gold aurora grain gradient */}
