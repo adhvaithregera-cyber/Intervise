@@ -49,7 +49,7 @@ export function NavAuthLinks({ initials, tier }: Props) {
   }
 
   return (
-    <div className="flex items-center gap-3 sm:gap-4">
+    <div className="flex items-center gap-4">
       {/* Mobile only: Home + Pricing icons */}
       <Link href="/" className="text-white/65 hover:text-white transition-colors sm:hidden" aria-label="Home">
         <Home className="h-5 w-5" />
