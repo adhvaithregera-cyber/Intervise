@@ -47,7 +47,7 @@ lib/analysis.ts                                      Filler detection + WPM calc
 lib/scorecard.ts                                     Grade styles + computeScorecardStats()
 lib/validation.ts                                    Zod schemas for all API inputs
 types/database.ts                                    Profile, Question, Session, Answer, AiFeedback types
-supabase/migrations/                                 Schema migrations (001–022)
+supabase/migrations/                                 Schema migrations (see directory for current list)
 docs/GRADING.md                                      Full grading rubric + AI feedback schema
 ```
 
@@ -144,6 +144,20 @@ Skill generally outranks fillers in typical cases (e.g. skill=32 + fillers=6 →
 - Fallbacks: `not_enough_data` (< 2 sessions) / `all_good` (no thresholds triggered)
 
 **Data fetch:** `recentAnswers` query augmented to include `filler_count, wpm, question_id` for all tiers (was previously `session_id, ai_feedback` only). One extra category lookup query runs for all users.
+
+## Database migrations — applying them
+Supabase CLI is installed as a local devDependency (`npx supabase <command>`), linked to the
+project (ref derivable from `NEXT_PUBLIC_SUPABASE_URL`'s subdomain). `SUPABASE_DB_PASSWORD` in
+`.env.local` is required for `migration repair` / `db push` (direct Postgres auth) — it is **not**
+read by the app itself and does not need to be in Vercel's env vars.
+- Migration history was applied by hand for 001–025 before the CLI was ever linked, so those are
+  baselined via `migration repair --status applied <versions>` rather than `db push` (which would
+  otherwise try to replay the entire history from scratch).
+- **Two files share version `002`** in history: `002_add_age_to_profiles.sql` is the real `002`;
+  the session-names/tier-limits migration was renamed to `0021_session_names_tier_limits.sql` to
+  give it its own tracking slot (Postgres version keys must be unique; the live DB only had one
+  slot for `002`). Keep using unique numeric prefixes for all new migrations going forward.
+- Normal workflow for a new migration: add the `.sql` file, then `npx supabase db push`.
 
 ## Conventions
 - Server Components for data fetching, Client Components for interactivity

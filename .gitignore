@@ -52,3 +52,7 @@ REVIEW.md
 # Raw data files
 questions_raw.json
 .backups/
+.env*
+
+# Supabase CLI local link/session state
+supabase/.temp/

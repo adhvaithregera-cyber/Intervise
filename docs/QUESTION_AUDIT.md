@@ -577,4 +577,25 @@ After migration, run a verification query to confirm:
 
 ---
 
+## Addendum — 2026-10-19 Relevance Cleanup (migration 026)
+
+A user flagged question 515 ("How many petrol stations are there in India? You
+have two minutes.") as out of place. Investigation found the real cause isn't
+bad wording, it's structural: that question — and its closest sibling, 516
+("Sell me this pen.") — are puzzle/performative-task prompts with no personal
+narrative, so they don't fit any of the app's 8 taught answer formats
+(including their own category's Pause → Reframe → Redirect). Both removed.
+
+While reviewing the category, also closed out six leftover gaps from this
+audit that List B/C recommended but migration 019 never actually applied:
+IDs 164, 167, 174, 301, 346 (pure Software Engineering/SRE jargon, no
+accessible rewrite) and 421 (industry-trends essay question, same issue as
+the already-removed 411) were removed; 247 and 416 were rewritten to drop a
+role-specific assumption instead of being removed outright, since a small
+edit kept the question's intent intact. See `supabase/migrations/026_question_bank_relevance_cleanup.sql`.
+
+Net effect: 8 questions removed, 2 rewritten, bank goes from 422 → 414
+questions. No new questions were added — this pass prioritised relevance per
+product direction, not restoring count.
+
 *End of Audit Report*
