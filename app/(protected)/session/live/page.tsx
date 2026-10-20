@@ -757,6 +757,10 @@ export default function LiveSessionPage() {
                 ? `Answer ${Math.min(transcribeProgress.current + 1, transcribeProgress.total)} of ${transcribeProgress.total}`
                 : 'Preparing…'}
             </p>
+            <p className="text-white/45 text-xs mt-3 leading-relaxed">
+              We&apos;re transcribing and scoring every answer, which usually takes 30–60 seconds.
+              <br />Please keep this tab open — your report will appear automatically.
+            </p>
           </div>
         )}
       </div>

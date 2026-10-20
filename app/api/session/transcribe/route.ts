@@ -143,7 +143,9 @@ async function handleAudioPath(
     return supabase.from('answers').update(changes).eq('id', existing.id)
   }
 
+  const t0 = Date.now()
   const result = await transcribeAudio(audioFile)
+  const tTranscribe = Date.now() - t0
 
   if (isTranscriptionError(result)) {
     const { error: insertError } = await saveAnswer({
@@ -183,6 +185,7 @@ async function handleAudioPath(
     difficulty:      session.difficulty,
   })
 
+  console.log(`[transcribe] timing question=${question_id} audio=${duration_seconds}s assemblyai=${tTranscribe}ms ai=${Date.now() - t0 - tTranscribe}ms`)
   if (!aiFeedback) console.error('[transcribe] aiFeedback is null for question_id:', question_id)
 
   const { error: insertError } = await saveAnswer({
