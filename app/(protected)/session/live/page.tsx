@@ -60,6 +60,9 @@ export default function LiveSessionPage() {
   const answerTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const answerStartTimeRef = useRef<number>(0)
   const storedAnswersRef = useRef<StoredAnswer[]>([])
+  // Answers upload in the background as soon as each one is recorded, so the
+  // end-of-session wait only covers whatever is still in flight.
+  const uploadsRef = useRef<Map<number, Promise<boolean>>>(new Map())
   const endingSessionRef = useRef(false)
   const processingRef = useRef(false)
   const videoRef = useRef<HTMLVideoElement | null>(null)
@@ -211,12 +214,14 @@ export default function LiveSessionPage() {
       const actualType = recorder.mimeType || mimeTypeRef.current || 'audio/mp4'
       const blob = new Blob(chunksRef.current, { type: actualType })
       const elapsed = Math.round((Date.now() - answerStartTimeRef.current) / 1000)
-      storedAnswersRef.current.push({
+      const stored: StoredAnswer = {
         blob,
         duration: elapsed,
         questionId: questions[currentIndex].id,
         index: currentIndex + 1,
-      })
+      }
+      storedAnswersRef.current.push(stored)
+      uploadsRef.current.set(stored.index, submitAnswer(stored))
       if (endingSessionRef.current) {
         finishAndProcess()
       } else {
@@ -300,6 +305,36 @@ export default function LiveSessionPage() {
     window.location.href = '/dashboard'
   }
 
+  // Retries up to 3 times on transient failures (network errors, 5xx, 429).
+  // 409 = duplicate already stored, treat as success.
+  // 4xx other than 429 = permanent error, no point retrying.
+  async function submitAnswer(answer: StoredAnswer): Promise<boolean> {
+    const sessionId = new URLSearchParams(window.location.search).get('session_id')
+    if (!sessionId) return false
+    const ext = answer.blob.type.includes('mp4') ? 'mp4' : answer.blob.type.includes('ogg') ? 'ogg' : 'webm'
+    for (let attempt = 0; attempt < 3; attempt++) {
+      if (attempt > 0) await new Promise(r => setTimeout(r, attempt * 3000))
+      try {
+        const formData = new FormData()
+        formData.append('audio', answer.blob, `answer.${ext}`)
+        formData.append('session_id', sessionId)
+        formData.append('question_id', String(answer.questionId))
+        formData.append('answer_index', String(answer.index))
+        formData.append('duration_seconds', String(answer.duration))
+        const res = await fetch('/api/session/transcribe', {
+          method: 'POST',
+          body: formData,
+          signal: AbortSignal.timeout(310_000), // slightly above server maxDuration
+        })
+        if (res.ok || res.status === 409) return true
+        if (res.status !== 429 && res.status < 500) return false
+      } catch {
+        // Network error or timeout — retry
+      }
+    }
+    return false
+  }
+
   async function finishAndProcess() {
     if (processingRef.current) return
     processingRef.current = true
@@ -326,37 +361,9 @@ export default function LiveSessionPage() {
 
     for (let i = 0; i < answers.length; i++) {
       const answer = answers[i]
-      const ext = answer.blob.type.includes('mp4') ? 'mp4' : answer.blob.type.includes('ogg') ? 'ogg' : 'webm'
-
-      // Retry up to 3 times on transient failures (network errors, 5xx, 429).
-      // 409 = duplicate already stored, treat as success.
-      // 4xx other than 429 = permanent error, no point retrying.
-      let submitted = false
-      for (let attempt = 0; attempt < 3 && !submitted; attempt++) {
-        if (attempt > 0) await new Promise(r => setTimeout(r, attempt * 3000))
-        try {
-          const formData = new FormData()
-          formData.append('audio', answer.blob, `answer.${ext}`)
-          formData.append('session_id', sessionId)
-          formData.append('question_id', String(answer.questionId))
-          formData.append('answer_index', String(answer.index))
-          formData.append('duration_seconds', String(answer.duration))
-          const res = await fetch('/api/session/transcribe', {
-            method: 'POST',
-            body: formData,
-            signal: AbortSignal.timeout(310_000), // slightly above server maxDuration
-          })
-          if (res.ok || res.status === 409) {
-            submitted = true
-          } else if (res.status !== 429 && res.status < 500) {
-            // Permanent client error — no retry
-            break
-          }
-          // 429 or 5xx → retry after delay
-        } catch {
-          // Network error or timeout — retry
-        }
-      }
+      let ok = await (uploadsRef.current.get(answer.index) ?? submitAnswer(answer))
+      // One more full attempt for anything that failed in the background.
+      if (!ok) ok = await submitAnswer(answer)
       setTranscribeProgress({ current: i + 1, total })
     }
 
