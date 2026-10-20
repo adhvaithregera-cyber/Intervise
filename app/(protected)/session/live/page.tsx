@@ -12,6 +12,7 @@ type LivePhase =
   | 'recording'
   | 'between'
   | 'transcribing'
+  | 'failed_answers'    // some answers could not be processed; offer retry
   | 'error'
 
 type Question = {
@@ -27,6 +28,14 @@ type StoredAnswer = {
   duration: number
   questionId: number
   index: number
+}
+
+// AbortSignal.timeout is missing on Safari < 16 and older mobile browsers.
+function timeoutSignal(ms: number): AbortSignal {
+  if (typeof AbortSignal.timeout === 'function') return AbortSignal.timeout(ms)
+  const controller = new AbortController()
+  setTimeout(() => controller.abort(), ms)
+  return controller.signal
 }
 
 const glassCard = {
@@ -65,6 +74,9 @@ export default function LiveSessionPage() {
   const uploadsRef = useRef<Map<number, Promise<boolean>>>(new Map())
   const endingSessionRef = useRef(false)
   const processingRef = useRef(false)
+  const failedIndexesRef = useRef<number[]>([])
+  const [failedCount, setFailedCount] = useState(0)
+  const [retrying, setRetrying] = useState(false)
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const cameraStreamRef = useRef<MediaStream | null>(null)
 
@@ -192,6 +204,13 @@ export default function LiveSessionPage() {
 
   function startRecording() {
     if (!micStreamRef.current || !questions[currentIndex]) return
+    // iOS/Android can end the mic track mid-session (call, app switch, Bluetooth change).
+    // Recording a dead stream silently produces an empty answer, so ask for the mic again.
+    if (micStreamRef.current.getAudioTracks().every(t => t.readyState === 'ended')) {
+      micStreamRef.current = null
+      setPhase('need_mic')
+      return
+    }
     // Safari only supports audio/mp4 — must be checked explicitly.
     // webm/ogg are Chrome/Firefox; mp4 is Safari on macOS/iOS.
     const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
@@ -324,9 +343,15 @@ export default function LiveSessionPage() {
         const res = await fetch('/api/session/transcribe', {
           method: 'POST',
           body: formData,
-          signal: AbortSignal.timeout(310_000), // slightly above server maxDuration
+          signal: timeoutSignal(310_000), // slightly above server maxDuration
         })
-        if (res.ok || res.status === 409) return true
+        if (res.status === 409) return true
+        if (res.ok) {
+          // The server stores a placeholder row when AssemblyAI fails; that is not a success.
+          const body = await res.json().catch(() => null) as { transcriptionFailed?: boolean } | null
+          if (!body?.transcriptionFailed) return true
+          continue
+        }
         if (res.status !== 429 && res.status < 500) return false
       } catch {
         // Network error or timeout — retry
@@ -359,14 +384,32 @@ export default function LiveSessionPage() {
     const params = new URLSearchParams(window.location.search)
     const sessionId = params.get('session_id')!
 
+    const failed: number[] = []
     for (let i = 0; i < answers.length; i++) {
       const answer = answers[i]
       let ok = await (uploadsRef.current.get(answer.index) ?? submitAnswer(answer))
       // One more full attempt for anything that failed in the background.
       if (!ok) ok = await submitAnswer(answer)
+      if (!ok) failed.push(answer.index)
       setTranscribeProgress({ current: i + 1, total })
     }
 
+    if (failed.length > 0) {
+      stopProcessingTimers()
+      failedIndexesRef.current = failed
+      setFailedCount(failed.length)
+      setPhase('failed_answers')
+      return
+    }
+    await completeSession(sessionId)
+  }
+
+  function stopProcessingTimers() {
+    if (estimateTimerRef.current) clearInterval(estimateTimerRef.current)
+    if (waitMsgRef.current) clearInterval(waitMsgRef.current)
+  }
+
+  async function completeSession(sessionId: string) {
     try {
       await fetch('/api/session/complete', {
         method: 'POST',
@@ -374,9 +417,24 @@ export default function LiveSessionPage() {
         body: JSON.stringify({ session_id: sessionId }),
       })
     } finally {
-      if (estimateTimerRef.current) clearInterval(estimateTimerRef.current)
-      if (waitMsgRef.current) clearInterval(waitMsgRef.current)
+      stopProcessingTimers()
       router.push('/session/report/' + sessionId)
+    }
+  }
+
+  async function retryFailedAnswers() {
+    setRetrying(true)
+    const stillFailed: number[] = []
+    for (const index of failedIndexesRef.current) {
+      const answer = storedAnswersRef.current.find(a => a.index === index)
+      if (!answer || !(await submitAnswer(answer))) stillFailed.push(index)
+    }
+    setRetrying(false)
+    failedIndexesRef.current = stillFailed
+    setFailedCount(stillFailed.length)
+    if (stillFailed.length === 0) {
+      setPhase('transcribing')
+      await completeSession(new URLSearchParams(window.location.search).get('session_id')!)
     }
   }
 
@@ -654,6 +712,35 @@ export default function LiveSessionPage() {
                   </button>
                 </>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* Some answers could not be processed */}
+        {phase === 'failed_answers' && (
+          <div style={glassCard} className="p-8 text-center">
+            <p className="text-white text-lg font-semibold mb-2">
+              {failedCount === 1 ? '1 answer' : `${failedCount} answers`} couldn&apos;t be processed
+            </p>
+            <p className="text-white/60 text-sm mb-6">
+              This is usually a connection issue. Your recording is still here, so you can try again
+              without re-answering. If you continue, failed answers won&apos;t appear in your report.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-3">
+              <button
+                onClick={retryFailedAnswers}
+                disabled={retrying}
+                className="rounded-xl bg-[#F9C125] px-6 py-3 text-sm font-bold text-[#080d1a] hover:brightness-110 transition-all disabled:opacity-60"
+              >
+                {retrying ? 'Retrying…' : 'Retry failed answers'}
+              </button>
+              <button
+                onClick={() => completeSession(new URLSearchParams(window.location.search).get('session_id')!)}
+                disabled={retrying}
+                className="rounded-xl border border-white/20 px-6 py-3 text-sm font-semibold text-white/60 hover:bg-white/5 hover:text-white/80 transition-all disabled:opacity-60"
+              >
+                Continue to report
+              </button>
             </div>
           </div>
         )}

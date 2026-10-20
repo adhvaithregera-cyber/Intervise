@@ -63,8 +63,8 @@ export const RATE_LIMITS = {
   sessionStart:  { maxRequests: 10, windowMs: 60 * 60 * 1000 },   // 10 / hour
   /** Audio transcription — global per-user ceiling (generous; per-session limit is the real guard) */
   transcribe:    { maxRequests: 100, windowMs: 60 * 60 * 1000 },  // 100 / hour
-  /** Per-session transcription cap — 5 questions + 10 retries buffer; prevents runaway within one session */
-  transcribeSession: { maxRequests: 15, windowMs: 60 * 60 * 1000 }, // 15 / session / hour
+  /** Per-session transcription cap — 5 questions x 3 attempts + retry buffer; prevents runaway within one session */
+  transcribeSession: { maxRequests: 30, windowMs: 60 * 60 * 1000 }, // 30 / session / hour
   /** Session completion */
   complete:      { maxRequests: 25, windowMs: 60 * 60 * 1000 },   // 25 / hour
   /** Session rename */

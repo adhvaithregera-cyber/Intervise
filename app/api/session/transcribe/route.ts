@@ -100,60 +100,53 @@ async function handleAudioPath(
     )
   }
 
-  const { data: session } = await supabase
-    .from('sessions')
-    .select('id, status')
-    .eq('id', session_id)
-    .eq('user_id', userId)
-    .single()
+  // One round trip: session ownership/status, the full question row, and the duplicate check.
+  const [{ data: session }, { data: question }, { data: existing }] = await Promise.all([
+    supabase
+      .from('sessions')
+      .select('id, status, difficulty, tier_at_time')
+      .eq('id', session_id)
+      .eq('user_id', userId)
+      .single(),
+    supabase
+      .from('questions')
+      .select('id, question_text, answer_format, category_id, category_name')
+      .eq('id', question_id)
+      .single(),
+    supabase
+      .from('answers')
+      .select('id, transcription_failed')
+      .eq('session_id', session_id)
+      .eq('answer_index', answer_index)
+      .maybeSingle(),
+  ])
 
   if (!session) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   if (session.status !== 'in_progress') {
     return NextResponse.json({ error: 'Session is not in progress' }, { status: 403 })
   }
 
-  // ── Verify question_id is valid for this session's tier/difficulty ────────
-  const { data: sessionRow } = await supabase
-    .from('sessions')
-    .select('difficulty, tier_at_time')
-    .eq('id', session_id)
-    .single()
-
-  if (!sessionRow) {
-    return NextResponse.json({ error: 'Session not found' }, { status: 404 })
-  }
-
-  // Build the allowed category filter based on tier
-  const tierAtTime = sessionRow.tier_at_time as string
-  const allowedCategories = tierAtTime === 'free' ? [1, 2] : [1, 2, 3, 4, 5, 6, 7, 8, 9]
-
-  // Check if question belongs to allowed categories for this session
-  const { data: questionRow } = await supabase
-    .from('questions')
-    .select('id, category_id')
-    .eq('id', question_id)
-    .in('category_id', allowedCategories)
-    .single()
-
-  if (!questionRow) {
+  // Verify question_id is valid for this session's tier
+  const allowedCategories = session.tier_at_time === 'free' ? [1, 2] : [1, 2, 3, 4, 5, 6, 7, 8, 9]
+  if (!question || !allowedCategories.includes(question.category_id)) {
     return NextResponse.json({ error: 'Question not valid for this session' }, { status: 403 })
   }
 
-  const { data: existing } = await supabase
-    .from('answers')
-    .select('id')
-    .eq('session_id', session_id)
-    .eq('answer_index', answer_index)
-    .maybeSingle()
-
-  if (existing) {
+  // A previously failed transcription may be retried; its row is overwritten below.
+  if (existing && !existing.transcription_failed) {
     return NextResponse.json({ error: 'Answer already submitted for this slot' }, { status: 409 })
+  }
+
+  const saveAnswer = (row: Database['public']['Tables']['answers']['Insert']) => {
+    if (!existing) return supabase.from('answers').insert(row)
+    const { session_id: _sid, ...changes } = row
+    return supabase.from('answers').update(changes).eq('id', existing.id)
   }
 
   const result = await transcribeAudio(audioFile)
 
   if (isTranscriptionError(result)) {
-    const { error: insertError } = await supabase.from('answers').insert({
+    const { error: insertError } = await saveAnswer({
       session_id,
       question_id,
       answer_index,
@@ -178,31 +171,21 @@ async function handleAudioPath(
 
   const analysis = analyzeAnswer({ transcript: result.text, durationSeconds: duration_seconds })
 
-  const { data: question } = await supabase
-    .from('questions')
-    .select('question_text, answer_format, category_id, category_name')
-    .eq('id', question_id)
-    .single()
-
-  if (!question) console.error('[transcribe] question not found for id:', question_id)
-
-  const aiFeedback = question
-    ? await generateAnswerFeedback({
-        questionText:    question.question_text,
-        categoryId:      question.category_id,
-        categoryName:    question.category_name,
-        answerFormat:    question.answer_format,
-        transcript:      result.text,
-        fillerCount:     analysis.fillerCount,
-        wpm:             analysis.wpm,
-        durationSeconds: duration_seconds,
-        difficulty:      sessionRow.difficulty,
-      })
-    : null
+  const aiFeedback = await generateAnswerFeedback({
+    questionText:    question.question_text,
+    categoryId:      question.category_id,
+    categoryName:    question.category_name,
+    answerFormat:    question.answer_format,
+    transcript:      result.text,
+    fillerCount:     analysis.fillerCount,
+    wpm:             analysis.wpm,
+    durationSeconds: duration_seconds,
+    difficulty:      session.difficulty,
+  })
 
   if (!aiFeedback) console.error('[transcribe] aiFeedback is null for question_id:', question_id)
 
-  const { error: insertError } = await supabase.from('answers').insert({
+  const { error: insertError } = await saveAnswer({
     session_id,
     question_id,
     answer_index,
