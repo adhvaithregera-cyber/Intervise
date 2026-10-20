@@ -91,10 +91,12 @@ export default async function DashboardPage({
   // ── Chart data (Student+ only) ──────────────────────────────────────────
   type CategoryStat = { category: string; avgFillers: number; sessions: number }
 
-  let sessionStats: SessionStat[] = []
-  let categoryStats: CategoryStat[] = []
-
-  if (isStudent) {
+  // Runs concurrently with the recent-sessions / focus-areas queries below;
+  // the two branches share no data, so there is no reason to wait on each other.
+  const loadChartData = async (): Promise<{ sessionStats: SessionStat[]; categoryStats: CategoryStat[] }> => {
+    let sessionStats: SessionStat[] = []
+    let categoryStats: CategoryStat[] = []
+    if (!isStudent) return { sessionStats, categoryStats }
     const chartSessions = chartSessionsResult.data
     const sessionIds = (chartSessions ?? []).map((s) => s.id)
 
@@ -173,7 +175,9 @@ export default async function DashboardPage({
         sessions: count,
       }))
     }
+    return { sessionStats, categoryStats }
   }
+  const chartDataPromise = loadChartData()
 
   // ── Your Score per recent session + focus-area raw data ───────────────
   const recentSessionIds = (recentSessions ?? []).map(s => s.id)
@@ -220,6 +224,8 @@ export default async function DashboardPage({
     })),
     focusCategoryMap,
   )
+
+  const { sessionStats, categoryStats } = await chartDataPromise
 
   const sessionsLimit = TIER_SESSION_LIMITS[profile.tier] ?? 2
   const sessionsLeft = Math.max(0, sessionsLimit - profile.sessions_used_this_month)
