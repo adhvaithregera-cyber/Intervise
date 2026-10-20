@@ -226,7 +226,15 @@ export default async function DashboardPage({
   const exhausted = sessionsLeft <= 0
   const pct = Math.min((profile.sessions_used_this_month / sessionsLimit) * 100, 100)
 
-  const isFirstSession = profile.onboarding_complete && profile.sessions_used_this_month === 0
+  // Quota resets monthly, so a zero count alone would show returning users the
+  // first-session panel on the 1st. Only treat as first session if they have never finished one.
+  let isFirstSession = false
+  if (profile.onboarding_complete && profile.sessions_used_this_month === 0) {
+    const { count: completedEver } = await supabase
+      .from('sessions').select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id).eq('status', 'complete')
+    isFirstSession = (completedEver ?? 0) === 0
+  }
   const firstName = profile.full_name ? profile.full_name.split(' ')[0] : null
 
   return (
