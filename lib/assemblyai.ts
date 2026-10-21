@@ -86,6 +86,8 @@ async function requestTranscription(
       body: JSON.stringify({
         audio_url: audioUrl,
         speech_models: ['universal-2'],
+        // AssemblyAI strips "um"/"uh" by default, which made filler counts near zero.
+        disfluencies: true,
       }),
     })
   } catch {
