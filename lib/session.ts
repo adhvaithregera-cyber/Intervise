@@ -25,7 +25,10 @@ const TIER_QUESTION_COUNT: Record<string, number> = {
   pro:     5,
 }
 
-const FREE_CATEGORY_IDS = [1, 2]
+const FREE_CATEGORY_IDS = [1, 2, 10]
+
+// Open-ended (10) has no structure to practise, so cap it to keep sessions varied.
+const MAX_PER_CATEGORY: Record<number, number> = { 10: 2 }
 
 export type CreateSessionResult =
   | { sessionId: string; questions: Question[]; tier: string }
@@ -97,7 +100,7 @@ export async function createSession(
     if (questionPool.length < questionCount) questionPool = basePool
   }
 
-  const selectedQuestions = selectAdaptiveQuestions(questionPool, askedIds, questionCount)
+  const selectedQuestions = selectAdaptiveQuestions(questionPool, askedIds, questionCount, MAX_PER_CATEGORY)
 
   // ── Atomic: quota check + session creation ─────────────────────────────
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

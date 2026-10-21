@@ -127,7 +127,7 @@ async function handleAudioPath(
   }
 
   // Verify question_id is valid for this session's tier
-  const allowedCategories = session.tier_at_time === 'free' ? [1, 2] : [1, 2, 3, 4, 5, 6, 7, 8, 9]
+  const allowedCategories = session.tier_at_time === 'free' ? [1, 2, 10] : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
   if (!question || !allowedCategories.includes(question.category_id)) {
     return NextResponse.json({ error: 'Question not valid for this session' }, { status: 403 })
   }

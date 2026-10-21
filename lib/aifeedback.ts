@@ -15,6 +15,7 @@ const CATEGORIES: Record<number, { name: string; format: string }> = {
   7: { name: 'Situational / Hypothetical',   format: 'PACE — Prioritise · Act · Communicate · Evaluate' },
   8: { name: 'Curveball / Pressure',         format: 'Pause → Reframe → Redirect' },
   9: { name: 'Weaknesses',                   format: 'Name it → Show awareness → Show action → Show progress' },
+  10: { name: 'Open-ended / General',        format: 'Answer → Evidence → Insight' },
 }
 
 // ── Ideal duration per category (seconds) ────────────────────────────────────
@@ -29,6 +30,7 @@ const IDEAL_DURATION: Record<number, { min: number; max: number; tooShort: numbe
   7: { min: 75,  max: 120, tooShort: 40, tooLong: 180 },
   8: { min: 45,  max: 75,  tooShort: 15, tooLong: 120 },
   9: { min: 60,  max: 90,  tooShort: 30, tooLong: 150 },
+  10: { min: 45, max: 90,  tooShort: 20, tooLong: 150 },
 }
 
 // ── Rubrics per category ──────────────────────────────────────────────────────
@@ -152,6 +154,19 @@ const RUBRICS: Record<number, object> = {
       "'I work too hard' or 'I care too much' → automatic F (final score 0)",
       "No action plan → cap at D (max total 54)",
       "Reframed weakness as strength immediately → deduct 20 points",
+    ],
+  },
+  10: {
+    components: {
+      answer:   { max: 20, scoring: "Directly answers the question that was actually asked. A clear, on-point answer = 15+/20. Partly answers or drifts = 8-12. Dodges the question or answers a different one = 0-5." },
+      evidence: { max: 25, scoring: "Voice answers cannot be fact-checked, so judge only whether it sounds like a believable, real experience or habit. A natural-sounding concrete example, situation or specific way of working = 18+/25. Do NOT require numbers, names, metrics or proof. Only score low (under 8) if the answer is entirely generic statements with nothing concrete or lived-in at all." },
+      insight:  { max: 15, scoring: "Shows reasoning, self-awareness or a genuine perspective: why it matters, what they learned, how they think about it. A sensible reason or reflection = 10+/15. Bare assertion with no reasoning = 3-6." },
+      clarity:  { max: 10, scoring: "Easy to follow with one clear main point and a logical order. Minor rambling is fine. Only score low if the answer is confusing or has no discernible point." },
+    },
+    automatic_caps: [
+      "Answer under 15 seconds → cap at D (max total 54)",
+      "'I don't know' or no real answer given → automatic F (final score 0)",
+      "Answer is completely off-topic and never addresses the question → cap at D (max total 54)",
     ],
   },
 }
@@ -348,6 +363,13 @@ function detectAutomaticCaps(
       fired.push(caps[3])
   }
 
+  if (categoryId === 10) {
+    if (durationSeconds < 15)
+      fired.push(caps[0])
+    if (words.length < 40 && /\b(i\s+don'?t\s+know|no\s+idea|can'?t\s+think\s+of|nothing\s+comes\s+to\s+mind|i\s+have\s+no\s+answer)\b/i.test(transcript))
+      fired.push(caps[1])
+  }
+
   return fired.filter(Boolean)
 }
 
@@ -425,6 +447,12 @@ const COACHING_TEMPLATES: Record<number, Record<string, string>> = {
     show_awareness: "Your awareness section must name when, where, and what the concrete consequence was. Hypotheticals score zero.",
     show_action:    "Name the exact course, book, habit, or system you have adopted. 'I am working on it' scores zero — 'I completed X / I now use Y system' scores full marks.",
     show_progress:  "Prepare a recent positive signal — a situation where the weakness showed up and you handled it better than before.",
+  },
+  10: {
+    answer:   "Start with a one-sentence direct answer to the question, then explain. If the first sentence could be the whole answer, you are on track.",
+    evidence: "Back your point with one real moment: 'For example, when I...' Even a short, natural example makes the answer sound lived-in rather than rehearsed.",
+    insight:  "Finish with the 'why': one sentence on what you learned or why this matters to how you work.",
+    clarity:  "Stick to one main point. Say it, support it, stop. Aim for 45 to 90 seconds.",
   },
 }
 

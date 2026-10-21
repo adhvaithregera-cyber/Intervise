@@ -57,7 +57,9 @@ Tables: `profiles`, `questions`, `sessions`, `answers`, `question_history`
 - `profiles.tier`: `free | student | pro`
 - Sessions/month: Free=2, Student=12, Pro=30
 - Difficulty gating: Free=Easy only, Student=Easy+Medium, Pro=all
-- Category pools: Free=Cat 1+2, Student/Pro=All 9 (categories 1–9; category 9 = Weaknesses, split from old Strengths & Weaknesses in migration 019)
+- Category pools: Free=Cat 1+2+10, Student/Pro=All 10 (categories 1–10; category 9 = Weaknesses, split from old Strengths & Weaknesses in migration 019; category 10 = Open-ended / General, added in migration 027)
+- Category 10 (Open-ended / General): questions that fit no taught answer format (e.g. "How do you prefer to receive feedback?"). Rubric: Answer 20 · Evidence 25 · Insight 15 · Clarity 10 (+30 delivery). Evidence is judged leniently — it only has to sound like a believable real experience; no numbers or proof required (voice answers can't be verified). Caps: under 15s → D, no real answer → F, completely off-topic → D. Max 2 Open-ended questions per session (`MAX_PER_CATEGORY` in `lib/session.ts`). Time limit 60s easy / 90s medium+hard.
+- Question audit: migration 027 re-files 165 mis-categorised questions (see `docs/QUESTION_CATEGORY_AUDIT.md`). **Deploy the app code before running 027** — the transcribe route rejects unknown categories. Rollback via `questions_category_backup_027`.
 - Session history: Free=7 days, Student=30 days, Pro=unlimited
 
 ## Pricing

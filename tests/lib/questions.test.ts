@@ -46,4 +46,32 @@ describe('selectAdaptiveQuestions', () => {
     const ids = result.map(q => q.id)
     expect(new Set(ids).size).toBe(ids.length)
   })
+
+  describe('maxPerCategory', () => {
+    const mixed = [
+      ...makeQuestions(10, 10).map(q => ({ ...q, id: q.id + 100 })),
+      ...makeQuestions(10, 2).map(q => ({ ...q, id: q.id + 200 })),
+    ]
+
+    it('never exceeds the cap for a capped category', () => {
+      for (let i = 0; i < 50; i++) {
+        const result = selectAdaptiveQuestions(mixed, [], 5, { 10: 2 })
+        expect(result).toHaveLength(5)
+        expect(result.filter(q => q.category_id === 10).length).toBeLessThanOrEqual(2)
+      }
+    })
+
+    it('uses already-asked questions before breaking the cap', () => {
+      const unaskedOnlyCapped = [...makeQuestions(5, 10), ...makeQuestions(2, 2).map(q => ({ ...q, id: q.id + 200 }))]
+      const asked = [201, 202]
+      const result = selectAdaptiveQuestions(unaskedOnlyCapped, asked, 4, { 10: 2 })
+      expect(result).toHaveLength(4)
+      expect(result.filter(q => q.category_id === 10)).toHaveLength(2)
+    })
+
+    it('breaks the cap as a last resort rather than returning too few', () => {
+      const result = selectAdaptiveQuestions(makeQuestions(6, 10), [], 5, { 10: 2 })
+      expect(result).toHaveLength(5)
+    })
+  })
 })
