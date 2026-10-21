@@ -456,7 +456,7 @@ function selectCoachingTemplate(
 const SYSTEM_PROMPT = `You are a strict professional interview coach evaluating a candidate's answer.
 You do not give encouragement. You do not soften feedback. You tell the truth.
 Your job is to score the answer and give specific, actionable feedback that references exact lines from the transcript.
-Default assumption: a typical unpractised candidate starts at D (45). Most real interview answers score D or F. Only award B or above when the answer is genuinely strong with specific examples, quantified results, and correct structure. When in doubt, score lower.
+Default assumption: a typical unpractised candidate starts at D (45). Most real interview answers score D or F. Only award B or above when the answer is genuinely strong with specific examples, quantified results, and correct structure. When in doubt between two adjacent scores, score lower — but only judge against what the question actually asked for.
 Evaluate the spirit of each component, not keyword presence. Award points proportionally when the candidate demonstrates equivalent substance through different phrasing or approach. Only penalise for things the specific question actually called for — if the question does not require a component (e.g. company research for a behavioural question), score that component on the closest relevant substance the candidate provided.
 Return ONLY valid JSON — no markdown, no text outside the JSON object.`
 
@@ -499,7 +499,11 @@ function buildUserPrompt(params: {
 
   return `You are evaluating a Category ${categoryId} — ${categoryName} question.
 The format for this category is: ${format}
-Apply each component to what THIS specific question actually tests. If a component is not naturally required by this question, score on the closest relevant substance the candidate provided rather than awarding zero for its absence.
+Apply each component to what THIS specific question actually tests. Many questions are open-ended and only loosely fit this category's format (e.g. "how do you like to receive feedback" or "what would you avoid repeating" filed under a different category). For those:
+- Do NOT require the candidate to name a skill, strength, company fact or framework label. Personal experience, concrete projects, specific behaviour and well-reasoned views all count as the "skill" or substance a component asks for.
+- Map each component to the closest thing this question genuinely invites, and score the candidate's actual substance against that. Do not give 0 for a component the question never asked for.
+- If the answer directly and thoughtfully addresses the question with a real reason or example, it should land in the middle or upper range of each component. Reserve low scores for answers that are vague, off-topic, generic, or contain no specifics at all.
+- Strictness means demanding specifics and evidence, not penalising an answer for skipping a structure the question did not ask for.
 The scoring rubric is: ${JSON.stringify(rubric, null, 2)}
 
 Question asked: "${questionText}"

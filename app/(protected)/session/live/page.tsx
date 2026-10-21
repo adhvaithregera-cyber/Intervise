@@ -758,7 +758,7 @@ export default function LiveSessionPage() {
                 : 'Preparing…'}
             </p>
             <p className="text-white/45 text-xs mt-3 leading-relaxed">
-              We&apos;re transcribing and scoring every answer, which usually takes 30–60 seconds.
+              We&apos;re transcribing and scoring every answer, which takes about a minute, and a little longer if you used your full time on every answer.
               <br />Please keep this tab open — your report will appear automatically.
             </p>
           </div>
